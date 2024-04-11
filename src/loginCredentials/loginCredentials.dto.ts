@@ -1,5 +1,16 @@
-import { IsEnum, IsString, Length } from 'class-validator'
+import { IsEmail, IsEnum, IsString, Length } from 'class-validator'
 import { Unique } from 'typeorm'
+
+export class LoginDTO   {
+    @IsEmail()
+    @Length(15, 50)
+    readonly email: string
+
+    @IsString()
+    @Length(15, 250)
+    readonly password: string
+
+}
 
 export class CreateCredentialsDTO   {
     @IsString()
@@ -8,7 +19,7 @@ export class CreateCredentialsDTO   {
     readonly email: string
 
     @IsString()
-    @Length(10, 250)
+    @Length(15, 250)
     readonly password: string
 
     @IsEnum(["company", "candidate"])
