@@ -14,3 +14,9 @@ export class CreateCredentialsDTO   {
     @IsEnum(["company", "candidate"])
     readonly role: string
 }
+
+export class UpdatePasswordDTO   {
+    @IsString()
+    @Length(10, 250)
+    readonly password: string
+}
