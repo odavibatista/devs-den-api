@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class JobCategories  {
@@ -10,9 +10,13 @@ export class JobCategories  {
     })
     name: string
 
-    @Column({})
+    @CreateDateColumn({
+        nullable: false
+    })
     created_at: Date
 
-    @Column({})
+    @UpdateDateColumn({
+        nullable: false
+    })
     updated_at: Date
 }
