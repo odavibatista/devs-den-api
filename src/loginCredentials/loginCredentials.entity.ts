@@ -1,6 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-
 enum Role {
     COMPANY = 'company',
     CANDIDATE = 'candidate'
