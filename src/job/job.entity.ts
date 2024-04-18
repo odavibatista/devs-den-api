@@ -1,5 +1,6 @@
 import { Companies } from "src/company/company.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Profiles } from "src/profile/profile.entity";
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 enum Modality {
     PRESENTIAL = 'presential',
@@ -41,6 +42,19 @@ export class Jobs  {
     })
     modality: string
     
+    @ManyToMany(()  => Profiles, user => user.id_profile)
+    @JoinTable({
+        name: 'job_subscribes',
+        joinColumn: {
+            name: 'job_id',
+            referencedColumnName: 'id_job'
+        },
+        inverseJoinColumn:  {
+            name: 'user_id',
+            referencedColumnName: 'id_profile'
+        }
+    })
+
     @CreateDateColumn({
         nullable: false
     })
