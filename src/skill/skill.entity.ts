@@ -37,6 +37,19 @@ export class Skills {
             referencedColumnName: 'id_job'
         }
     })
+    
+    @ManyToMany(()  => Profiles, user => user.id_profile)
+    @JoinTable({
+        name: 'user_skills',
+        joinColumn: {
+            name: 'skill_id',
+            referencedColumnName: 'id_skill'
+        },
+        inverseJoinColumn:  {
+            name: 'user_id',
+            referencedColumnName: 'id_profile'
+        }
+    })
 
     @CreateDateColumn({
         nullable: false
