@@ -7,7 +7,7 @@ import { AppController } from 'src/app.controller';
 import { AppService } from 'src/app.service';
 import { UserService } from './service/user.service';
 import { UserController } from './controller/user.controller';
-import { JwtService } from './service/jwt.service';
+import { JWTProvider } from './providers/JWT.provider';
 
 @Module({
     imports: [
@@ -15,6 +15,6 @@ import { JwtService } from './service/jwt.service';
         TypeOrmModule.forFeature([User, AddressEntity]),
       ],
       controllers: [AppController, UserController],
-      providers: [AppService, UserService, JwtService],
+      providers: [AppService, UserService, JWTProvider],
 })
 export class UserModule {}

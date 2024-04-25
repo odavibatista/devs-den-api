@@ -9,10 +9,14 @@ import {
   } from '@nestjs/common';
   import { CreateUserDTO, LoginDTO } from '../dto/user.dto';
   import { UserService } from '../service/user.service';
+import { JWTProvider } from '../providers/JWT.provider';
   
   @Controller('user')
   export class UserController {
-    constructor(private readonly userService: UserService) {}
+    constructor(
+      private readonly userService: UserService,
+      private JwtProvider: JWTProvider
+    ) {}
   
     @Get()
     async findAll(): Promise<any[]> {
