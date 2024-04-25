@@ -1,13 +1,11 @@
 
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Callback, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { User } from '../entity/user.entity';
 import { CreateUserDTO, LoginDTO } from '../dto/user.dto';
 import * as bcrypt from 'bcrypt';
-import jwt from "jsonwebtoken";
-import { error } from 'console';
-import { JwtService } from './jwt.service';
+import { JWTProvider } from '../providers/JWT.provider';
 
 
 @Injectable()
@@ -15,6 +13,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private jwtProvider: JWTProvider
   ) {}
   
   async findAll (): Promise<User[]> {
@@ -58,17 +57,14 @@ export class UserService {
   }
 
   async login (loginDto: LoginDTO): Promise<any> {
-    const user = await this.userRepository.findOne({
+    const user: User = await this.userRepository.findOne({
       where: { email: loginDto.email },
     });
-
-    const jwt = new JwtService()
-
     if (!user) {
       throw new HttpException('Usuário não encontrado.', HttpStatus.NOT_FOUND);
     }
 
-    const isPasswordValid = await jwt.checkPassword(loginDto.password, user.password, (err, isSame) => {
+    const isPasswordValid = await this.checkPassword(loginDto.password, user.password, (err, isSame) => {
       if (err) {
         throw new HttpException('Erro ao verificar a senha.', HttpStatus.INTERNAL_SERVER_ERROR);
       }
@@ -83,7 +79,29 @@ export class UserService {
     if (isPasswordValid === null) {
       throw new HttpException('Senha inválida.', HttpStatus.UNAUTHORIZED);
     } else  {
-      return user
+      const token = this.jwtProvider.generate({ payload: { id: user.id_login }, expiresIn: '6h', secret: process.env.JWT_SECRET });
+
+      
+      const response = {
+        user: {
+          id: user.id_login,
+          email: user.email,
+          role: user.role
+        },
+        token
+      }
+      return response
     }
   }
+
+  /* TO BE REMOVED */
+  public async checkPassword (password: string, otherPassword: string, callbackfn: (err?: Error, isSame?: boolean) => void) {
+    bcrypt.compare(password, otherPassword, (err, isSame) => {
+      if (err) {
+        callbackfn(err)
+      } else {
+        callbackfn(err, isSame)
+      }
+    });
+}
 }
