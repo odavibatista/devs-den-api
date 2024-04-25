@@ -1,5 +1,5 @@
 import { Addresses } from "src/address/address.entity";
-import { LoginCredentials } from "src/loginCredentials/loginCredentials.entity";
+import { Users } from "src/users/entity/user.entity";
 import { Skills } from "src/skill/skill.entity";
 import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToOne, PrimaryColumn, UpdateDateColumn } from "typeorm";
 
@@ -13,7 +13,7 @@ export class Profiles  {
     @PrimaryColumn()
     id_profile: number
     
-    @OneToOne(()    => LoginCredentials, (login) => login.id_login, {
+    @OneToOne(()    => Users, (user) => user.id_login, {
         nullable: false
     })
 
