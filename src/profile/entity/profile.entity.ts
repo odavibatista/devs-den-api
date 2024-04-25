@@ -1,6 +1,6 @@
 import { Addresses } from "src/address/address.entity";
 import { Users } from "src/users/entity/user.entity";
-import { Skills } from "src/skill/skill.entity";
+import { Skills } from "src/skill/entity/skill.entity";
 import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToOne, PrimaryColumn, UpdateDateColumn } from "typeorm";
 
 enum Gender {

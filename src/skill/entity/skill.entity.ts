@@ -1,5 +1,5 @@
 import { Jobs } from 'src/job/job.entity';
-import { Profiles } from 'src/profile/profile.entity';
+import { Profiles } from 'src/profile/entity/profile.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable } from 'typeorm';
 
 @Entity()

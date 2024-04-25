@@ -1,4 +1,4 @@
-import { Ufs } from "src/uf/uf.entity";
+import { Ufs } from "src/uf/entity/uf.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
