@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsString, Length } from 'class-validator'
+import { IsEmail, IsString, Length } from 'class-validator'
 import { Unique } from 'typeorm'
 
 export class UserDTO   {

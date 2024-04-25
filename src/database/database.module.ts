@@ -1,5 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { config } from 'dotenv';
 import { DataSource } from 'typeorm';
 
@@ -10,30 +11,24 @@ import { DataSource } from 'typeorm';
             envFilePath: ['.env'],
             isGlobal: true
         }),
-    ],
 
-    providers: [
-        {
-            provide: 'DATA_SOURCE',
+        TypeOrmModule.forRootAsync({
+            imports: [ConfigModule],
             inject: [ConfigService],
-            useFactory: async (config: ConfigService): Promise<DataSource> => {
-                const dataSource = new DataSource({
-                    type: config.get<any>('DB_ENGINE'),
-                    host: config.get<string>('DB_HOST'),
-                    port: config.get<number>('DB_PORT'),
-                    username: config.get<string>('DB_USER'),
-                    password: config.get<string>('DB_PASSWORD'),
-                    database: config.get<string>('DB_DATABASE'),
-                    entities: [config.get<string>('DB_ENTITIES')],
-                    synchronize: config.get<boolean>('DB_SYNCHRONIZE'),
-                    logging: config.get<boolean>('DB_LOGGING'),
-                });
-
-                return dataSource.initialize()
-            }
-        },
+            useFactory: async (configService: ConfigService) => ({
+                type: configService.get<any>('DB_ENGINE'),
+                host: configService.get<string>('DB_HOST'),
+                port: configService.get<number>('DB_PORT'),
+                username: configService.get<string>('DB_USER'),
+                password: configService.get<string>('DB_PASSWORD'),
+                database: configService.get<string>('DB_DATABASE'),
+                entities: [configService.get<string>('DB_ENTITIES')],
+                synchronize: configService.get<boolean>('DB_SYNCHRONIZE'),
+                logging: configService.get<boolean>('DB_LOGGING'),
+                logger: 'advanced-console',
+              }),
+    
+          }),
     ],
-
-    exports: ['DATA_SOURCE']
 })
 export class DatabaseModule {}

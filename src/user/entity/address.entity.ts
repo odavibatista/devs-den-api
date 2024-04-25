@@ -2,7 +2,7 @@ import { Ufs } from "src/uf/entity/uf.entity";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
-export class Addresses  {
+export class AddressEntity  {
     @PrimaryGeneratedColumn({})
     id_address: number
 
