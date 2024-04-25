@@ -24,18 +24,21 @@ export class CreateUserDTO   {
     @IsString()
     @Length(7, 9)
     role: "company" | "candidate"
- 
-    getPassword()   {
-        return this.password
-    }
-
-    setPassword(new_password: string)   {
-        this.password = new_password
-    }
 }
 
 export class UpdatePasswordDTO   {
     @IsString()
     @Length(10, 250)
+    readonly password: string
+}
+
+export class LoginDTO   {
+    @IsString()
+    @IsEmail()
+    @Length(10, 50)
+    readonly email: string
+
+    @IsString()
+    @Length(15, 250)
     readonly password: string
 }
