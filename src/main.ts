@@ -4,9 +4,25 @@ import { patchNestJsSwagger } from 'nestjs-zod';
 import { SwaggerModule } from '@nestjs/swagger';
 import { sharedSwaggerConfig } from './shared/config/swagger.config';
 import { config } from 'dotenv';
+import { HttpException, HttpStatus, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      exceptionFactory: (errors) =>
+        new HttpException(
+          {
+            message: 'Entrada de dados invalida',
+            errors: errors,
+          },
+          HttpStatus.BAD_REQUEST,
+        ),
+    }),
+  );
 
   const PORT = process.env.API_PORT
 
