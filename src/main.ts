@@ -8,6 +8,7 @@ import { HttpException, HttpStatus, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -21,8 +22,7 @@ async function bootstrap() {
           },
           HttpStatus.BAD_REQUEST,
         ),
-    }),
-  );
+    }))
 
   const PORT = process.env.API_PORT
 

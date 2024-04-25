@@ -1,7 +1,7 @@
-import { Addresses } from "src/address/address.entity";
-import { Users } from "src/users/entity/user.entity";
+import { AddressEntity } from "src/user/entity/address.entity";
 import { Skills } from "src/skill/entity/skill.entity";
-import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToOne, PrimaryColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToMany, OneToOne, PrimaryColumn, UpdateDateColumn } from "typeorm";
+import { User } from "src/user/entity/user.entity";
 
 enum Gender {
     MALE = 'male',
@@ -13,7 +13,7 @@ export class Profiles  {
     @PrimaryColumn()
     id_profile: number
     
-    @OneToOne(()    => Users, (user) => user.id_login, {
+    @OneToOne(()    => User, (user) => user.id_login, {
         nullable: false
     })
 
@@ -37,7 +37,7 @@ export class Profiles  {
     })
     birth_date: Date
 
-    @OneToOne(()    => Addresses, (address) => address.id_address, {
+    @OneToOne(()    => AddressEntity, (address) => address.id_address, {
         nullable: false
     })
     address_id: number
