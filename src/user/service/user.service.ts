@@ -3,7 +3,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entity/user.entity';
-import { CreateUserDTO } from '../dto/user.dto';
+import { CreateUserDTO, LoginDTO } from '../dto/user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -12,11 +13,11 @@ export class UserService {
     private userRepository: Repository<User>,
   ) {}
 
-  async findAll(): Promise<User[]> {
+  async findAll (): Promise<User[]> {
     return await this.userRepository.find();
   }
 
-  async findOne(id: number): Promise<User> {
+  async findOne (id: number): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { id_login: id},
     });
@@ -27,8 +28,13 @@ export class UserService {
     return user;
   }
 
-  async create(createUserDto: CreateUserDTO): Promise<User> {
+  async create  (createUserDto: CreateUserDTO): Promise<User> {
     try {
+      const saltOrRounds = 10
+      const hash = await bcrypt.hash(createUserDto.password, saltOrRounds);
+
+      createUserDto.password = hash
+
       return await this.userRepository.save(
         this.userRepository.create(createUserDto),
       );
@@ -41,6 +47,24 @@ export class UserService {
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
+    }
+  }
+
+  async login (loginDto: LoginDTO): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { email: loginDto.email },
+    });
+
+    if (!user) {
+      throw new HttpException('Usuário não encontrado.', HttpStatus.NOT_FOUND);
+    }
+
+    const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
+
+    if (!isPasswordValid) {
+      throw new HttpException('Senha inválida.', HttpStatus.UNAUTHORIZED);
+    } else  {
+      return user
     }
   }
 }
