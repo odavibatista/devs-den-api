@@ -7,7 +7,7 @@ export class UserDTO   {
     readonly email: string
 
     @IsString()
-    @Length(15, 250)
+    @Length(15, 255)
     readonly password: string
 }
 
@@ -18,7 +18,7 @@ export class CreateUserDTO   {
     email: string
 
     @IsString()
-    @Length(15, 250)
+    @Length(15, 255)
     password: string
 
     @IsString()
@@ -39,6 +39,6 @@ export class LoginDTO   {
     readonly email: string
 
     @IsString()
-    @Length(15, 250)
+    @Length(15, 255)
     readonly password: string
 }
