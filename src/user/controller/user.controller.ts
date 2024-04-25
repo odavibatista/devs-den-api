@@ -7,7 +7,7 @@ import {
     Post,
     Put,
   } from '@nestjs/common';
-  import { CreateUserDTO } from '../dto/user.dto';
+  import { CreateUserDTO, LoginDTO } from '../dto/user.dto';
   import { UserService } from '../service/user.service';
   
   @Controller('user')
@@ -27,6 +27,11 @@ import {
     @Post()
     async create(@Body() createUserDto: CreateUserDTO): Promise<any> {
       return this.userService.create(createUserDto);
+    }
+
+    @Post('login')
+    async login(@Body() loginDto: LoginDTO): Promise<any> {
+      return this.userService.login(loginDto);
     }
   }
   
