@@ -15,15 +15,23 @@ export class CreateUserDTO   {
     @IsString()
     @Length(10, 50)
     @Unique(["email"])
-    readonly email: string
+    email: string
 
     @IsString()
     @Length(15, 250)
-    readonly password: string
+    password: string
 
     @IsString()
     @Length(7, 9)
-    readonly role: "company" | "candidate"
+    role: "company" | "candidate"
+ 
+    getPassword()   {
+        return this.password
+    }
+
+    setPassword(new_password: string)   {
+        this.password = new_password
+    }
 }
 
 export class UpdatePasswordDTO   {
