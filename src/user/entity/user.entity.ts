@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 enum Role {
     COMPANY = 'company',
@@ -6,7 +6,7 @@ enum Role {
 }
 
 @Entity()
-export class LoginCredentials  {
+export class User  {
     @PrimaryGeneratedColumn()
     id_login: number
 
@@ -29,9 +29,13 @@ export class LoginCredentials  {
     })
     role: string
 
-    @Column({})
+    @CreateDateColumn({
+        nullable: false
+    })
     created_at: Date
 
-    @Column({})
+    @UpdateDateColumn({
+        nullable: false
+    })
     updated_at: Date
 }

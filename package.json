@@ -17,7 +17,12 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "docker:up": "docker compose up --build -d",
+    "docker:down": "docker compose down",
+    "docker:restart": "docker compose restart",
+    "docker:logs": "docker compose logs -f",
+    "docker:rebuild": "npm run docker:down && npm run docker:up"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -27,9 +32,11 @@
     "@nestjs/swagger": "^7.3.1",
     "@nestjs/typeorm": "^10.0.2",
     "bcrypt": "^5.1.1",
+    "class-transformer": "^0.5.1",
     "cors": "^2.8.5",
     "dot-env": "^0.0.1",
     "dotenv": "^16.4.5",
+    "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.9.4",
     "nestjs-zod": "^3.0.0",
     "reflect-metadata": "^0.2.0",

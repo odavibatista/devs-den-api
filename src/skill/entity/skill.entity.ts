@@ -1,5 +1,5 @@
 import { Jobs } from 'src/job/job.entity';
-import { Profiles } from 'src/profile/profile.entity';
+import { Profiles } from 'src/profile/entity/profile.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable } from 'typeorm';
 
 @Entity()
@@ -35,6 +35,19 @@ export class Skills {
         inverseJoinColumn:  {
             name: 'job_id',
             referencedColumnName: 'id_job'
+        }
+    })
+    
+    @ManyToMany(()  => Profiles, user => user.id_profile)
+    @JoinTable({
+        name: 'user_skills',
+        joinColumn: {
+            name: 'skill_id',
+            referencedColumnName: 'id_skill'
+        },
+        inverseJoinColumn:  {
+            name: 'user_id',
+            referencedColumnName: 'id_profile'
         }
     })
 
