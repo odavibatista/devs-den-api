@@ -6,7 +6,7 @@ enum Role {
 }
 
 @Entity()
-export class LoginCredentials  {
+export class Users  {
     @PrimaryGeneratedColumn()
     id_login: number
 
