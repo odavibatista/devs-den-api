@@ -5,9 +5,14 @@ import { SwaggerModule } from '@nestjs/swagger';
 import { sharedSwaggerConfig } from './shared/config/swagger.config';
 import { config } from 'dotenv';
 import { HttpException, HttpStatus, ValidationPipe } from '@nestjs/common';
+import * as cors from 'cors'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.use(cors({
+    origin: '*'
+  }))
 
   app.useGlobalPipes(
     new ValidationPipe({
