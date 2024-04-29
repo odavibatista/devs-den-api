@@ -28,7 +28,7 @@ import { JWTProvider } from '../providers/JWT.provider';
       return this.userService.findOne(id);
     }
   
-    @Post()
+    @Post('/register')
     async create(@Body() createUserDto: CreateUserDTO): Promise<any> {
       return this.userService.create(createUserDto);
     }
