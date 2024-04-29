@@ -1,5 +1,5 @@
-import { Jobs } from 'src/job/job.entity';
-import { Profiles } from 'src/profile/entity/profile.entity';
+import { Jobs } from 'src/modules/job/entity/job.entity';
+import { Candidate } from 'src/modules/candidate/entity/candidate.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable } from 'typeorm';
 
 @Entity()
@@ -12,7 +12,7 @@ export class Skills {
     })
     name: string
 
-    @ManyToMany(()  =>  Profiles, user => user.id_profile)
+    @ManyToMany(()  =>  Candidate, user => user.id_profile)
     @JoinTable({
         name: 'user_skills',
         joinColumn: {
@@ -38,7 +38,7 @@ export class Skills {
         }
     })
     
-    @ManyToMany(()  => Profiles, user => user.id_profile)
+    @ManyToMany(()  => Candidate, user => user.id_profile)
     @JoinTable({
         name: 'user_skills',
         joinColumn: {
