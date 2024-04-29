@@ -1,5 +1,5 @@
-import { Companies } from "../company/entity/company.entity";
-import { Profiles } from "../profile/entity/profile.entity";
+import { Companies } from "src/modules/company/entity/company.entity";
+import { Profiles } from "src/modules/profile/entity/profile.entity";
 import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 enum Modality {
