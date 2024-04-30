@@ -2,13 +2,15 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { patchNestJsSwagger } from 'nestjs-zod';
 import { SwaggerModule } from '@nestjs/swagger';
-import { sharedSwaggerConfig } from './shared/config/swagger.config';
-import { config } from 'dotenv';
+import { sharedSwaggerConfig } from '../shared/config/swagger.config';
 import { HttpException, HttpStatus, ValidationPipe } from '@nestjs/common';
 import * as cors from 'cors'
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger: ['error', 'warn', 'log', 'debug', 'verbose']
+  });
 
   app.use(cors({
     origin: '*'

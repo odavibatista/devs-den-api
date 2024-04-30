@@ -1,9 +1,20 @@
 import { Module } from '@nestjs/common';
 import { CompanyService } from './service/company.service';
 import { ConjunctCompanyController, IndividualCompanyController } from './controller/company.controller';
+import { DatabaseModule } from 'src/database/database.module';
+import { AppService } from 'src/app.service';
+import { AppController } from 'src/app/app.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Companies } from './entity/company.entity';
+import { User } from '../user/entity/user.entity';
 
 @Module({
-  providers: [CompanyService],
-  controllers: [ConjunctCompanyController, IndividualCompanyController]
+  imports: [
+    DatabaseModule,
+    CompanyModule,
+    TypeOrmModule.forFeature([Companies, User]),
+  ],
+  controllers: [AppController, ConjunctCompanyController, IndividualCompanyController],
+  providers: [AppService, CompanyService],
 })
 export class CompanyModule {}

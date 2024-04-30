@@ -1,8 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { config } from 'dotenv';
-import { DataSource } from 'typeorm';
+import { appConfigurations } from 'src/shared/config/app.config';
 
 @Global()
 @Module({
@@ -14,17 +13,16 @@ import { DataSource } from 'typeorm';
 
         TypeOrmModule.forRootAsync({
             imports: [ConfigModule],
-            inject: [ConfigService],
-            useFactory: async (configService: ConfigService) => ({
-                type: configService.get<any>('DB_ENGINE'),
-                host: configService.get<string>('DB_HOST'),
-                port: configService.get<number>('DB_PORT'),
-                username: configService.get<string>('DB_USER'),
-                password: configService.get<string>('DB_PASSWORD'),
-                database: configService.get<string>('DB_DATABASE'),
-                entities: [configService.get<string>('DB_ENTITIES')],
-                synchronize: configService.get<boolean>('DB_SYNCHRONIZE'),
-                logging: configService.get<boolean>('DB_LOGGING'),
+            useFactory: async () => ({
+                type: appConfigurations.DB_ENGINE as any,
+                host: appConfigurations.DB_HOST,
+                port: appConfigurations.DB_PORT,
+                username: appConfigurations.DB_USER,
+                password: appConfigurations.DB_PASSWORD,
+                database: appConfigurations.DB_DATABASE,
+                entities: [appConfigurations.DB_ENTITIES],
+                synchronize: appConfigurations.DB_SYNCHRONIZE,
+                logging: appConfigurations.DB_LOGGING,
                 logger: 'advanced-console',
               }),
     
