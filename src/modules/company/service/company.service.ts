@@ -1,21 +1,21 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Companies } from '../entity/company.entity';
+import { Company } from '../entity/company.entity';
 import { Repository } from 'typeorm';
 import { CreateCompanyDTO } from '../dto/company.dto';
 
 @Injectable()
 export class CompanyService {
     constructor(
-        @InjectRepository(Companies)
-        private companyRepository: Repository<Companies>,
+        @InjectRepository(Company)
+        private companyRepository: Repository<Company>,
     )   {}
 
-    async findAll (): Promise<Companies[]>  {
+    async findAll (): Promise<Company[]>  {
         return await this.companyRepository.find()
     }
 
-    async findOne (id: number): Promise<Companies>    {
+    async findOne (id: number): Promise<Company>    {
         const company = await this.companyRepository.findOne({
             where:  { id_company: id}
         })
@@ -25,7 +25,7 @@ export class CompanyService {
         return company
     }
 
-    async create    (createCompanyDto: CreateCompanyDTO): Promise<Companies> {
+    async create    (createCompanyDto: CreateCompanyDTO): Promise<Company> {
         try {
             const companyWithSameName = await this.companyRepository.findOne({
                 where: { name: createCompanyDto.company_name }
@@ -53,7 +53,7 @@ export class CompanyService {
     }
  
     // NEEDS TO BE FIXED, PROVISORY ONLY
-    async delete    (id: number): Promise<Companies>    {
+    async delete    (id: number): Promise<Company>    {
         try {
             const company = this.companyRepository.findOne({ where: { id_company: id}})
             

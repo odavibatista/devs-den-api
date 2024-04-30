@@ -1,9 +1,9 @@
-import { Jobs } from 'src/modules/job/entity/job.entity';
+import { Job } from 'src/modules/job/entity/job.entity';
 import { Candidate } from 'src/modules/candidate/entity/candidate.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable } from 'typeorm';
 
 @Entity()
-export class Skills {
+export class Skill {
     @PrimaryGeneratedColumn()
     id_skill: number
 
@@ -25,7 +25,7 @@ export class Skills {
         }
     })
 
-    @ManyToMany(()  =>  Jobs, job => job.id_job)
+    @ManyToMany(()  =>  Job, job => job.id_job)
     @JoinTable({
         name: 'job_skills',
         joinColumn: {
