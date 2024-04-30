@@ -5,6 +5,11 @@ import { User } from '../entity/user.entity';
 import { CreateUserDTO, LoginDTO } from '../dto/user.dto';
 import * as bcrypt from 'bcrypt';
 import { JWTProvider } from '../providers/JWT.provider';
+import { UserNotFoundException } from '../domain/errors/UserNotFound.exception';
+import { EmailAlreadyRegisteredException } from '../domain/errors/EmailAlreadyRegistered.exception';
+import { UnformattedEmailException } from '../domain/errors/UnformattedEmail.exception';
+import { UnformattedPasswordException } from '../domain/errors/UnformattedPassword.exception';
+import { WrongPasswordException } from '../domain/errors/WrongPassword.exception';
 
 @Injectable()
 export class UserService {
@@ -14,22 +19,27 @@ export class UserService {
     private jwtProvider: JWTProvider
   ) {}
   
-  async findAll (): Promise<User[]> {
-    return await this.userRepository.find();
+  async findAll (): Promise<User[] | UserNotFoundException> {
+    const users = await this.userRepository.find()
+
+    if (users.length === 0) throw new UserNotFoundException()
+
+    else return users
   }
 
-  async findOne (id: number): Promise<User> {
+  async findOne (id: number): Promise<User | UserNotFoundException> {
     const user = await this.userRepository.findOne({
       where: { id_login: id},
     });
 
     if (!user) {
-      throw new HttpException(`Usuário não encontrado.`, HttpStatus.NOT_FOUND);
+      throw new UserNotFoundException()
     }
+
     return user;
   }
 
-  async create  (createUserDto: CreateUserDTO): Promise<User> {
+  async create  (createUserDto: CreateUserDTO): Promise<User | EmailAlreadyRegisteredException | UnformattedEmailException | UnformattedPasswordException> {
     try {
       const saltOrRounds = 10
       const hash = await bcrypt.hash(createUserDto.password, saltOrRounds);
@@ -43,7 +53,7 @@ export class UserService {
       );
     } catch (error) {
       if (error.code === 'ER_DUP_ENTRY') {
-        throw new HttpException('Email já registrado.', HttpStatus.BAD_REQUEST);
+        throw new EmailAlreadyRegisteredException()
       } else {
         console.log(error);
         throw new HttpException(
@@ -63,19 +73,19 @@ export class UserService {
     }
 
     const isPasswordValid = await this.checkPassword(loginDto.password, user.password, (err, isSame) => {
-      if (err) {
-        throw new HttpException('Erro ao verificar a senha.', HttpStatus.INTERNAL_SERVER_ERROR);
+      if (!isSame) {
+        throw new WrongPasswordException()
       }
 
-      if (!isSame) {
-        throw new HttpException('Senha inválida.', HttpStatus.UNAUTHORIZED);
+      if (err) {
+        throw new HttpException('Erro ao verificar a senha.', HttpStatus.INTERNAL_SERVER_ERROR);
       }
 
       return true
     });
 
     if (isPasswordValid === null) {
-      throw new HttpException('Senha inválida.', HttpStatus.UNAUTHORIZED);
+      throw new WrongPasswordException()
     } else  {
       const token = this.jwtProvider.generate({ payload: { id: user.id_login }, expiresIn: '6h', secret: process.env.JWT_SECRET });
 
