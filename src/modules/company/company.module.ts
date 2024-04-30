@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { CompanyService } from './service/company.service';
 import { ConjunctCompanyController, IndividualCompanyController } from './controller/company.controller';
 import { DatabaseModule } from 'src/database/database.module';
-import { AppService } from 'src/app.service';
+import { AppService } from 'src/app/app.service';
 import { AppController } from 'src/app/app.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Companies } from './entity/company.entity';
