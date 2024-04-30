@@ -12,7 +12,7 @@ export class CompanyService {
     )   {}
 
     async findAll (): Promise<Companies[]>  {
-        return await this.companyRepository.find({})
+        return await this.companyRepository.find()
     }
 
     async findOne (id: number): Promise<Companies>    {
@@ -20,9 +20,7 @@ export class CompanyService {
             where:  { id_company: id}
         })
 
-        if  (!company) {
-            throw new HttpException(`Empresa não encontrada.`, HttpStatus.NOT_FOUND)
-        }
+        if  (!company) throw new HttpException(`Empresa não encontrada.`, HttpStatus.NOT_FOUND)
 
         return company
     }
