@@ -1,4 +1,4 @@
-import { IsString, Length } from "class-validator";
+import { IsNumber, IsString, Length } from "class-validator";
 import { Unique } from "typeorm";
 
 export class CompanyDTO {
