@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
-export class JobCategories  {
+export class JobCategory  {
     @PrimaryGeneratedColumn()
     id_category: number
 

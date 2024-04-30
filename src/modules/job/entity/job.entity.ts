@@ -1,4 +1,4 @@
-import { Companies } from "src/modules/company/entity/company.entity";
+import { Company } from "src/modules/company/entity/company.entity";
 import { Candidate } from "src/modules/candidate/entity/candidate.entity";
 import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
@@ -9,7 +9,7 @@ enum Modality {
 }
 
 @Entity()
-export class Jobs  {
+export class Job  {
     @PrimaryGeneratedColumn()
     id_job: number
 
@@ -24,7 +24,7 @@ export class Jobs  {
     })
     description: string
 
-    @ManyToOne(()   =>  Companies, (company) =>  company.id_company,   {
+    @ManyToOne(()   =>  Company, (company) =>  company.id_company,   {
         nullable: false
     })
     company_id: number

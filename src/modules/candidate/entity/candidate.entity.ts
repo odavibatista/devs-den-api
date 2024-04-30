@@ -1,5 +1,5 @@
-import { AddressEntity } from "src/modules/user/entity/address.entity";
-import { Skills } from "src/modules/skill/entity/skill.entity";
+import { Address } from "src/modules/user/entity/address.entity";
+import { Skill } from "src/modules/skill/entity/skill.entity";
 import { Column, CreateDateColumn, Entity, ManyToMany, OneToOne, PrimaryColumn, UpdateDateColumn } from "typeorm";
 import { User } from "src/modules/user/entity/user.entity";
 
@@ -37,12 +37,12 @@ export class Candidate  {
     })
     birth_date: Date
 
-    @OneToOne(()    => AddressEntity, (address) => address.id_address, {
+    @OneToOne(()    => Address, (address) => address.id_address, {
         nullable: false
     })
     address_id: number
 
-    @ManyToMany(()  =>  Skills, skill => skill.id_skill)
+    @ManyToMany(()  =>  Skill, skill => skill.id_skill)
 
     @CreateDateColumn({
         nullable: false

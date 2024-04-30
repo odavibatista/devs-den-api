@@ -3,15 +3,15 @@ import { SkillService } from './service/skill.service';
 import { ConjunctSkillController, IndividualSkillController } from './controller/skill.controller';
 import { DatabaseModule } from 'src/database/database.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Skills } from './entity/skill.entity';
+import { Skill } from './entity/skill.entity';
 import { Candidate } from '../candidate/entity/candidate.entity';
-import { Jobs } from '../job/entity/job.entity';
+import { Job } from '../job/entity/job.entity';
 
 @Module({
   imports: [
     DatabaseModule,
     SkillModule,
-    TypeOrmModule.forFeature([Skills, Candidate, Jobs]),
+    TypeOrmModule.forFeature([Skill, Candidate, Job]),
   ],
   providers: [SkillService],
   controllers: [ConjunctSkillController, IndividualSkillController]
