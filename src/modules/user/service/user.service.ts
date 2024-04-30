@@ -6,7 +6,6 @@ import { CreateUserDTO, LoginDTO } from '../dto/user.dto';
 import * as bcrypt from 'bcrypt';
 import { JWTProvider } from '../providers/JWT.provider';
 
-
 @Injectable()
 export class UserService {
   constructor(

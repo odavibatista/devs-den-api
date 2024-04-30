@@ -14,7 +14,7 @@ export class ConjunctSkillController {
 }
 
 @Controller('skill')
-export class IndividualSkill {
+export class IndividualSkillController {
     constructor(
         private readonly skillService: SkillService
     )   {}

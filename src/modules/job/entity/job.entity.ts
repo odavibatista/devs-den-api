@@ -1,5 +1,5 @@
 import { Companies } from "src/modules/company/entity/company.entity";
-import { Profiles } from "src/modules/profile/entity/profile.entity";
+import { Candidate } from "src/modules/candidate/entity/candidate.entity";
 import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 enum Modality {
@@ -42,7 +42,7 @@ export class Jobs  {
     })
     modality: string
     
-    @ManyToMany(()  => Profiles, user => user.id_profile)
+    @ManyToMany(()  => Candidate, user => user.id_profile)
     @JoinTable({
         name: 'job_subscribes',
         joinColumn: {
