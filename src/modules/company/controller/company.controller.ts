@@ -1,5 +1,7 @@
 import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { CompanyService } from '../service/company.service';
+import { Company } from '../entity/company.entity';
+import { CompanyNotFoundException } from '../domain/errors/CompanyNotFound.exception';
 
 
 @Controller('companies')
@@ -21,7 +23,7 @@ export class IndividualCompanyController    {
     )   {}
 
     @Get(':id')
-    async findOne(@Param('id') id: number): Promise<any>    {
+    async findOne(@Param('id') id: number): Promise<Company | CompanyNotFoundException>    {
         return this.companyService.findOne(id)
     }
 

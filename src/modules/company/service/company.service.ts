@@ -18,12 +18,10 @@ export class CompanyService {
         return await this.companyRepository.find()
     }
 
-    async findOne (id: number): Promise<Company>    {
+    async findOne (id: number): Promise<Company | Company>    {
         const company = await this.companyRepository.findOne({
             where:  { id_company: id}
         })
-
-        if  (!company) throw new CompanyNotFoundException()
 
         return company
     }
