@@ -53,4 +53,20 @@ export class CompanyService {
             );
         }
     }
+ 
+    // NEEDS TO BE FIXED, PROVISORY ONLY
+    async delete    (id: number): Promise<Companies>    {
+        try {
+            const company = this.companyRepository.findOne({ where: { id_company: id}})
+            
+            await this.companyRepository.delete({
+                id_company: id
+            })
+
+            return company
+
+        } catch (error) {
+            
+        }
+    }
 }
