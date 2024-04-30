@@ -1,15 +1,15 @@
-import { Ufs } from "src/modules/uf/entity/uf.entity";
+import { Uf } from "src/modules/uf/entity/uf.entity";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
-export class AddressEntity  {
+export class Address  {
     @PrimaryGeneratedColumn({})
     id_address: number
 
-    @ManyToOne(()   =>  Ufs, (uf) =>  uf.id_uf,   {
+    @ManyToOne(()   =>  Uf, (uf) =>  uf.id_uf,   {
         nullable: false
     })
-    uf: Ufs
+    uf: Uf
 
     @Column({
         length: 50,

@@ -1,20 +1,20 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Skills } from '../entity/skill.entity';
+import { Skill } from '../entity/skill.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class SkillService {
     constructor(
-        @InjectRepository(Skills)
-        private skillRepository: Repository<Skills>
+        @InjectRepository(Skill)
+        private skillRepository: Repository<Skill>
     )   {}
 
-    async findAll   (): Promise <Skills[]>  {
+    async findAll   (): Promise <Skill[]>  {
         return await this.skillRepository.find()
     }
 
-    async findOne   (id: number): Promise <Skills>    {
+    async findOne   (id: number): Promise <Skill>    {
         const skill = this.skillRepository.findOne({
             where: { id_skill: id }
         })

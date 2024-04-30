@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
-export class Ufs  {
+export class Uf  {
     @PrimaryGeneratedColumn()
     id_uf: number
 

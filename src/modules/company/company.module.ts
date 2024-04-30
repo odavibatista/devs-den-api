@@ -5,14 +5,14 @@ import { DatabaseModule } from 'src/database/database.module';
 import { AppService } from 'src/app/app.service';
 import { AppController } from 'src/app/app.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Companies } from './entity/company.entity';
+import { Company } from './entity/company.entity';
 import { User } from '../user/entity/user.entity';
 
 @Module({
   imports: [
     DatabaseModule,
     CompanyModule,
-    TypeOrmModule.forFeature([Companies, User]),
+    TypeOrmModule.forFeature([Company, User]),
   ],
   controllers: [AppController, ConjunctCompanyController, IndividualCompanyController],
   providers: [AppService, CompanyService],
