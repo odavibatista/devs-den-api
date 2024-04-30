@@ -10,6 +10,8 @@ import {
   import { CreateUserDTO, LoginDTO } from '../dto/user.dto';
   import { UserService } from '../service/user.service';
 import { JWTProvider } from '../providers/JWT.provider';
+import { UserNotFoundException } from '../domain/errors/UserNotFound.exception';
+import { User } from '../entity/user.entity';
   
   @Controller('user')
   export class UserController {
@@ -19,12 +21,12 @@ import { JWTProvider } from '../providers/JWT.provider';
     ) {}
   
     @Get()
-    async findAll(): Promise<any[]> {
+    async findAll(): Promise<any[] | UserNotFoundException> {
       return this.userService.findAll();
     }
   
     @Get(':id')
-    async findOne(@Param('id') id: number): Promise<any> {
+    async findOne(@Param('id') id: number): Promise<User | UserNotFoundException> {
       return this.userService.findOne(id);
     }
   
