@@ -40,5 +40,5 @@ export class LoginDTO   {
 
     @IsString()
     @Length(15, 255)
-    readonly password: string
+    readonly inserted_password: string
 }
