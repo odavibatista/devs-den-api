@@ -6,11 +6,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Candidate } from './entity/candidate.entity';
 import { Address } from '../user/entity/address.entity';
 import { User } from '../user/entity/user.entity';
+import { Uf } from '../uf/entity/uf.entity';
 
 @Module({
   imports:  [
     DatabaseModule,
-    TypeOrmModule.forFeature([Candidate, Address, User]),
+    TypeOrmModule.forFeature([Candidate, Address, User, Uf]),
   ],
   providers: [CandidateService],
   controllers: [CandidateController]
