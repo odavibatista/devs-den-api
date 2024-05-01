@@ -22,7 +22,11 @@
     "docker:down": "docker compose down",
     "docker:restart": "docker compose restart",
     "docker:logs": "docker compose logs -f",
-    "docker:rebuild": "npm run docker:down && npm run docker:up"
+    "docker:rebuild": "npm run docker:down && npm run docker:up",
+    "db:create": "ts-node ./node_modules/typeorm-extension/bin/cli.cjs db:create",
+    "db:drop": "ts-node ./node_modules/typeorm-extension/bin/cli.cjs db:drop",
+    "seed:run": "ts-node ./node_modules/typeorm-extension/bin/cli.cjs seed:run",
+    "seed:create": "ts-node ./node_modules/typeorm-extension/bin/cli.cjs seed:create"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -42,6 +46,7 @@
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "typeorm": "^0.3.20",
+    "typeorm-extension": "^3.5.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
@@ -67,7 +72,7 @@
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.0",
     "ts-loader": "^9.4.3",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.1.3"
   },

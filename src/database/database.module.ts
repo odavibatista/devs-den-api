@@ -26,7 +26,7 @@ import { appConfigurations } from 'src/shared/config/app.config';
                 logger: 'advanced-console',
               }),
     
-          }),
-    ],
+          })
+        ],
 })
 export class DatabaseModule {}
