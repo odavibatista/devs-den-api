@@ -1,8 +1,11 @@
-import { Controller, Get, HttpStatus, Param } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param, UnauthorizedException } from '@nestjs/common';
 import { SkillService } from '../service/skill.service';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SkillNotFoundException } from '../domain/errors/SkillNotFound.exception';
 import { AllExceptionsFilterDTO } from 'src/shared/domain/dtos/errors/AllException.filter.dto';
+import { FindSkillResponseDTO, FindSkillsResponseDTO } from '../domain/requests/FindSkills.request.dto';
+import { Skill } from '../entity/skill.entity';
+import { BadTokenException } from 'src/modules/user/domain/errors/BadToken.exception';
 
 @Controller('skills')
 @ApiTags('Skills')
@@ -14,9 +17,10 @@ export class ConjunctSkillController {
     @Get()
     @ApiResponse({
         status: HttpStatus.OK,
-        description: 'Skills encontradas com sucesso'
+        description: 'Skills encontradas com sucesso.',
+        type: FindSkillsResponseDTO
     })
-    async findAll(): Promise<any[]> {
+    async findAll(): Promise<Skill[]> {
         return this.skillService.findAll()
     }
 }
@@ -35,10 +39,21 @@ export class IndividualSkillController {
         type: AllExceptionsFilterDTO
     })
     @ApiResponse({
-        status: HttpStatus.OK,
-        description: 'Skill encontrada com sucesso'
+        status: new BadTokenException().getStatus(),
+        description: new BadTokenException().message,
+        type: AllExceptionsFilterDTO
     })
-    async findOne(@Param('id') id: number): Promise<any>    {
+    @ApiResponse({
+        status: new UnauthorizedException().getStatus(),
+        description: new UnauthorizedException().message,
+        type: AllExceptionsFilterDTO
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Skill encontrada com sucesso',
+        type: FindSkillResponseDTO
+    })
+    async findOne(@Param('id') id: number): Promise<Skill>    {
         return this.skillService.findOne(id)
     }
 }
