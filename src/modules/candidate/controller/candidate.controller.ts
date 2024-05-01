@@ -17,22 +17,22 @@ export class CandidateController {
     ) {}
 
     @Post('/register')
-    @ApiResponse    ({
+    @ApiResponse({
       status: new UnformattedEmailException().getStatus(),
       description: new UnformattedEmailException().message,
       type: AllExceptionsFilterDTO
     })
-    @ApiResponse    ({
+    @ApiResponse({
       status: new UnformattedPasswordException().getStatus(),
       description: new UnformattedPasswordException().message,
       type: AllExceptionsFilterDTO
     })
-    @ApiResponse    ({
+    @ApiResponse({
       status: new EmailAlreadyRegisteredException().getStatus(),
       description: new EmailAlreadyRegisteredException().message,
       type: AllExceptionsFilterDTO
     })
-    @ApiResponse    ({
+    @ApiResponse({
       status: HttpStatus.CREATED,
       description: 'Usuário criado com sucesso',
       type: RegisterCandidateResponseDTO

@@ -6,11 +6,13 @@ import { Address } from './entity/address.entity';
 import { UserService } from './service/user.service';
 import { UserController } from './controller/user.controller';
 import { JWTProvider } from './providers/JWT.provider';
+import { Candidate } from '../candidate/entity/candidate.entity';
+import { Company } from '../company/entity/company.entity';
 
 @Module({
     imports: [
         DatabaseModule,
-        TypeOrmModule.forFeature([User, Address]),
+        TypeOrmModule.forFeature([User, Address, Candidate, Company]),
       ],
       controllers: [UserController],
       providers: [UserService, JWTProvider],

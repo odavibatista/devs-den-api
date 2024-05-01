@@ -10,13 +10,21 @@ import { EmailAlreadyRegisteredException } from '../domain/errors/EmailAlreadyRe
 import { UnformattedEmailException } from '../domain/errors/UnformattedEmail.exception';
 import { UnformattedPasswordException } from '../domain/errors/UnformattedPassword.exception';
 import { WrongPasswordException } from '../domain/errors/WrongPassword.exception';
+import { LoginUserBodyDTO } from '../domain/requests/LoginUser.request.dto';
+import { Candidate } from 'src/modules/candidate/entity/candidate.entity';
+import { Company } from 'src/modules/company/entity/company.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    private jwtProvider: JWTProvider
+    @InjectRepository(Candidate)
+    private candidateRepository: Repository<Candidate>,
+    @InjectRepository(Company)
+    private companyRepository: Repository<Company>,
+
+    private jwtProvider: JWTProvider,
   ) {}
   
   async findAll (): Promise<User[] | UserNotFoundException> {
@@ -64,7 +72,7 @@ export class UserService {
     }
   }
 
-  async login (loginDto: LoginDTO): Promise<any> {
+  async login (loginDto: LoginDTO | LoginUserBodyDTO): Promise<any> {
     const user: User = await this.userRepository.findOne({
       where: { email: loginDto.email },
     });
@@ -72,7 +80,7 @@ export class UserService {
       throw new HttpException('Usuário não encontrado.', HttpStatus.NOT_FOUND);
     }
 
-    const isPasswordValid = await this.checkPassword(loginDto.password, user.password, (err, isSame) => {
+    const isPasswordValid = await this.checkPassword(loginDto.inserted_password, user.password, (err, isSame) => {
       if (!isSame) {
         throw new WrongPasswordException()
       }
@@ -88,11 +96,30 @@ export class UserService {
       throw new WrongPasswordException()
     } else  {
       const token = this.jwtProvider.generate({ payload: { id: user.id_login }, expiresIn: '6h', secret: process.env.JWT_SECRET });
+
+      let name: string
+      
+      if (user.role === 'candidate') {
+        const candidateUser = await this.candidateRepository.findOne({
+          where: { id_profile: user.id_login }
+        })
+
+        name = candidateUser.name
+      }
+
+      if (user.role === 'company') {
+        const companyUser = await this.companyRepository.findOne({
+          where: { id_company: user.id_login }
+        })
+
+        name = companyUser.name
+      }
       
       const response = {
         user: {
           id: user.id_login,
-          role: user.role
+          name: name,
+          role: user.role,
         },
         token
       }
