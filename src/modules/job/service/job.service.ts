@@ -4,13 +4,14 @@ import { Job } from '../entity/job.entity';
 import { Repository } from 'typeorm';
 import { JobNotFoundException } from '../domain/errors/JobNotFound.exception';
 import { CategoryNotFoundException } from 'src/modules/job-category/domain/errors/CategoryNotFound.exception';
-import { JobCategory } from 'src/modules/job-category/entity/job-category';
+import { JobCategory } from 'src/modules/job-category/entity/job-category.entity';
 
 @Injectable()
 export class JobService {
     constructor(
         @InjectRepository(Job)
         private jobRepository: Repository<Job>,
+        @InjectRepository(JobCategory)
         private jobCategoryRepository: Repository<JobCategory>
     )   {}
 

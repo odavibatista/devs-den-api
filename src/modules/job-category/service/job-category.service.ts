@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { JobCategory } from '../entity/job-category';
+import { JobCategory } from '../entity/job-category.entity';
 import { Repository } from 'typeorm';
 import { CategoryNotFoundException } from '../domain/errors/CategoryNotFound.exception';
 

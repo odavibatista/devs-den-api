@@ -3,8 +3,7 @@ import { JobCategoryController } from './controller/job-category.controller';
 import { JobCategoryService } from './service/job-category.service';
 import { CategoryNotFoundException } from './domain/errors/CategoryNotFound.exception';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { JobCategory } from './entity/job-category';
-import { Job } from '../job/entity/job.entity';
+import { JobCategory } from './entity/job-category.entity';
 
 @Module({
   imports: [
@@ -13,6 +12,6 @@ import { Job } from '../job/entity/job.entity';
     TypeOrmModule.forFeature([JobCategory]),
   ],
   controllers: [JobCategoryController],
-  providers: [JobCategoryService]
+  providers: [JobCategoryService],
 })
 export class JobCategoryModule {}
