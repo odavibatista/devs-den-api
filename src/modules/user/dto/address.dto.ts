@@ -24,7 +24,8 @@ export class AddressDto {
 
 export class CreateAddressDTO   {
     @IsInt()
-    uf_id: number
+    @Length(1, 2)
+    uf: number
 
     @IsString()
     @Length(5, 50)

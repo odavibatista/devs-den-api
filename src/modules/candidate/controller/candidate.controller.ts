@@ -7,6 +7,7 @@ import { AllExceptionsFilterDTO } from 'src/shared/domain/dtos/errors/AllExcepti
 import { UnformattedPasswordException } from 'src/modules/user/domain/errors/UnformattedPassword.exception';
 import { EmailAlreadyRegisteredException } from 'src/modules/user/domain/errors/EmailAlreadyRegistered.exception';
 import { CreateCandidateDTO } from '../dto/candidate.dto';
+import { Response } from 'express';
 
 @Controller('candidate')
 @ApiTags('Candidatos')
@@ -37,7 +38,11 @@ export class CandidateController {
       type: RegisterCandidateResponseDTO
     })
     async register  (
-        @Body() body: CreateCandidateDTO): Promise<any> {
-        return await this.candidateService.create(body)
+        @Body() body: CreateCandidateDTO,
+        @Res() res: Response
+    ): Promise<any> {
+        const result = await this.candidateService.create(body);
+
+        return res.status(HttpStatus.CREATED).json(result);
     }
 }
