@@ -19,6 +19,7 @@ import { UnformattedEmailException } from '../domain/errors/UnformattedEmail.exc
 import { UnformattedPasswordException } from '../domain/errors/UnformattedPassword.exception';
 import { EmailAlreadyRegisteredException } from '../domain/errors/EmailAlreadyRegistered.exception';
 import { WrongPasswordException } from '../domain/errors/WrongPassword.exception';
+import { RegisterCandidateBodyDTO, RegisterCandidateResponseDTO } from 'src/modules/candidate/domain/requests/RegisterUser.request.dto';
   
   @Controller('user')
   @ApiTags('Usuário')
@@ -42,6 +43,7 @@ import { WrongPasswordException } from '../domain/errors/WrongPassword.exception
       return this.userService.findOne(id);
     }
   
+    // Mover isso para o controller de candidato
     @Post('/register')
     @ApiResponse({
       status: new UnformattedEmailException().getStatus(),
@@ -61,8 +63,11 @@ import { WrongPasswordException } from '../domain/errors/WrongPassword.exception
     @ApiResponse({
       status: HttpStatus.CREATED,
       description: 'Usuário criado com sucesso',
+      type: RegisterCandidateResponseDTO
     })
-    async create(@Body() createUserDto: CreateUserDTO): Promise<any> {
+
+    // Change the DTO to match the register user body
+    async create(@Body() body: RegisterCandidateBodyDTO, createUserDto: CreateUserDTO): Promise<any> {
       return this.userService.create(createUserDto);
     }
 

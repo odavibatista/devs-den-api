@@ -93,7 +93,6 @@ export class UserService {
       const response = {
         user: {
           id: user.id_login,
-          email: user.email,
           role: user.role
         },
         token
