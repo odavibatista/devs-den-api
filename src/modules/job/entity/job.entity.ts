@@ -1,7 +1,7 @@
 import { Company } from "src/modules/company/entity/company.entity";
 import { Candidate } from "src/modules/candidate/entity/candidate.entity";
 import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { JobCategory } from "src/modules/job-category/entity/job-category";
+import { JobCategory } from "src/modules/job-category/entity/job-category.entity";
 
 enum Modality {
     PRESENTIAL = 'presential',
