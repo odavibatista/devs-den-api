@@ -9,7 +9,6 @@ import {
     Put,
     Res,
   } from '@nestjs/common';
-  import { CreateUserDTO, LoginDTO } from '../dto/user.dto';
   import { UserService } from '../service/user.service';
 import { JWTProvider } from '../providers/JWT.provider';
 import { UserNotFoundException } from '../domain/errors/UserNotFound.exception';
@@ -17,12 +16,10 @@ import { User } from '../entity/user.entity';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AllExceptionsFilterDTO } from 'src/shared/domain/dtos/errors/AllException.filter.dto';
 import { UnformattedEmailException } from '../domain/errors/UnformattedEmail.exception';
-import { UnformattedPasswordException } from '../domain/errors/UnformattedPassword.exception';
-import { EmailAlreadyRegisteredException } from '../domain/errors/EmailAlreadyRegistered.exception';
 import { WrongPasswordException } from '../domain/errors/WrongPassword.exception';
-import { RegisterCandidateBodyDTO, RegisterCandidateResponseDTO } from 'src/modules/candidate/domain/requests/RegisterCandidate.request.dto';
 import { LoginUserBodyDTO, LoginUserResponseDTO } from '../domain/requests/LoginUser.request.dto';
 import { Response } from 'express';
+import { FindUserResponseDTO } from '../domain/requests/FindUser.request.dto';
   
   @Controller('user')
   @ApiTags('Usuário')
@@ -41,9 +38,21 @@ import { Response } from 'express';
     @ApiResponse({
       status: HttpStatus.OK,
       description: 'Usuário encontrado com sucesso',
+      type: FindUserResponseDTO
     })
-    async findOne(@Param('id') id: number): Promise<User | UserNotFoundException> {
-      return this.userService.findOne(id);
+    async findOne(
+      @Param('id') id: number,
+      @Res() res: Response
+    ): Promise<FindUserResponseDTO | AllExceptionsFilterDTO> {
+      const result = await this.userService.findOne(id);
+
+      if  (result instanceof User) {
+        return res.status(HttpStatus.OK).json({
+          id: result.id_login,
+          email: result.email,
+          role: result.role
+        })
+      }
     }
 
     @Post('login')
@@ -69,9 +78,9 @@ import { Response } from 'express';
     })
     async login(
       @Res() res: Response,
-      @Body() loginDto: LoginUserBodyDTO
-    ): Promise<any> {
-      const result = await this.userService.login(loginDto)
+      @Body() body: LoginUserBodyDTO
+    ): Promise<LoginUserResponseDTO | AllExceptionsFilterDTO> {
+      const result = await this.userService.login(body)
 
       return res.status(HttpStatus.OK).json(result);
     }
