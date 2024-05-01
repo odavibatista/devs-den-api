@@ -19,7 +19,7 @@ import { UnformattedEmailException } from '../domain/errors/UnformattedEmail.exc
 import { UnformattedPasswordException } from '../domain/errors/UnformattedPassword.exception';
 import { EmailAlreadyRegisteredException } from '../domain/errors/EmailAlreadyRegistered.exception';
 import { WrongPasswordException } from '../domain/errors/WrongPassword.exception';
-import { RegisterCandidateBodyDTO, RegisterCandidateResponseDTO } from 'src/modules/candidate/domain/requests/RegisterUser.request.dto';
+import { RegisterCandidateBodyDTO, RegisterCandidateResponseDTO } from 'src/modules/candidate/domain/requests/RegisterCandidate.request.dto';
   
   @Controller('user')
   @ApiTags('Usuário')

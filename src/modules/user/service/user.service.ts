@@ -88,7 +88,6 @@ export class UserService {
       throw new WrongPasswordException()
     } else  {
       const token = this.jwtProvider.generate({ payload: { id: user.id_login }, expiresIn: '6h', secret: process.env.JWT_SECRET });
-
       
       const response = {
         user: {
