@@ -1,10 +1,11 @@
 import { Controller, Get, HttpStatus, Param } from '@nestjs/common';
 import { SkillService } from '../service/skill.service';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SkillNotFoundException } from '../domain/errors/SkillNotFound.exception';
 import { AllExceptionsFilterDTO } from 'src/shared/domain/dtos/errors/AllException.filter.dto';
 
 @Controller('skills')
+@ApiTags('Skills')
 export class ConjunctSkillController {
     constructor(
         private readonly skillService: SkillService
@@ -21,6 +22,7 @@ export class ConjunctSkillController {
 }
 
 @Controller('skill')
+@ApiTags('Skills')
 export class IndividualSkillController {
     constructor(
         private readonly skillService: SkillService

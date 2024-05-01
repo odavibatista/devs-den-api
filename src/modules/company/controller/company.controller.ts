@@ -2,11 +2,12 @@ import { Controller, Delete, Get, HttpStatus, Param } from '@nestjs/common';
 import { CompanyService } from '../service/company.service';
 import { Company } from '../entity/company.entity';
 import { CompanyNotFoundException } from '../domain/errors/CompanyNotFound.exception';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AllExceptionsFilterDTO } from 'src/shared/domain/dtos/errors/AllException.filter.dto';
 
 
 @Controller('companies')
+@ApiTags('Empresas')
 export class ConjunctCompanyController {
     constructor(
         private readonly companyService: CompanyService
@@ -23,6 +24,7 @@ export class ConjunctCompanyController {
 }
 
 @Controller('company')
+@ApiTags('Empresas')
 export class IndividualCompanyController    {
     constructor(
         private readonly companyService: CompanyService
