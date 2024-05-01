@@ -3,6 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Company } from '../entity/company.entity';
 import { Repository } from 'typeorm';
 import { CreateCompanyDTO } from '../dto/company.dto';
+import { CompanyNotFoundException } from '../domain/errors/CompanyNotFound.exception';
+import { CompanyNameAlreadyRegisteredException } from '../domain/errors/CompanyNameAlreadyRegistered.exception';
+import { CNPJAlreadyRegisteredException } from '../domain/errors/CNPJAlreadyRegistered.exception';
 
 @Injectable()
 export class CompanyService {
@@ -15,12 +18,10 @@ export class CompanyService {
         return await this.companyRepository.find()
     }
 
-    async findOne (id: number): Promise<Company>    {
+    async findOne (id: number): Promise<Company | Company>    {
         const company = await this.companyRepository.findOne({
             where:  { id_company: id}
         })
-
-        if  (!company) throw new HttpException(`Empresa não encontrada.`, HttpStatus.NOT_FOUND)
 
         return company
     }
@@ -31,13 +32,13 @@ export class CompanyService {
                 where: { name: createCompanyDto.company_name }
             })
 
-            if (companyWithSameName) throw new HttpException(`Uma empresa com este nome já existe. Insira outro ou entre em contato com o nosso suporte.`, HttpStatus.CONFLICT)
+            if (companyWithSameName) throw new CompanyNameAlreadyRegisteredException()
 
             const companyWithSamePJ = await this.companyRepository.findOne({
                 where: { cnpj: createCompanyDto.cnpj }
             })
 
-            if (companyWithSamePJ) throw new HttpException(`Este CNPJ já está cadastrado. Insira outro ou entre em contato com o nosso suporte.`, HttpStatus.CONFLICT)
+            if (companyWithSamePJ) throw new CNPJAlreadyRegisteredException()
 
             const createdCompany = await this.companyRepository.save(createCompanyDto)
 
@@ -57,6 +58,8 @@ export class CompanyService {
         try {
             const company = this.companyRepository.findOne({ where: { id_company: id}})
             
+            if (!company) throw new CompanyNotFoundException()
+
             await this.companyRepository.delete({
                 id_company: id
             })

@@ -21,7 +21,7 @@ export class Candidate  {
         length: 50,
         nullable: false
     })
-    nome: string
+    name: string
 
     @Column({
         name: "gender",
