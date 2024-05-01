@@ -13,6 +13,7 @@ import { WrongPasswordException } from '../domain/errors/WrongPassword.exception
 import { LoginUserBodyDTO } from '../domain/requests/LoginUser.request.dto';
 import { Candidate } from 'src/modules/candidate/entity/candidate.entity';
 import { Company } from 'src/modules/company/entity/company.entity';
+import { FindUserResponseDTO } from '../domain/requests/FindUser.request.dto';
 
 @Injectable()
 export class UserService {
@@ -35,16 +36,39 @@ export class UserService {
     else return users
   }
 
-  async findOne (id: number): Promise<User | UserNotFoundException> {
+  async findOne (id: number): Promise<FindUserResponseDTO | UserNotFoundException> {
     const user = await this.userRepository.findOne({
-      where: { id_login: id},
+      where: { id_login: id },
     });
 
     if (!user) {
       throw new UserNotFoundException()
     }
 
-    return user;
+    let name: string
+
+    if (user.role === 'candidate') {
+      const candidateUser = await this.candidateRepository.findOne({
+        where: { id_profile: user.id_login }
+      })
+
+      name = candidateUser.name
+    }
+
+    if (user.role === 'company') {
+      const companyUser = await this.companyRepository.findOne({
+        where: { id_company: user.id_login }
+      })
+
+      name = companyUser.name
+    }
+
+    return {
+      id: user.id_login,
+      email: user.email,
+      name: name,
+      role: user.role,
+    }
   }
 
   async create  (createUserDto: CreateUserDTO): Promise<User | EmailAlreadyRegisteredException | UnformattedEmailException | UnformattedPasswordException> {
@@ -98,7 +122,7 @@ export class UserService {
       const token = this.jwtProvider.generate({ payload: { id: user.id_login }, expiresIn: '6h', secret: process.env.JWT_SECRET });
 
       let name: string
-      
+
       if (user.role === 'candidate') {
         const candidateUser = await this.candidateRepository.findOne({
           where: { id_profile: user.id_login }
