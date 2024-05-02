@@ -1,6 +1,7 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { runSeeders, SeederOptions } from 'typeorm-extension';
-import { appConfigurations } from './shared/config/app.config';
+import { SeederOptions } from 'typeorm-extension';
+import { appConfigurations } from '../shared/config/app.config';
+import { MainSeeder } from '../modules/Main.seeder';
 
 const options: DataSourceOptions & SeederOptions = {
     type: appConfigurations.DB_ENGINE as any,
@@ -9,12 +10,12 @@ const options: DataSourceOptions & SeederOptions = {
     password: appConfigurations.DB_PASSWORD,
     host: appConfigurations.DB_HOST,
     port: appConfigurations.DB_PORT,
-    entities: [appConfigurations.DB_ENTITIES],
+    // I want all the files that ends with .entity.ts
+	entities: [`./**/{uf,job-category}.entity.ts`],
     logging: appConfigurations.DB_LOGGING,
     synchronize: appConfigurations.DB_SYNCHRONIZE,
 
-    seeds: ['./*.seeder.ts'],
-    factories: ['./*.factory.ts']
+    seeds: [MainSeeder]
     
 };
 
