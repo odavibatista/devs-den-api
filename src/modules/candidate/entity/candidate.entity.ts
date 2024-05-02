@@ -1,4 +1,4 @@
-import { Address } from "src/modules/user/entity/address.entity";
+import { Address } from "src/modules/address/entity/address.entity";
 import { Skill } from "src/modules/skill/entity/skill.entity";
 import { Column, CreateDateColumn, Entity, ManyToMany, OneToOne, PrimaryColumn, UpdateDateColumn } from "typeorm";
 import { User } from "src/modules/user/entity/user.entity";
