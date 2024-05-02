@@ -8,7 +8,7 @@ import { BadTokenException } from 'src/modules/user/domain/errors/BadToken.excep
 import { NotAuthenticatedException } from 'src/modules/user/domain/errors/NotAuthenticated.exception';
 import { DeleteCompanyResponseDTO } from '../domain/requests/DeleteCompany.request.dto';
 import { FindCompaniesResponseDTO } from '../domain/requests/FindCompanies.request.dto';
-import { FindCompanyResponseDTO } from '../domain/requests/FindCompany.request.dto';
+import { FindCompanyResponseDTO } from '../domain/requests/FindCompanies.request.dto';
 
 
 @Controller('companies')

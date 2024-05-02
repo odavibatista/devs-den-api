@@ -4,7 +4,7 @@ import { CandidateController } from './controller/candidate.controller';
 import { DatabaseModule } from 'src/database/database.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Candidate } from './entity/candidate.entity';
-import { Address } from '../user/entity/address.entity';
+import { Address } from '../address/entity/address.entity';
 import { User } from '../user/entity/user.entity';
 import { Uf } from '../uf/entity/uf.entity';
 

@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { Candidate } from '../entity/candidate.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/modules/user/entity/user.entity';
-import { Address } from 'src/modules/user/entity/address.entity';
+import { Address } from 'src/modules/address/entity/address.entity';
 import { CreateCandidateDTO } from '../dto/candidate.dto';
 import { RegisterCandidateBodyDTO, RegisterCandidateResponseDTO } from '../domain/requests/RegisterCandidate.request.dto';
 import { UnformattedEmailException } from 'src/modules/user/domain/errors/UnformattedEmail.exception';
