@@ -23,7 +23,7 @@ services:
       - database
     depends_on:
       - database
-    command: sh -c "/wait; npm i; npm run start:dev"
+    command: sh -c "/wait; npm i; npm run db:create; npm run seed:run; npm run start:dev"
     environment:
       - WAIT_HOSTS=database:3306
       - WAIT_TIMEOUT=500
