@@ -7,15 +7,15 @@ import { Repository } from 'typeorm';
 export class SkillService {
     constructor(
         @InjectRepository(Skill)
-        private skillRepository: Repository<Skill>
+        private ufRepository: Repository<Skill>
     )   {}
 
     async findAll   (): Promise <Skill[]>  {
-        return await this.skillRepository.find()
+        return await this.ufRepository.find()
     }
 
     async findOne   (id: number): Promise <Skill>    {
-        const skill = this.skillRepository.findOne({
+        const skill = this.ufRepository.findOne({
             where: { id_skill: id }
         })
 
