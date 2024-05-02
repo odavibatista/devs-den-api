@@ -18,6 +18,21 @@ export default class JobCategorySeeder implements Seeder {
             },
             {
                 name: 'Full-stack'
+            },
+            {
+                name: 'DevOps'
+            },
+            {
+                name: 'Mobile'
+            },
+            {
+                name: 'UI/UX'
+            },
+            {
+                name: 'QA'
+            },
+            {
+                name: 'Testers'
             }
         ]
         // ---------------------------------------------------
