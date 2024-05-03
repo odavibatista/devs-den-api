@@ -25,53 +25,49 @@ export class CandidateService {
         private readonly ufRepository: Repository<Uf>
     ) {}
 
-    async create (createCandidateDTO: CreateCandidateDTO | RegisterCandidateBodyDTO): Promise<RegisterCandidateResponseDTO | UnformattedEmailException | UnformattedPasswordException | EmailAlreadyRegisteredException> {
+    async create (createCandidateParams: CreateCandidateDTO | RegisterCandidateBodyDTO): Promise<RegisterCandidateResponseDTO | UnformattedEmailException | UnformattedPasswordException | EmailAlreadyRegisteredException> {
         try {
-            const userEmail = await this.userRepository.findOne({
-                where: { email: createCandidateDTO.credentials.email }
+            const user = await this.userRepository.save({
+                email: createCandidateParams.credentials.email,
+                password: createCandidateParams.credentials.password,
+                role: 'candidate'
             })
 
-            if (userEmail) {
+            if (!user) {
                 throw new EmailAlreadyRegisteredException()
                 
-            }  else if (createCandidateDTO.credentials.password.length < 8) {
-                throw new UnformattedPasswordException()
+            } else {
 
-            }  else {
-                const user = this.userRepository.create({
-                    ...createCandidateDTO.credentials,
-                    role: 'candidate'
-                })
 
                 const uf = await this.ufRepository.findOne({
-                    where: { id_uf: createCandidateDTO.address.uf }
+                    where: { id_uf: createCandidateParams.address.uf }
                 })
 
                 if (!uf) {
                     throw new UFNotFoundException()
                 }
     
-                const address = this.addressRepository.create({
+                const address = this.addressRepository.save({
                     uf: uf,
-                    cep: createCandidateDTO.address.cep,
-                    city: createCandidateDTO.address.city,
-                    street: createCandidateDTO.address.street,
-                    complement: createCandidateDTO.address.complement,
-                    number: createCandidateDTO.address.number,
+                    cep: createCandidateParams.address.cep,
+                    city: createCandidateParams.address.city,
+                    street: createCandidateParams.address.street,
+                    complement: createCandidateParams.address.complement,
+                    number: createCandidateParams.address.number,
                 })
     
-                const candidate = this.candidateRepository.create({
+                const candidate = this.candidateRepository.save({
                     id_profile: user.id_login,
-                    name: createCandidateDTO.name,
-                    address_id: address.id_address,
-                    birth_date: createCandidateDTO.birth_date,
-                    gender: createCandidateDTO.gender
+                    name: createCandidateParams.name,
+                    gender: createCandidateParams.gender,
+                    birth_date: createCandidateParams.birth_date,
+                    address_id: (await address).id_address,
                 })
     
                 return {
                     user: {
                         id: user.id_login,
-                        name: candidate.name,
+                        name: (await candidate).name,
                         role: user.role
                     },
                     
@@ -80,12 +76,16 @@ export class CandidateService {
             }
         } catch (error) {
             if (error instanceof UnformattedEmailException) {
+                console.log('UnformattedEmailException')
                 throw new UnformattedEmailException()
             } else if (error instanceof UnformattedPasswordException) {
+                console.log('UnformattedPasswordException')
                 throw new UnformattedPasswordException()
             } else if (error instanceof EmailAlreadyRegisteredException) {
+                console.log('EmailAlreadyRegisteredException')
                 throw new EmailAlreadyRegisteredException()
             } else {
+                console.log(error)
                 throw error()
             }
         }

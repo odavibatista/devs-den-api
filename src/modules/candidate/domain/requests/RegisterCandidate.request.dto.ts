@@ -3,9 +3,10 @@ import { z } from 'nestjs-zod/z'
 
 export const RegisterCandidateBodySchema = z.object({
     /* Dados pessoais  */
+    id_profile: z.number().int().positive().describe("ID do usuário candidato"),
     name: z.string().min(5).max(50).describe("Nome do usuário candidato"),
     gender: z.string().min(4).max(6).describe("Gênero do usuário candidato"),
-    birth_date: z.date().describe("Data de nascimento do usuário candidato"),
+    birth_date: z.string().describe("Data de nascimento do usuário candidato"),
 
     /* Credenciais  */
     credentials: z.object({

@@ -11,12 +11,10 @@ export class CreateCandidateDTO {
     @Length(4, 6)
     readonly gender: 'male' | 'female'
 
-    @IsDate()
-    readonly birth_date: Date
+    @IsString()
+    readonly birth_date: string
 
-    @IsObject()
     readonly credentials: CreateUserDTO
 
-    @IsObject()
     readonly address: CreateAddressDTO
 }
