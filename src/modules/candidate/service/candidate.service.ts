@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Candidate } from '../entity/candidate.entity';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/modules/user/entity/user.entity';
 import { Address } from 'src/modules/address/entity/address.entity';
 import { CreateCandidateDTO } from '../dto/candidate.dto';
@@ -11,6 +11,7 @@ import { UnformattedPasswordException } from 'src/modules/user/domain/errors/Unf
 import { EmailAlreadyRegisteredException } from 'src/modules/user/domain/errors/EmailAlreadyRegistered.exception';
 import { Uf } from 'src/modules/uf/entity/uf.entity';
 import { UFNotFoundException } from 'src/modules/uf/domain/errors/UfNotFound.exception';
+import { JWTProvider } from 'src/modules/user/providers/JWT.provider';
 
 @Injectable()
 export class CandidateService {
@@ -22,7 +23,9 @@ export class CandidateService {
         @InjectRepository(Address)
         private readonly addressRepository: Repository<Address>,
         @InjectRepository(Uf)
-        private readonly ufRepository: Repository<Uf>
+        private readonly ufRepository: Repository<Uf>,
+        @InjectDataSource()
+        private readonly JwtProvider: JWTProvider
     ) {}
 
     async create (createCandidateParams: CreateCandidateDTO | RegisterCandidateBodyDTO): Promise<RegisterCandidateResponseDTO | UnformattedEmailException | UnformattedPasswordException | EmailAlreadyRegisteredException> {
@@ -63,6 +66,16 @@ export class CandidateService {
                     birth_date: createCandidateParams.birth_date,
                     address_id: (await address).id_address,
                 })
+
+                const token = await this.JwtProvider.generate({
+                    payload: {
+                        id: user.id_login,
+                        email: user.email,
+                        role: user.role
+                    }
+                })
+
+                const loginSession = ''
     
                 return {
                     user: {
@@ -71,7 +84,7 @@ export class CandidateService {
                         role: user.role
                     },
                     
-                    token: 'token',
+                    token: token,
                 }
             }
         } catch (error) {
@@ -86,7 +99,6 @@ export class CandidateService {
                 throw new EmailAlreadyRegisteredException()
             } else {
                 console.log(error)
-                throw error()
             }
         }
     }

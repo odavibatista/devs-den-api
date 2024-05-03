@@ -10,7 +10,7 @@ import { EmailAlreadyRegisteredException } from '../domain/errors/EmailAlreadyRe
 import { UnformattedEmailException } from '../domain/errors/UnformattedEmail.exception';
 import { UnformattedPasswordException } from '../domain/errors/UnformattedPassword.exception';
 import { WrongPasswordException } from '../domain/errors/WrongPassword.exception';
-import { LoginUserBodyDTO } from '../domain/requests/LoginUser.request.dto';
+import { LoginUserBodyDTO, LoginUserResponseDTO } from '../domain/requests/LoginUser.request.dto';
 import { Candidate } from 'src/modules/candidate/entity/candidate.entity';
 import { Company } from 'src/modules/company/entity/company.entity';
 import { FindUserResponseDTO } from '../domain/requests/FindUser.request.dto';
@@ -96,58 +96,65 @@ export class UserService {
     }
   }
 
-  async login (loginDto: LoginDTO | LoginUserBodyDTO): Promise<any> {
-    const user: User = await this.userRepository.findOne({
-      where: { email: loginDto.email },
-    });
-    if (!user) {
-      throw new HttpException('Usuário não encontrado.', HttpStatus.NOT_FOUND);
-    }
+  async login (loginDto: LoginDTO | LoginUserBodyDTO): Promise<LoginUserResponseDTO | UserNotFoundException | WrongPasswordException | UnformattedEmailException> {
+    try {
+      const user: User = await this.userRepository.findOne({
+        where: { email: loginDto.email },
+      });
 
-    const isPasswordValid = await this.checkPassword(loginDto.inserted_password, user.password, (err, isSame) => {
-      if (!isSame) {
-        throw new WrongPasswordException()
+      if (!user) {
+        return new UserNotFoundException()
       }
-
-      if (err) {
-        throw new HttpException('Erro ao verificar a senha.', HttpStatus.INTERNAL_SERVER_ERROR);
+  
+      const isPasswordValid = loginDto.inserted_password === user.password
+      /*
+      const isPasswordValid = await this.checkPassword(loginDto.inserted_password, user.password, (err, isSame) => {
+        if (!isSame) {
+          throw new WrongPasswordException()
+        }
+  
+        if (err) {
+          throw new HttpException('Erro ao verificar a senha.', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+  
+        return true
+      });*/
+  
+      if (!isPasswordValid) {
+        return new WrongPasswordException()
+      } else  {
+        const token = this.jwtProvider.generate({ payload: { id: user.id_login }, expiresIn: '6h'});
+  
+        let name: string
+  
+        if (user.role === 'candidate') {
+          const candidateUser = await this.candidateRepository.findOne({
+            where: { id_profile: user.id_login }
+          })
+  
+          name = candidateUser.name
+        }
+  
+        if (user.role === 'company') {
+          const companyUser = await this.companyRepository.findOne({
+            where: { id_company: user.id_login }
+          })
+  
+          name = companyUser.name
+        }
+        
+        const response = {
+          user: {
+            id: user.id_login,
+            name: name,
+            role: user.role,
+          },
+          token: token
+        }
+        return response
       }
-
-      return true
-    });
-
-    if (isPasswordValid === null) {
-      throw new WrongPasswordException()
-    } else  {
-      const token = this.jwtProvider.generate({ payload: { id: user.id_login }, expiresIn: '6h', secret: process.env.JWT_SECRET });
-
-      let name: string
-
-      if (user.role === 'candidate') {
-        const candidateUser = await this.candidateRepository.findOne({
-          where: { id_profile: user.id_login }
-        })
-
-        name = candidateUser.name
-      }
-
-      if (user.role === 'company') {
-        const companyUser = await this.companyRepository.findOne({
-          where: { id_company: user.id_login }
-        })
-
-        name = companyUser.name
-      }
-      
-      const response = {
-        user: {
-          id: user.id_login,
-          name: name,
-          role: user.role,
-        },
-        token
-      }
-      return response
+    } catch (error) {
+      console.log(error)
     }
   }
 

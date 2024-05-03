@@ -3,6 +3,7 @@ import {
     Controller,
     Delete,
     Get,
+    HttpException,
     HttpStatus,
     Param,
     Post,
@@ -20,6 +21,7 @@ import { WrongPasswordException } from '../domain/errors/WrongPassword.exception
 import { LoginUserBodyDTO, LoginUserResponseDTO } from '../domain/requests/LoginUser.request.dto';
 import { Response } from 'express';
 import { FindUserResponseDTO } from '../domain/requests/FindUser.request.dto';
+import { LoginDTO } from '../dto/user.dto';
   
   @Controller('user')
   @ApiTags('Usuário')
@@ -47,10 +49,21 @@ import { FindUserResponseDTO } from '../domain/requests/FindUser.request.dto';
       const result = await this.userService.findOne(id);
 
       if  (result instanceof User) {
+        const token = await this.JwtProvider.generate({
+          payload: {
+            id: result.id_login,
+            email: result.email,
+            role: result.role
+          }
+        })
+        
         return res.status(HttpStatus.OK).json({
-          id: result.id_login,
-          email: result.email,
-          role: result.role
+          user: {
+            id: result.id_login,
+            email: result.email,
+            role: result.role
+          },
+          token: token
         })
       }
     }
@@ -78,11 +91,22 @@ import { FindUserResponseDTO } from '../domain/requests/FindUser.request.dto';
     })
     async login(
       @Res() res: Response,
-      @Body() body: LoginUserBodyDTO
+      @Body() body: LoginUserBodyDTO | LoginDTO
     ): Promise<LoginUserResponseDTO | AllExceptionsFilterDTO> {
-      const result = await this.userService.login(body)
+      try {
+        const result = await this.userService.login(body)
 
-      return res.status(HttpStatus.OK).json(result);
+        if (result instanceof HttpException)  {
+          return res.status(result.getStatus()).json({
+            message: result.message,
+            status: result.getStatus(),
+          })
+        } else {
+          return res.status(HttpStatus.OK).json(result)
+        }
+      } catch (error) {
+        return error.getStatus()
+      }
     }
   }
   
