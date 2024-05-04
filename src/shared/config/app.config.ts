@@ -35,21 +35,21 @@ try {
     /* Same divisions as above */
     appConfigurations = appConfigurationsSchema.parse({
       FRONTEND_URL: process.env.FRONTEND_URL,
+      NODE_ENV: process.env.NODE_ENV,
 
       DB_ENGINE: process.env.DB_ENGINE,
       DB_HOST: process.env.DB_HOST,
       DB_PORT: parseInt(process.env.DB_PORT),
       DB_USER: process.env.DB_USER,
       DB_PASSWORD: process.env.DB_PASSWORD,
-      DB_DATABASE: process.env.DB_DATABASE,
+      DB_DATABASE: process.env.DB_DATABASE.concat('_' + process.env.NODE_ENV),
       DB_ENTITIES: process.env.DB_ENTITIES,
-      DB_SYNCHRONIZE: process.env.DB_SYNCHRONIZE === 'true',
-      DB_LOGGING: process.env.DB_LOGGING === 'true',
+      DB_SYNCHRONIZE: process.env.DB_SYNCHRONIZE,
+      DB_LOGGING: process.env.DB_LOGGING,
 
       API_URL: process.env.API_URL,
       JWT_KEY: process.env.JWT_KEY,
       API_PORT: parseInt(process.env.API_PORT),
-      NODE_ENV: process.env.NODE_ENV,
     })
   } catch (error) {
     if (error instanceof ZodError) {
