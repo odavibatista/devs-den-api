@@ -56,8 +56,8 @@ export class UserService {
     }
 
     if (user.role === 'company') {
-      const companyUser = await this.companyRepository.findOne({
-        where: { id_company: user.id_login }
+       const companyUser = await this.companyRepository.findOne({
+         where: { id_company: user.id_login }
       })
 
       name = companyUser.name

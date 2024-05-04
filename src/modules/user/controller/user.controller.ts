@@ -48,22 +48,19 @@ import { LoginDTO } from '../dto/user.dto';
     ): Promise<FindUserResponseDTO | AllExceptionsFilterDTO> {
       const result = await this.userService.findOne(id);
 
-      if  (result instanceof User) {
-        const token = await this.JwtProvider.generate({
-          payload: {
-            id: result.id_login,
+      if (result instanceof HttpException)  {
+        return res.status(result.getStatus()).json({
+          message: result.message,
+          status: result.getStatus(),
+        })
+      } else  {
+        return res.status(HttpStatus.OK).json({
+          user: {
+            id: result.id,
+            name: result.name,
             email: result.email,
             role: result.role
           }
-        })
-        
-        return res.status(HttpStatus.OK).json({
-          user: {
-            id: result.id_login,
-            email: result.email,
-            role: result.role
-          },
-          token: token
         })
       }
     }
