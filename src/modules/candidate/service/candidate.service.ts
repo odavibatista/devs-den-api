@@ -4,7 +4,6 @@ import { Candidate } from '../entity/candidate.entity';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/modules/user/entity/user.entity';
 import { Address } from 'src/modules/address/entity/address.entity';
-import { CreateCandidateDTO } from '../dto/candidate.dto';
 import { RegisterCandidateBodyDTO, RegisterCandidateResponseDTO } from '../domain/requests/RegisterCandidate.request.dto';
 import { UnformattedEmailException } from 'src/modules/user/domain/errors/UnformattedEmail.exception';
 import { UnformattedPasswordException } from 'src/modules/user/domain/errors/UnformattedPassword.exception';
@@ -30,28 +29,28 @@ export class CandidateService {
         private readonly JwtProvider: JWTProvider
     ) {}
 
-    async create (createCandidateParams: CreateCandidateDTO | RegisterCandidateBodyDTO): Promise<RegisterCandidateResponseDTO | UnformattedEmailException | UnformattedPasswordException | EmailAlreadyRegisteredException> {
+    async create (params: RegisterCandidateBodyDTO): Promise<RegisterCandidateResponseDTO | UnformattedEmailException | UnformattedPasswordException | EmailAlreadyRegisteredException> {
         try {
             const userWithSameEmail = await this.userRepository.findOne({
-                where: { email: createCandidateParams.credentials.email }
+                where: { email: params.credentials.email }
             })
 
-            if (createCandidateParams.credentials.email.length < 8 || createCandidateParams.credentials.email.length > 50) throw new UnformattedEmailException()
+            if (params.credentials.email.length < 8 || params.credentials.email.length > 50) throw new UnformattedEmailException()
 
             if (userWithSameEmail) throw new EmailAlreadyRegisteredException()
 
-            if (!emailValidate(createCandidateParams.credentials.email)) throw new UnformattedEmailException()
+            if (!emailValidate(params.credentials.email)) throw new UnformattedEmailException()
 
-            if (!passwordValidate(createCandidateParams.credentials.password)) throw new UnformattedPasswordException()
+            if (!passwordValidate(params.credentials.password)) throw new UnformattedPasswordException()
 
             const user = await this.userRepository.save({
-                email: createCandidateParams.credentials.email,
-                password: createCandidateParams.credentials.password,
+                email: params.credentials.email,
+                password: params.credentials.password,
                 role: 'candidate'
             })
             
                 const uf = await this.ufRepository.findOne({
-                    where: { id_uf: createCandidateParams.address.uf }
+                    where: { id_uf: params.address.uf }
                 })
 
                 if (!uf) {
@@ -60,18 +59,18 @@ export class CandidateService {
     
                 const address = await this.addressRepository.save({
                     uf: uf,
-                    cep: createCandidateParams.address.cep,
-                    city: createCandidateParams.address.city,
-                    street: createCandidateParams.address.street,
-                    complement: createCandidateParams.address.complement,
-                    number: createCandidateParams.address.number,
+                    cep: params.address.cep,
+                    city: params.address.city,
+                    street: params.address.street,
+                    complement: params.address.complement,
+                    number: params.address.number,
                 })
     
                 const candidate = await this.candidateRepository.save({
                     id_profile: user.id_login,
-                    name: createCandidateParams.name,
-                    gender: createCandidateParams.gender,
-                    birth_date: createCandidateParams.birth_date,
+                    name: params.name,
+                    gender: params.gender,
+                    birth_date: params.birth_date,
                     address_id: (await address).id_address,
                 })
 
@@ -86,8 +85,9 @@ export class CandidateService {
 
                 const response =  {
                     user: {
+                        id: user.id_login,
                         name: candidate.name,
-                        role: createCandidateParams.credentials.email
+                        role: user.role
                     },
                     //token: token,
                 }

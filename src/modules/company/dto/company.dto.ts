@@ -17,12 +17,12 @@ export class CreateCompanyDTO   {
     @IsString()
     @Length(5, 50)
     @Unique(["name"])
-    company_name: string
+    readonly company_name: string
 
     @IsString()
     @Length(16, 16)
     @Unique(["cnpj"])
-    cnpj: string
+    readonly cnpj: string
 
     readonly credentials: CreateUserDTO
 

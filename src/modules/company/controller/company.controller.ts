@@ -16,7 +16,7 @@ import { UnformattedEmailException } from 'src/modules/user/domain/errors/Unform
 import { UnformattedPasswordException } from 'src/modules/user/domain/errors/UnformattedPassword.exception';
 import { CreateCompanyDTO } from '../dto/company.dto';
 import { Response } from 'express';
-import { RegisterCompanyResponseDTO } from '../domain/requests/RegisterCompany.request.dto';
+import { RegisterCompanyBodyDTO, RegisterCompanyResponseDTO } from '../domain/requests/RegisterCompany.request.dto';
 
 
 @Controller('companies')
@@ -91,8 +91,8 @@ export class IndividualCompanyController    {
     })
     async create(
         @Res() res: Response,
-        @Body() createCompanyDto: CreateCompanyDTO): Promise<RegisterCompanyResponseDTO | AllExceptionsFilterDTO> {
-        const result = await this.companyService.create(createCompanyDto)
+        @Body() body:  RegisterCompanyBodyDTO): Promise<RegisterCompanyResponseDTO | AllExceptionsFilterDTO> {
+        const result = await this.companyService.create(body)
 
         if (result instanceof HttpException)  {
             return res.status(result.getStatus()).json({

@@ -14,6 +14,7 @@ import { emailValidate } from 'src/shared/utils/emailValidate';
 import { UnformattedPasswordException } from 'src/modules/user/domain/errors/UnformattedPassword.exception';
 import { UnformattedEmailException } from 'src/modules/user/domain/errors/UnformattedEmail.exception';
 import { InvalidCNPJException } from '../domain/errors/InvalidCNPJ.exception';
+import { RegisterCompanyBodyDTO } from '../domain/requests/RegisterCompany.request.dto';
 
 @Injectable()
 export class CompanyService {
@@ -36,35 +37,35 @@ export class CompanyService {
         return company
     }
 
-    async create    (createCompanyDto: CreateCompanyDTO): Promise<Company | EmailAlreadyRegisteredException | UnformattedPasswordException | CompanyNameAlreadyRegisteredException | CNPJAlreadyRegisteredException | InvalidCNPJException> {
+    async create    (params: RegisterCompanyBodyDTO): Promise<Company | EmailAlreadyRegisteredException | UnformattedPasswordException | CompanyNameAlreadyRegisteredException | CNPJAlreadyRegisteredException | InvalidCNPJException> {
         try {
             const userWithSameEmail = await this.userRepository.findOne({
-                where: { email: createCompanyDto.credentials.email }
+                where: { email: params.credentials.email }
             })
 
             if (userWithSameEmail) throw new EmailAlreadyRegisteredException()
 
-            if (!passwordValidate(createCompanyDto.credentials.email)) throw new UnformattedPasswordException()
+            if (!passwordValidate(params.credentials.email)) throw new UnformattedPasswordException()
 
-            if (!emailValidate(createCompanyDto.credentials.email)) throw new UnformattedEmailException()
+            if (!emailValidate(params.credentials.email)) throw new UnformattedEmailException()
 
             const companyWithSameName = await this.companyRepository.findOne({
-                where: { name: createCompanyDto.company_name }
+                where: { name: params.company_name }
             })
 
             if (companyWithSameName) throw new CompanyNameAlreadyRegisteredException()
 
             const companyWithSamePJ = await this.companyRepository.findOne({
-                where: { cnpj: createCompanyDto.cnpj }
+                where: { cnpj: params.cnpj }
             })
 
             if (companyWithSamePJ) throw new CNPJAlreadyRegisteredException()
 
-            const isCNPJValid = pjValidate(createCompanyDto.cnpj)
+            const isCNPJValid = pjValidate(params.cnpj)
 
             if (!isCNPJValid) throw new InvalidCNPJException()
 
-            const createdCompany = await this.companyRepository.save(createCompanyDto)
+            const createdCompany = await this.companyRepository.save(params)
 
             return createdCompany
         } catch (error) {
