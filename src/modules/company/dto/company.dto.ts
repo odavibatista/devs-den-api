@@ -1,4 +1,6 @@
 import { IsNumber, IsString, Length } from "class-validator";
+import { CreateAddressDTO } from "src/modules/user/dto/address.dto";
+import { CreateUserDTO } from "src/modules/user/dto/user.dto";
 import { Unique } from "typeorm";
 
 export class CompanyDTO {
@@ -21,4 +23,8 @@ export class CreateCompanyDTO   {
     @Length(16, 16)
     @Unique(["cnpj"])
     cnpj: string
+
+    readonly credentials: CreateUserDTO
+
+    readonly address: CreateAddressDTO
 }

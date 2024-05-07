@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Candidate } from '../entity/candidate.entity';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
@@ -97,7 +97,7 @@ export class CandidateService {
                 }
             }
         } catch (error) {
-
+            throw new HttpException(error, error.status)
         }
     }
 }
