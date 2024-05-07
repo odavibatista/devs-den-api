@@ -12,6 +12,8 @@ import { EmailAlreadyRegisteredException } from 'src/modules/user/domain/errors/
 import { Uf } from 'src/modules/uf/entity/uf.entity';
 import { UFNotFoundException } from 'src/modules/uf/domain/errors/UfNotFound.exception';
 import { JWTProvider } from 'src/modules/user/providers/JWT.provider';
+import { passwordValidate } from 'src/shared/utils/passwordValidate';
+import { emailValidate } from 'src/shared/utils/emailValidate';
 
 @Injectable()
 export class CandidateService {
@@ -30,6 +32,16 @@ export class CandidateService {
 
     async create (createCandidateParams: CreateCandidateDTO | RegisterCandidateBodyDTO): Promise<RegisterCandidateResponseDTO | UnformattedEmailException | UnformattedPasswordException | EmailAlreadyRegisteredException> {
         try {
+            const userWithSameEmail = await this.userRepository.findOne({
+                where: { email: createCandidateParams.credentials.email }
+            })
+
+            if (userWithSameEmail) throw new EmailAlreadyRegisteredException()
+
+            if (!passwordValidate(createCandidateParams.credentials.email)) throw new UnformattedPasswordException()
+
+            if (!emailValidate(createCandidateParams.credentials.email)) throw new UnformattedEmailException()
+
             const user = await this.userRepository.save({
                 email: createCandidateParams.credentials.email,
                 password: createCandidateParams.credentials.password,
@@ -40,7 +52,6 @@ export class CandidateService {
                 throw new EmailAlreadyRegisteredException()
                 
             } else {
-
 
                 const uf = await this.ufRepository.findOne({
                     where: { id_uf: createCandidateParams.address.uf }
@@ -74,8 +85,6 @@ export class CandidateService {
                         role: user.role
                     }
                 })
-
-                const loginSession = ''
     
                 return {
                     user: {
@@ -88,18 +97,7 @@ export class CandidateService {
                 }
             }
         } catch (error) {
-            if (error instanceof UnformattedEmailException) {
-                console.log('UnformattedEmailException')
-                throw new UnformattedEmailException()
-            } else if (error instanceof UnformattedPasswordException) {
-                console.log('UnformattedPasswordException')
-                throw new UnformattedPasswordException()
-            } else if (error instanceof EmailAlreadyRegisteredException) {
-                console.log('EmailAlreadyRegisteredException')
-                throw new EmailAlreadyRegisteredException()
-            } else {
-                console.log(error)
-            }
+
         }
     }
 }

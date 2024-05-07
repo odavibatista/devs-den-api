@@ -44,8 +44,8 @@ try {
       DB_PASSWORD: process.env.DB_PASSWORD,
       DB_DATABASE: process.env.DB_DATABASE.concat('_' + process.env.NODE_ENV),
       DB_ENTITIES: process.env.DB_ENTITIES,
-      DB_SYNCHRONIZE: process.env.DB_SYNCHRONIZE,
-      DB_LOGGING: process.env.DB_LOGGING,
+      DB_SYNCHRONIZE: process.env.DB_SYNCHRONIZE === 'true' ? true : false,
+      DB_LOGGING: process.env.DB_LOGGING === 'true' ? true : false,
 
       API_URL: process.env.API_URL,
       JWT_KEY: process.env.JWT_KEY,

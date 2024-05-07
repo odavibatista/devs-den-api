@@ -25,7 +25,7 @@
     "docker:rebuild": "npm run docker:down && npm run docker:up",
     "db:create": "ts-node ./node_modules/typeorm-extension/bin/cli.cjs db:create",
     "db:drop": "ts-node ./node_modules/typeorm-extension/bin/cli.cjs db:drop",
-    "seed:run": "ts-node ./node_modules/typeorm-extension/bin/cli.cjs seed:run",
+    "db:seed": "ts-node ./node_modules/typeorm-extension/bin/cli.cjs seed:run",
     "seed:create": "ts-node ./node_modules/typeorm-extension/bin/cli.cjs seed:create"
   },
   "dependencies": {
