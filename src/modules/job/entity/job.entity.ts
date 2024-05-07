@@ -25,7 +25,7 @@ export class Job  {
     })
     description: string
 
-    @ManyToOne(()   =>  Company, (company) =>  company.id_company,   {
+    @ManyToOne(()   =>  Company, (company) =>  company.id_user,   {
         nullable: false
     })
     company_id: number
@@ -48,7 +48,7 @@ export class Job  {
     })
     modality: string
     
-    @ManyToMany(()  => Candidate, user => user.id_profile)
+    @ManyToMany(()  => Candidate, user => user.id_user)
     @JoinTable({
         name: 'job_subscribes',
         joinColumn: {
@@ -57,7 +57,7 @@ export class Job  {
         },
         inverseJoinColumn:  {
             name: 'user_id',
-            referencedColumnName: 'id_profile'
+            referencedColumnName: 'id_user'
         }
     })
 

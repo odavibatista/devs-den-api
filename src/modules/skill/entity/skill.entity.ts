@@ -12,7 +12,7 @@ export class Skill {
     })
     name: string
 
-    @ManyToMany(()  =>  Candidate, user => user.id_profile)
+    @ManyToMany(()  =>  Candidate, user => user.id_user)
     @JoinTable({
         name: 'user_skills',
         joinColumn: {
@@ -21,7 +21,7 @@ export class Skill {
         },
         inverseJoinColumn:  {
             name: 'user_id',
-            referencedColumnName: 'id_profile'
+            referencedColumnName: 'id_user'
         }
     })
 

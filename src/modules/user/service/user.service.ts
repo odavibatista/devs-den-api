@@ -38,7 +38,7 @@ export class UserService {
 
   async findOne (id: number): Promise<FindUserResponseDTO | UserNotFoundException> {
     const user = await this.userRepository.findOne({
-      where: { id_login: id },
+      where: { id_user: id },
     });
 
     if (!user) {
@@ -49,7 +49,7 @@ export class UserService {
 
     if (user.role === 'candidate') {
       const candidateUser = await this.candidateRepository.findOne({
-        where: { id_profile: user.id_login }
+        where: { id_user: user.id_user }
       })
 
       name = candidateUser.name
@@ -57,14 +57,14 @@ export class UserService {
 
     if (user.role === 'company') {
        const companyUser = await this.companyRepository.findOne({
-         where: { id_company: user.id_login }
+         where: { id_user: user.id_user }
       })
 
       name = companyUser.name
     }
 
     return {
-      id: user.id_login,
+      id: user.id_user,
       email: user.email,
       name: name,
       role: user.role,
@@ -121,13 +121,13 @@ export class UserService {
       if (!isPasswordValid) {
         return new WrongPasswordException()
       } else  {
-        const token = this.jwtProvider.generate({ payload: { id: user.id_login }, expiresIn: '6h'});
+        const token = this.jwtProvider.generate({ payload: { id: user.id_user }, expiresIn: '6h'});
   
         let name: string
   
         if (user.role === 'candidate') {
           const candidateUser = await this.candidateRepository.findOne({
-            where: { id_profile: user.id_login }
+            where: { id_user: user.id_user }
           })
   
           name = candidateUser.name
@@ -135,7 +135,7 @@ export class UserService {
   
         if (user.role === 'company') {
           const companyUser = await this.companyRepository.findOne({
-            where: { id_company: user.id_login }
+            where: { id_user: user.id_user }
           })
   
           name = companyUser.name
@@ -143,7 +143,7 @@ export class UserService {
         
         const response = {
           user: {
-            id: user.id_login,
+            id: user.id_user,
             name: name,
             role: user.role,
           },

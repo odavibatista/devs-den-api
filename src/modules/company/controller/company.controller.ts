@@ -96,7 +96,7 @@ export class IndividualCompanyController    {
         } else  {
             return res.status(HttpStatus.CREATED).json({
                 user: {
-                    id: result.id_company,
+                    id: result.id_user,
                     name: result.name,
                     role: 'company'
                 }

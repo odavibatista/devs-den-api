@@ -37,7 +37,7 @@ export class CompanyService {
 
     async findOne (id: number): Promise<Company | Company>    {
         const company = await this.companyRepository.findOne({
-            where:  { id_company: id}
+            where:  { id_user: id}
         })
 
         return company
@@ -97,6 +97,7 @@ export class CompanyService {
             })
 
             const createdCompany = await this.companyRepository.save({
+                id_user: user.id_user,
                 name: params.company_name,
                 cnpj: params.cnpj
             })
@@ -110,12 +111,12 @@ export class CompanyService {
     // NEEDS TO BE FIXED, PROVISORY ONLY
     async delete    (id: number): Promise<Company>    {
         try {
-            const company = this.companyRepository.findOne({ where: { id_company: id}})
+            const company = this.companyRepository.findOne({ where: { id_user: id}})
             
             if (!company) throw new CompanyNotFoundException()
 
             await this.companyRepository.delete({
-                id_company: id
+                id_user: id
             })
 
             return company

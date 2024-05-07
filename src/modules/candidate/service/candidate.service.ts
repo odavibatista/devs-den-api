@@ -67,7 +67,7 @@ export class CandidateService {
                 })
     
                 const candidate = await this.candidateRepository.save({
-                    id_profile: user.id_login,
+                    id_user: user.id_user,
                     name: params.name,
                     gender: params.gender,
                     birth_date: params.birth_date,
@@ -85,7 +85,7 @@ export class CandidateService {
 
                 const response =  {
                     user: {
-                        id: user.id_login,
+                        id: user.id_user,
                         name: candidate.name,
                         role: user.role
                     },
