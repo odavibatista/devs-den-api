@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entity/user.entity';
-import { CreateUserDTO, LoginDTO } from '../dto/user.dto';
+import { CreateUserDTO } from '../dto/user.dto';
 import * as bcrypt from 'bcrypt';
 import { JWTProvider } from '../providers/JWT.provider';
 import { UserNotFoundException } from '../domain/errors/UserNotFound.exception';
@@ -94,7 +94,7 @@ export class UserService {
     }
   }
 
-  async login (loginDto: LoginDTO | LoginUserBodyDTO): Promise<LoginUserResponseDTO | UserNotFoundException | WrongPasswordException | UnformattedEmailException> {
+  async login (loginDto: LoginUserBodyDTO): Promise<LoginUserResponseDTO | UserNotFoundException | WrongPasswordException | UnformattedEmailException> {
     try {
       const user: User = await this.userRepository.findOne({
         where: { email: loginDto.email },

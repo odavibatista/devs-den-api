@@ -14,7 +14,6 @@ import { InvalidCNPJException } from '../domain/errors/InvalidCNPJ.exception';
 import { EmailAlreadyRegisteredException } from 'src/modules/user/domain/errors/EmailAlreadyRegistered.exception';
 import { UnformattedEmailException } from 'src/modules/user/domain/errors/UnformattedEmail.exception';
 import { UnformattedPasswordException } from 'src/modules/user/domain/errors/UnformattedPassword.exception';
-import { CreateCompanyDTO } from '../dto/company.dto';
 import { Response } from 'express';
 import { RegisterCompanyBodyDTO, RegisterCompanyResponseDTO } from '../domain/requests/RegisterCompany.request.dto';
 

@@ -31,23 +31,17 @@ export class CandidateService {
 
     async create (params: RegisterCandidateBodyDTO): Promise<RegisterCandidateResponseDTO | UnformattedEmailException | UnformattedPasswordException | EmailAlreadyRegisteredException> {
         try {
+            if (params.credentials.email.length < 8 || params.credentials.email.length > 50) throw new UnformattedEmailException()
+
             const userWithSameEmail = await this.userRepository.findOne({
                 where: { email: params.credentials.email }
             })
-
-            if (params.credentials.email.length < 8 || params.credentials.email.length > 50) throw new UnformattedEmailException()
 
             if (userWithSameEmail) throw new EmailAlreadyRegisteredException()
 
             if (!emailValidate(params.credentials.email)) throw new UnformattedEmailException()
 
             if (!passwordValidate(params.credentials.password)) throw new UnformattedPasswordException()
-
-            const user = await this.userRepository.save({
-                email: params.credentials.email,
-                password: params.credentials.password,
-                role: 'candidate'
-            })
             
                 const uf = await this.ufRepository.findOne({
                     where: { id_uf: params.address.uf }
@@ -56,6 +50,12 @@ export class CandidateService {
                 if (!uf) {
                     throw new UFNotFoundException()
                 }
+
+                const user = await this.userRepository.save({
+                    email: params.credentials.email,
+                    password: params.credentials.password,
+                    role: 'candidate'
+                })
     
                 const address = await this.addressRepository.save({
                     uf: uf,

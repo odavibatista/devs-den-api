@@ -13,7 +13,6 @@ import {
   import { UserService } from '../service/user.service';
 import { JWTProvider } from '../providers/JWT.provider';
 import { UserNotFoundException } from '../domain/errors/UserNotFound.exception';
-import { User } from '../entity/user.entity';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AllExceptionsFilterDTO } from 'src/shared/domain/dtos/errors/AllException.filter.dto';
 import { UnformattedEmailException } from '../domain/errors/UnformattedEmail.exception';
@@ -21,7 +20,6 @@ import { WrongPasswordException } from '../domain/errors/WrongPassword.exception
 import { LoginUserBodyDTO, LoginUserResponseDTO } from '../domain/requests/LoginUser.request.dto';
 import { Response } from 'express';
 import { FindUserResponseDTO } from '../domain/requests/FindUser.request.dto';
-import { LoginDTO } from '../dto/user.dto';
   
   @Controller('user')
   @ApiTags('Usuário')
