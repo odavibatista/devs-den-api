@@ -76,13 +76,11 @@ export class UserService {
       const saltOrRounds = 10
       const hash = await bcrypt.hash(createUserDto.password, saltOrRounds);
 
-      createUserDto.password = hash
-
-      console.log(createUserDto.password)
-
-      return await this.userRepository.save(
-        this.userRepository.create(createUserDto),
-      );
+      return await this.userRepository.create({
+        email: createUserDto.email,
+        password: hash,
+        role: createUserDto.role,
+      })
     } catch (error) {
       if (error.code === 'ER_DUP_ENTRY') {
         throw new EmailAlreadyRegisteredException()

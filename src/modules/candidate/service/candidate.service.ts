@@ -36,23 +36,20 @@ export class CandidateService {
                 where: { email: createCandidateParams.credentials.email }
             })
 
+            if (createCandidateParams.credentials.email.length < 8 || createCandidateParams.credentials.email.length > 50) throw new UnformattedEmailException()
+
             if (userWithSameEmail) throw new EmailAlreadyRegisteredException()
 
-            if (!passwordValidate(createCandidateParams.credentials.email)) throw new UnformattedPasswordException()
-
             if (!emailValidate(createCandidateParams.credentials.email)) throw new UnformattedEmailException()
+
+            if (!passwordValidate(createCandidateParams.credentials.password)) throw new UnformattedPasswordException()
 
             const user = await this.userRepository.save({
                 email: createCandidateParams.credentials.email,
                 password: createCandidateParams.credentials.password,
                 role: 'candidate'
             })
-
-            if (!user) {
-                throw new EmailAlreadyRegisteredException()
-                
-            } else {
-
+            
                 const uf = await this.ufRepository.findOne({
                     where: { id_uf: createCandidateParams.address.uf }
                 })
@@ -61,7 +58,7 @@ export class CandidateService {
                     throw new UFNotFoundException()
                 }
     
-                const address = this.addressRepository.save({
+                const address = await this.addressRepository.save({
                     uf: uf,
                     cep: createCandidateParams.address.cep,
                     city: createCandidateParams.address.city,
@@ -70,7 +67,7 @@ export class CandidateService {
                     number: createCandidateParams.address.number,
                 })
     
-                const candidate = this.candidateRepository.save({
+                const candidate = await this.candidateRepository.save({
                     id_profile: user.id_login,
                     name: createCandidateParams.name,
                     gender: createCandidateParams.gender,
@@ -78,24 +75,24 @@ export class CandidateService {
                     address_id: (await address).id_address,
                 })
 
-                const token = await this.JwtProvider.generate({
-                    payload: {
-                        id: user.id_login,
-                        email: user.email,
-                        role: user.role
-                    }
-                })
-    
-                return {
+                // Not working, needs to be investigated
+                // const token = this.JwtProvider.generate({
+                //     payload: {
+                //         // id: user.id_login,
+                //         email: createCandidateParams.credentials.email,
+                //         role: createCandidateParams.credentials.role
+                //     }
+                // })
+
+                const response =  {
                     user: {
-                        id: user.id_login,
-                        name: (await candidate).name,
-                        role: user.role
+                        name: candidate.name,
+                        role: createCandidateParams.credentials.email
                     },
-                    
-                    token: token,
+                    //token: token,
                 }
-            }
+
+                return response
         } catch (error) {
             throw new HttpException(error, error.status)
         }

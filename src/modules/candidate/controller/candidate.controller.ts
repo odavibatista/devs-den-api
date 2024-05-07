@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, HttpException, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CandidateService } from '../service/candidate.service';
 import { RegisterCandidateBodyDTO, RegisterCandidateResponseDTO } from '../domain/requests/RegisterCandidate.request.dto';
@@ -41,8 +41,16 @@ export class CandidateController {
         @Body() body: CreateCandidateDTO | RegisterCandidateBodyDTO,
         @Res() res: Response
     ): Promise<any> {
+      
         const result = await this.candidateService.create(body);
 
-        return res.status(HttpStatus.CREATED).json(result);
+        if (result instanceof HttpException)  {
+          return res.status(result.getStatus()).json({
+            message: result.message,
+            status: result.getStatus(),
+          })
+        } else {
+          return res.status(res.statusCode).json(result)
+        }
     }
 }

@@ -36,7 +36,7 @@ export class CompanyService {
         return company
     }
 
-    async create    (createCompanyDto: CreateCompanyDTO): Promise<Company> {
+    async create    (createCompanyDto: CreateCompanyDTO): Promise<Company | EmailAlreadyRegisteredException | UnformattedPasswordException | CompanyNameAlreadyRegisteredException | CNPJAlreadyRegisteredException | InvalidCNPJException> {
         try {
             const userWithSameEmail = await this.userRepository.findOne({
                 where: { email: createCompanyDto.credentials.email }
