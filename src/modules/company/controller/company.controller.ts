@@ -91,7 +91,7 @@ export class IndividualCompanyController    {
     })
     async create(
         @Res() res: Response,
-        @Body() body:  RegisterCompanyBodyDTO): Promise<RegisterCompanyResponseDTO | AllExceptionsFilterDTO> {
+        @Body() body:  RegisterCompanyBodyDTO | CreateCompanyDTO): Promise<RegisterCompanyResponseDTO | AllExceptionsFilterDTO> {
         const result = await this.companyService.create(body)
 
         if (result instanceof HttpException)  {

@@ -1,15 +1,9 @@
-import { Uf } from "src/modules/uf/entity/uf.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class Company  {
     @PrimaryGeneratedColumn({})
     id_company: number
-
-    @ManyToOne(()   =>  Uf, (uf) =>  uf.id_uf,   {
-        nullable: false
-    })
-    uf: Uf
 
     @Column({
         length: 50,

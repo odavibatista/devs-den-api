@@ -38,7 +38,7 @@ export class CandidateController {
       type: RegisterCandidateResponseDTO
     })
     async register  (
-        @Body() body: CreateCandidateDTO | RegisterCandidateBodyDTO,
+        @Body() body: RegisterCandidateBodyDTO,
         @Res() res: Response
     ): Promise<any> {
       
