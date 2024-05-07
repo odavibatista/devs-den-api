@@ -55,11 +55,6 @@ export class IndividualCompanyController    {
     )   {}
     @Post('/create')
     @ApiResponse({
-        status: new CompanyNotFoundException().getStatus(),
-        description: new CompanyNotFoundException().message,
-        type: AllExceptionsFilterDTO
-    })
-    @ApiResponse({
         status: new CNPJAlreadyRegisteredException().getStatus(),
         description: new CNPJAlreadyRegisteredException().message,
         type: AllExceptionsFilterDTO
@@ -87,11 +82,11 @@ export class IndividualCompanyController    {
     @ApiResponse({
         status: HttpStatus.CREATED,
         description: 'Empresa criada com sucesso',
-        type: Company
+        type: RegisterCompanyResponseDTO
     })
     async create(
         @Res() res: Response,
-        @Body() body:  RegisterCompanyBodyDTO | CreateCompanyDTO): Promise<RegisterCompanyResponseDTO | AllExceptionsFilterDTO> {
+        @Body() body:  RegisterCompanyBodyDTO): Promise<RegisterCompanyResponseDTO | AllExceptionsFilterDTO> {
         const result = await this.companyService.create(body)
 
         if (result instanceof HttpException)  {

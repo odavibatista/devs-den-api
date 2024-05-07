@@ -88,7 +88,7 @@ import { LoginDTO } from '../dto/user.dto';
     })
     async login(
       @Res() res: Response,
-      @Body() body: LoginUserBodyDTO | LoginDTO
+      @Body() body: LoginUserBodyDTO
     ): Promise<LoginUserResponseDTO | AllExceptionsFilterDTO> {
       try {
         const result = await this.userService.login(body)

@@ -16,21 +16,6 @@ async function bootstrap() {
     origin: '*'
   }))
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-      exceptionFactory: (errors) =>
-        new HttpException(
-          {
-            message: 'Entrada de dados invalida',
-            errors: errors,
-          },
-          HttpStatus.BAD_REQUEST,
-        ),
-    }))
-
   const PORT = process.env.API_PORT
 
   patchNestJsSwagger()
