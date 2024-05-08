@@ -41,42 +41,46 @@ export class UserService {
   async findOne(
     id: number,
   ): Promise<FindUserResponseDTO | UserNotFoundException> {
-    const user = await this.userRepository.findOne({
-      where: { id_user: id },
-    });
-
-    if (!user) {
-      throw new UserNotFoundException();
-    }
-
-    let name: string;
-
-    if (user.role === 'candidate') {
-      const candidateUser = await this.candidateRepository.findOne({
-        where: { id_user: user.id_user },
+    try {
+      const user = await this.userRepository.findOne({
+        where: { id_user: id },
       });
-
-      name = candidateUser.name;
+  
+      if (!user) {
+        throw new UserNotFoundException();
+      }
+  
+      let name: string;
+  
+      if (user.role === 'candidate') {
+        const candidateUser = await this.candidateRepository.findOne({
+          where: { id_user: user.id_user },
+        });
+  
+        name = candidateUser.name;
+      }
+  
+      if (user.role === 'company') {
+        const companyUser = await this.companyRepository.findOne({
+          where: { id_user: user.id_user },
+        });
+  
+        name = companyUser.name;
+      }
+  
+      return {
+        id: user.id_user,
+        email: user.email,
+        name: name,
+        role: user.role,
+      };
+    } catch (error) {
+      throw new HttpException(error, error.status);
     }
-
-    if (user.role === 'company') {
-      const companyUser = await this.companyRepository.findOne({
-        where: { id_user: user.id_user },
-      });
-
-      name = companyUser.name;
-    }
-
-    return {
-      id: user.id_user,
-      email: user.email,
-      name: name,
-      role: user.role,
-    };
   }
 
   async create(
-    createUserDto: CreateUserDTO,
+    params: CreateUserDTO,
   ): Promise<
     | User
     | EmailAlreadyRegisteredException
@@ -85,23 +89,19 @@ export class UserService {
   > {
     try {
       const saltOrRounds = 10;
-      const hash = await bcrypt.hash(createUserDto.password, saltOrRounds);
+      const hash = await bcrypt.hash(params.password, saltOrRounds);
 
-      return await this.userRepository.create({
-        email: createUserDto.email,
+      console.log(hash)
+
+      const user = await this.userRepository.create({
+        email: params.email,
         password: hash,
-        role: createUserDto.role,
+        role: params.role,
       });
+      
+      return user
     } catch (error) {
-      if (error.code === 'ER_DUP_ENTRY') {
-        throw new EmailAlreadyRegisteredException();
-      } else {
-        console.log(error);
-        throw new HttpException(
-          'Erro ao criar o registro. Tente novamente mais tarde.',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
+      throw new HttpException(error, error.status);
     }
   }
 
@@ -173,7 +173,7 @@ export class UserService {
         return response;
       }
     } catch (error) {
-      console.log(error);
+      throw new HttpException(error, error.status);
     }
   }
 
