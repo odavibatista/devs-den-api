@@ -1,4 +1,5 @@
-import { Body, Controller, HttpStatus, Post, Req, Res } from '@nestjs/common';
+
+import { Body, Controller, HttpException, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CandidateService } from '../service/candidate.service';
 import { RegisterCandidateBodyDTO, RegisterCandidateResponseDTO } from '../domain/requests/RegisterCandidate.request.dto';
@@ -7,6 +8,8 @@ import { AllExceptionsFilterDTO } from 'src/shared/domain/dtos/errors/AllExcepti
 import { UnformattedPasswordException } from 'src/modules/user/domain/errors/UnformattedPassword.exception';
 import { EmailAlreadyRegisteredException } from 'src/modules/user/domain/errors/EmailAlreadyRegistered.exception';
 import { Response } from 'express';
+import { CreateCandidateDTO } from '../dto/candidate.dto';
+
 
 @Controller('candidate')
 @ApiTags('Candidatos')
@@ -42,6 +45,14 @@ export class CandidateController {
     ): Promise<any> {
         const result = await this.candidateService.create(body);
 
-        return res.status(HttpStatus.CREATED).json(result);
+        if (result instanceof HttpException)  {
+          return res.status(result.getStatus()).json({
+            message: result.message,
+            status: result.getStatus(),
+          })
+        } else {
+          return res.status(res.statusCode).json(result)
+        }
+
     }
 }

@@ -1,4 +1,4 @@
-import { IsDate, IsObject, IsString, Length } from "class-validator";
+import { IsString, Length } from "class-validator";
 import { CreateAddressDTO } from "src/modules/user/dto/address.dto";
 import { CreateUserDTO } from "src/modules/user/dto/user.dto";
 
@@ -11,12 +11,10 @@ export class CreateCandidateDTO {
     @Length(4, 6)
     readonly gender: 'male' | 'female'
 
-    @IsDate()
-    readonly birth_date: Date
+    @IsString()
+    readonly birth_date: string
 
-    @IsObject()
     readonly credentials: CreateUserDTO
 
-    @IsObject()
     readonly address: CreateAddressDTO
 }

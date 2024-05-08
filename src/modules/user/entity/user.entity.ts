@@ -8,7 +8,7 @@ enum Role {
 @Entity()
 export class User  {
     @PrimaryGeneratedColumn()
-    id_login: number
+    id_user: number
 
     @Column({
         unique: true,

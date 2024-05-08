@@ -1,5 +1,6 @@
 import { Uf } from "src/modules/uf/entity/uf.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+
 
 @Entity()
 export class Address  {
@@ -41,12 +42,12 @@ export class Address  {
     })
     complement: string
 
-    @Column({
+    @CreateDateColumn({
         nullable: false
     })
     created_at: Date
 
-    @Column({
+    @UpdateDateColumn({
         nullable: false
     })
     updated_at: Date

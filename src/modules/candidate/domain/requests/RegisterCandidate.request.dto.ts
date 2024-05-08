@@ -5,14 +5,13 @@ export const RegisterCandidateBodySchema = z.object({
     /* Dados pessoais  */
     name: z.string().min(5).max(50).describe("Nome do usuário candidato"),
     gender: z.string().min(4).max(6).describe("Gênero do usuário candidato"),
-    birth_date: z.date().describe("Data de nascimento do usuário candidato"),
+    birth_date: z.string().describe("Data de nascimento do usuário candidato"),
 
     /* Credenciais  */
     credentials: z.object({
-        email: z.string().email().max(50).describe("E-mail do usuário candidato"),
+        email: z.string().email().min(8).max(50).describe("E-mail do usuário candidato"),
         password: z.string().min(8).max(250).describe("Senha do usuário candidato"),
-        role: z.string().min(9).max(9).describe("Papel do usuário candidato"),
-    }),
+        role: z.string().min(9).max(9).describe("Tipo de usuário").default("candidate"),
 
     /* Endereço  */
     address: z.object({

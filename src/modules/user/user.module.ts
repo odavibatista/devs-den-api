@@ -16,5 +16,6 @@ import { Company } from '../company/entity/company.entity';
       ],
       controllers: [UserController],
       providers: [UserService, JWTProvider],
+      exports: [JWTProvider]
 })
 export class UserModule {}

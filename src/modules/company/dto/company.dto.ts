@@ -1,5 +1,4 @@
-import { IsNumber, IsString, Length } from "class-validator";
-import { Unique } from "typeorm";
+import { IsString, Length } from "class-validator";
 
 export class CompanyDTO {
     @IsString()
@@ -9,16 +8,4 @@ export class CompanyDTO {
     @IsString()
     @Length(16, 16)
     readonly cnpj: string
-}
-
-export class CreateCompanyDTO   {
-    @IsString()
-    @Length(5, 50)
-    @Unique(["name"])
-    company_name: string
-
-    @IsString()
-    @Length(16, 16)
-    @Unique(["cnpj"])
-    cnpj: string
 }

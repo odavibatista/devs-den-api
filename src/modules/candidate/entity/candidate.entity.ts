@@ -10,12 +10,11 @@ enum Gender {
 
 @Entity()
 export class Candidate  {
-    @PrimaryColumn()
-    id_profile: number
-    
-    @OneToOne(()    => User, (user) => user.id_login, {
+    @PrimaryColumn()    
+    @OneToOne(()    => User, (user) => user.id_user, {
         nullable: false
     })
+    id_user: number
 
     @Column({
         length: 50,

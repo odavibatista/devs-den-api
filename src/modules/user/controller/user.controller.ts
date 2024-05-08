@@ -3,6 +3,7 @@ import {
     Controller,
     Delete,
     Get,
+    HttpException,
     HttpStatus,
     Param,
     Post,
@@ -12,7 +13,6 @@ import {
   import { UserService } from '../service/user.service';
 import { JWTProvider } from '../providers/JWT.provider';
 import { UserNotFoundException } from '../domain/errors/UserNotFound.exception';
-import { User } from '../entity/user.entity';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AllExceptionsFilterDTO } from 'src/shared/domain/dtos/errors/AllException.filter.dto';
 import { UnformattedEmailException } from '../domain/errors/UnformattedEmail.exception';
@@ -46,11 +46,19 @@ import { FindUserResponseDTO } from '../domain/requests/FindUser.request.dto';
     ): Promise<FindUserResponseDTO | AllExceptionsFilterDTO> {
       const result = await this.userService.findOne(id);
 
-      if  (result instanceof User) {
+      if (result instanceof HttpException)  {
+        return res.status(result.getStatus()).json({
+          message: result.message,
+          status: result.getStatus(),
+        })
+      } else  {
         return res.status(HttpStatus.OK).json({
-          id: result.id_login,
-          email: result.email,
-          role: result.role
+          user: {
+            id: result.id,
+            name: result.name,
+            email: result.email,
+            role: result.role
+          }
         })
       }
     }
@@ -80,10 +88,19 @@ import { FindUserResponseDTO } from '../domain/requests/FindUser.request.dto';
       @Res() res: Response,
       @Body() body: LoginUserBodyDTO
     ): Promise<LoginUserResponseDTO | AllExceptionsFilterDTO> {
-      const result = await this.userService.login(body)
+      try {
+        const result = await this.userService.login(body)
 
-      return res.status(HttpStatus.OK).json(result);
+        if (result instanceof HttpException)  {
+          return res.status(result.getStatus()).json({
+            message: result.message,
+            status: result.getStatus(),
+          })
+        } else {
+          return res.status(HttpStatus.OK).json(result)
+        }
+      } catch (error) {
+        return error.getStatus()
+      }
     }
   }
-  
-  

@@ -1,15 +1,13 @@
-import { Uf } from "src/modules/uf/entity/uf.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { User } from "src/modules/user/entity/user.entity";
+import { Column, CreateDateColumn, Entity, OneToOne, PrimaryColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class Company  {
-    @PrimaryGeneratedColumn({})
-    id_company: number
-
-    @ManyToOne(()   =>  Uf, (uf) =>  uf.id_uf,   {
+    @PrimaryColumn()    
+    @OneToOne(()    => User, (user) => user.id_user, {
         nullable: false
     })
-    uf: Uf
+    id_user: number
 
     @Column({
         length: 50,
