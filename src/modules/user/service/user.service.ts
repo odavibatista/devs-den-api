@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entity/user.entity';
@@ -17,10 +17,12 @@ import {
 import { Candidate } from 'src/modules/candidate/entity/candidate.entity';
 import { Company } from 'src/modules/company/entity/company.entity';
 import { FindUserResponseDTO } from '../domain/requests/FindUser.request.dto';
+import { HashProvider } from '../providers/hash.provider';
 
 @Injectable()
 export class UserService {
   constructor(
+    private hashProvider: HashProvider,
     @InjectRepository(User)
     private userRepository: Repository<User>,
     @InjectRepository(Candidate)
@@ -86,20 +88,21 @@ export class UserService {
     | EmailAlreadyRegisteredException
     | UnformattedEmailException
     | UnformattedPasswordException
+    | any
   > {
+    const hashedPassword = await this.hashProvider.hash(params.password)
+
     try {
-      const saltOrRounds = 10;
-      const hash = await bcrypt.hash(params.password, saltOrRounds);
-
-      console.log(hash)
-
-      const user = await this.userRepository.create({
-        email: params.email,
-        password: hash,
-        role: params.role,
-      });
-      
-      return user
+        const user = await this.userRepository.save({
+          email: params.email,
+          password: hashedPassword,
+          role: params.role,
+        });
+        
+        return {
+          user: user,
+          id: user.id_user
+        }
     } catch (error) {
       throw new HttpException(error, error.status);
     }

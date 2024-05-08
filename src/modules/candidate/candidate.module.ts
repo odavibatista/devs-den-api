@@ -7,11 +7,13 @@ import { Candidate } from './entity/candidate.entity';
 import { Address } from '../address/entity/address.entity';
 import { User } from '../user/entity/user.entity';
 import { Uf } from '../uf/entity/uf.entity';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
     DatabaseModule,
     TypeOrmModule.forFeature([Candidate, Address, User, Uf]),
+    UserModule,
   ],
   providers: [CandidateService],
   controllers: [CandidateController],

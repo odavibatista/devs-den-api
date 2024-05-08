@@ -16,6 +16,7 @@ import { UFNotFoundException } from 'src/modules/uf/domain/errors/UfNotFound.exc
 import { JWTProvider } from 'src/modules/user/providers/JWT.provider';
 import { passwordValidate } from 'src/shared/utils/passwordValidate';
 import { emailValidate } from 'src/shared/utils/emailValidate';
+import { UserService } from 'src/modules/user/service/user.service';
 
 @Injectable()
 export class CandidateService {
@@ -30,6 +31,7 @@ export class CandidateService {
     private readonly ufRepository: Repository<Uf>,
     @InjectDataSource()
     private readonly JwtProvider: JWTProvider,
+    private readonly userService: UserService
   ) {}
 
   async create(
@@ -67,11 +69,14 @@ export class CandidateService {
         throw new UFNotFoundException();
       }
 
-      const user = await this.userRepository.save({
+      const user: User = await this.userService.create({
         email: params.credentials.email,
         password: params.credentials.password,
         role: 'candidate',
-      });
+      })
+
+      console.log(user)
+
 
       const address = await this.addressRepository.save({
         uf: uf,
@@ -82,8 +87,12 @@ export class CandidateService {
         number: params.address.number,
       });
 
+      const userToBeFound: User = await this.userRepository.findOne({
+        where: { email: params.credentials.email },
+      })
+
       const candidate = await this.candidateRepository.save({
-        id_user: user.id_user,
+        id_user: userToBeFound.id_user,
         name: params.name,
         gender: params.gender,
         birth_date: params.birth_date,
@@ -101,9 +110,9 @@ export class CandidateService {
 
       const response = {
         user: {
-          id: user.id_user,
+          id: candidate.id_user,
           name: candidate.name,
-          role: user.role,
+          role: 'candidate',
         },
         //token: token,
       };

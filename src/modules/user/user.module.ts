@@ -8,6 +8,7 @@ import { UserController } from './controller/user.controller';
 import { JWTProvider } from './providers/JWT.provider';
 import { Candidate } from '../candidate/entity/candidate.entity';
 import { Company } from '../company/entity/company.entity';
+import { HashProvider } from './providers/hash.provider';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { Company } from '../company/entity/company.entity';
     TypeOrmModule.forFeature([User, Address, Candidate, Company]),
   ],
   controllers: [UserController],
-  providers: [UserService, JWTProvider],
-  exports: [JWTProvider],
+  providers: [UserService, JWTProvider, HashProvider],
+  exports: [JWTProvider, HashProvider, UserService],
 })
 export class UserModule {}

@@ -23,7 +23,7 @@ export class User {
   email: string;
 
   @Column({
-    length: 250,
+    length: 500,
   })
   password: string;
 
