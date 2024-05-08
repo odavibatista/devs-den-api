@@ -8,6 +8,7 @@ import { Address } from '../address/entity/address.entity';
 import { User } from '../user/entity/user.entity';
 import { Uf } from '../uf/entity/uf.entity';
 import { UserModule } from '../user/user.module';
+import { JWTProvider } from '../user/providers/JWT.provider';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { UserModule } from '../user/user.module';
     TypeOrmModule.forFeature([Candidate, Address, User, Uf]),
     UserModule,
   ],
-  providers: [CandidateService],
+  providers: [CandidateService, JWTProvider],
   controllers: [CandidateController],
 })
 export class CandidateModule {}

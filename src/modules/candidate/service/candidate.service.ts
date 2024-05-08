@@ -29,7 +29,6 @@ export class CandidateService {
     private readonly addressRepository: Repository<Address>,
     @InjectRepository(Uf)
     private readonly ufRepository: Repository<Uf>,
-    @InjectDataSource()
     private readonly JwtProvider: JWTProvider,
     private readonly userService: UserService
   ) {}
@@ -99,14 +98,13 @@ export class CandidateService {
         address_id: (await address).id_address,
       });
 
-      // Not working, needs to be investigated
-      // const token = this.JwtProvider.generate({
-      //     payload: {
-      //         // id: user.id_login,
-      //         email: createCandidateParams.credentials.email,
-      //         role: createCandidateParams.credentials.role
-      //     }
-      // })
+      const token = this.JwtProvider.generate({
+        payload: {
+          id: userToBeFound.id_user,
+          email: params.credentials.email,
+          role: params.credentials.role
+        }
+      })
 
       const response = {
         user: {
@@ -114,7 +112,7 @@ export class CandidateService {
           name: candidate.name,
           role: 'candidate',
         },
-        //token: token,
+        token: token,
       };
 
       return response;
