@@ -9,7 +9,16 @@ import { SkillModule } from '../modules/skill/skill.module';
 import { JobCategoryModule } from '../modules/job-category/job-category.module';
 
 @Module({
-  imports: [DatabaseModule, UserModule, CompanyModule, JobModule, UfModule, CandidateModule, SkillModule, JobCategoryModule],
+  imports: [
+    DatabaseModule,
+    UserModule,
+    CompanyModule,
+    JobModule,
+    UfModule,
+    CandidateModule,
+    SkillModule,
+    JobCategoryModule,
+  ],
   controllers: [],
   providers: [],
 })

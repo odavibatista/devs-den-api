@@ -1,7 +1,7 @@
-import { HttpException, HttpStatus } from '@nestjs/common'
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 export class JobNotFoundException extends HttpException {
   constructor() {
-    super('Vaga não encontrada. Busque por outra.', HttpStatus.NOT_FOUND)
+    super('Vaga não encontrada. Busque por outra.', HttpStatus.NOT_FOUND);
   }
 }

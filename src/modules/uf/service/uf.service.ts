@@ -5,12 +5,12 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class UfService {
-    constructor(
-        @InjectRepository(Uf)
-        private skillRepository: Repository<Uf>
-    )   {}
+  constructor(
+    @InjectRepository(Uf)
+    private skillRepository: Repository<Uf>,
+  ) {}
 
-    async findAll   (): Promise <Uf[]>  {
-        return await this.skillRepository.find()
-    }
+  async findAll(): Promise<Uf[]> {
+    return await this.skillRepository.find();
+  }
 }

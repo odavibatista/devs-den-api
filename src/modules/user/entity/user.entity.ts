@@ -1,41 +1,47 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 enum Role {
-    COMPANY = 'company',
-    CANDIDATE = 'candidate'
+  COMPANY = 'company',
+  CANDIDATE = 'candidate',
 }
 
 @Entity()
-export class User  {
-    @PrimaryGeneratedColumn()
-    id_user: number
+export class User {
+  @PrimaryGeneratedColumn()
+  id_user: number;
 
-    @Column({
-        unique: true,
-        length: 50
-    })
-    email: string
+  @Column({
+    unique: true,
+    length: 50,
+  })
+  email: string;
 
-    @Column({
-        length: 250
-    })
-    password: string
+  @Column({
+    length: 250,
+  })
+  password: string;
 
-    @Column({
-        name: "role",
-        type: "enum",
-        enum: [Role.CANDIDATE, Role.COMPANY],
-        enumName: "role"
-    })
-    role: string
+  @Column({
+    name: 'role',
+    type: 'enum',
+    enum: [Role.CANDIDATE, Role.COMPANY],
+    enumName: 'role',
+  })
+  role: string;
 
-    @CreateDateColumn({
-        nullable: false
-    })
-    created_at: Date
+  @CreateDateColumn({
+    nullable: false,
+  })
+  created_at: Date;
 
-    @UpdateDateColumn({
-        nullable: false
-    })
-    updated_at: Date
+  @UpdateDateColumn({
+    nullable: false,
+  })
+  updated_at: Date;
 }
