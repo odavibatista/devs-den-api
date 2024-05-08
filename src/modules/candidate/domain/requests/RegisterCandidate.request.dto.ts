@@ -22,6 +22,7 @@ export const RegisterCandidateBodySchema = z.object({
         number: z.string().min(1).max(10).describe("Número do endereço do usuário."),
         complement: z.string().min(3).max(30).describe("Complemento do endereço do usuário."),
     })
+    })
 })
 
 export class RegisterCandidateBodyDTO extends createZodDto(RegisterCandidateBodySchema){}
