@@ -8,54 +8,54 @@ import { JobCategory } from 'src/modules/job-category/entity/job-category.entity
 
 @Injectable()
 export class JobService {
-    constructor(
-        @InjectRepository(Job)
-        private jobRepository: Repository<Job>,
-        @InjectRepository(JobCategory)
-        private jobCategoryRepository: Repository<JobCategory>
-    )   {}
+  constructor(
+    @InjectRepository(Job)
+    private jobRepository: Repository<Job>,
+    @InjectRepository(JobCategory)
+    private jobCategoryRepository: Repository<JobCategory>,
+  ) {}
 
-    async findAll (): Promise<Job[] | JobNotFoundException> {
-        const jobs = await this.jobRepository.find()
+  async findAll(): Promise<Job[] | JobNotFoundException> {
+    const jobs = await this.jobRepository.find();
 
-        if (jobs.length === 0) throw new JobNotFoundException()
+    if (jobs.length === 0) throw new JobNotFoundException();
+    else return jobs;
+  }
 
-        else return jobs
-    }
+  async findOne(id: number): Promise<Job | JobNotFoundException> {
+    const job = await this.jobRepository.findOne({
+      where: { id_job: id },
+    });
 
-    async findOne (id: number): Promise<Job | JobNotFoundException>   {
-        const job = await this.jobRepository.findOne({
-            where: { id_job: id}
-        })
+    if (!job) throw new JobNotFoundException();
+    else return job;
+  }
 
-        if (!job) throw new JobNotFoundException()
+  async findJobsByJobCategory(
+    categoryId: number,
+  ): Promise<Job[] | JobNotFoundException | CategoryNotFoundException> {
+    const category = await this.jobCategoryRepository.findOne({
+      where: { id_category: categoryId },
+    });
 
-        else return job
-    }
+    if (!category) throw new CategoryNotFoundException();
 
-    async findJobsByJobCategory (categoryId: number): Promise<Job[] | JobNotFoundException | CategoryNotFoundException>   {
-        const category = await this.jobCategoryRepository.findOne({
-            where: { id_category: categoryId }
-        })
+    const jobsOfGivenCategory = await this.jobRepository.find({
+      where: { job_category_id: categoryId },
+    });
 
-        if (!category) throw new CategoryNotFoundException()
+    if (!jobsOfGivenCategory) throw new JobNotFoundException();
+    else return jobsOfGivenCategory;
+  }
 
-        const jobsOfGivenCategory = await this.jobRepository.find({
-            where: { job_category_id: categoryId}
-        })
+  async findJobsByModality(
+    modality: 'presential' | 'hybrid' | 'remote',
+  ): Promise<Job[] | JobNotFoundException> {
+    const jobsByGivenModality = await this.jobRepository.find({
+      where: { modality: modality },
+    });
 
-        if (!jobsOfGivenCategory) throw new JobNotFoundException
-
-        else return jobsOfGivenCategory
-    }
-
-    async findJobsByModality (modality: "presential" | "hybrid" | "remote"): Promise<Job[] | JobNotFoundException>  {        
-        const jobsByGivenModality = await this.jobRepository.find({
-            where:  { modality: modality }
-        })
-
-        if (jobsByGivenModality.length === 0) throw new JobNotFoundException()
-
-        else return jobsByGivenModality
-    }
+    if (jobsByGivenModality.length === 0) throw new JobNotFoundException();
+    else return jobsByGivenModality;
+  }
 }

@@ -8,22 +8,20 @@ import { FindUFsResponseDTO } from '../domain/requests/FindUfs.request.dto';
 @Controller('ufs')
 @ApiTags('UFs')
 export class UfController {
-    constructor(
-        private readonly ufService: UfService
-    ) {}
+  constructor(private readonly ufService: UfService) {}
 
-    @Get()
-    @ApiResponse({
-        status: new UFNotFoundException().getStatus(),
-        description: new UFNotFoundException().message,
-        type: AllExceptionsFilterDTO
-    })
-    @ApiResponse({
-        status: HttpStatus.OK,
-        description: 'UFs encontradas',
-        type: FindUFsResponseDTO
-    })
-    async findAll(): Promise<any> {
-        return await this.ufService.findAll();
-    }
+  @Get()
+  @ApiResponse({
+    status: new UFNotFoundException().getStatus(),
+    description: new UFNotFoundException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'UFs encontradas',
+    type: FindUFsResponseDTO,
+  })
+  async findAll(): Promise<any> {
+    return await this.ufService.findAll();
+  }
 }

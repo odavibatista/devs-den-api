@@ -1,24 +1,24 @@
-import z, { ZodError } from 'zod'
+import z, { ZodError } from 'zod';
 
 const authConfigSchema = z.object({
   token: z.object({
     secret: z.string().default(''),
-    expiresIn: z.string().or(z.number()).default(1)
-  })
-})
+    expiresIn: z.string().or(z.number()).default(1),
+  }),
+});
 
-let authConfig: z.infer<typeof authConfigSchema> = {}
+let authConfig: z.infer<typeof authConfigSchema> = {};
 
 try {
   authConfig = authConfigSchema.parse({
     token: {
       secret: String(process.env.JWT_SECRET),
-      expiresIn: '6h'
-    }
-  })
+      expiresIn: '6h',
+    },
+  });
 } catch (error) {
   if (error instanceof ZodError) {
   }
 }
 
-export { authConfig }
+export { authConfig };

@@ -15,7 +15,7 @@ import { Skill } from '../skill/entity/skill.entity';
   ],
 
   providers: [JobService, JobCategory],
-    
-  controllers: [JobController]
+
+  controllers: [JobController],
 })
 export class JobModule {}

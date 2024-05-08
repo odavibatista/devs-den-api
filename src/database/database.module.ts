@@ -5,28 +5,27 @@ import { appConfigurations } from 'src/shared/config/app.config';
 
 @Global()
 @Module({
-    imports:    [
-        ConfigModule.forRoot({
-            envFilePath: ['.env'],
-            isGlobal: true
-        }),
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: ['.env'],
+      isGlobal: true,
+    }),
 
-        TypeOrmModule.forRootAsync({
-            imports: [ConfigModule],
-            useFactory: async () => ({
-                type: appConfigurations.DB_ENGINE as any,
-                host: appConfigurations.DB_HOST,
-                port: appConfigurations.DB_PORT,
-                username: appConfigurations.DB_USER,
-                password: appConfigurations.DB_PASSWORD,
-                database: appConfigurations.DB_DATABASE,
-                entities: [appConfigurations.DB_ENTITIES],
-                synchronize: appConfigurations.DB_SYNCHRONIZE,
-                logging: appConfigurations.DB_LOGGING,
-                logger: 'advanced-console',
-              }),
-    
-          })
-        ],
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async () => ({
+        type: appConfigurations.DB_ENGINE as any,
+        host: appConfigurations.DB_HOST,
+        port: appConfigurations.DB_PORT,
+        username: appConfigurations.DB_USER,
+        password: appConfigurations.DB_PASSWORD,
+        database: appConfigurations.DB_DATABASE,
+        entities: [appConfigurations.DB_ENTITIES],
+        synchronize: appConfigurations.DB_SYNCHRONIZE,
+        logging: appConfigurations.DB_LOGGING,
+        logger: 'advanced-console',
+      }),
+    }),
+  ],
 })
 export class DatabaseModule {}

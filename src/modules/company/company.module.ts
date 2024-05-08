@@ -1,13 +1,15 @@
 import { Module } from '@nestjs/common';
 import { CompanyService } from './service/company.service';
-import { ConjunctCompanyController, IndividualCompanyController } from './controller/company.controller';
+import {
+  ConjunctCompanyController,
+  IndividualCompanyController,
+} from './controller/company.controller';
 import { DatabaseModule } from 'src/database/database.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Company } from './entity/company.entity';
 import { User } from '../user/entity/user.entity';
 import { Address } from '../address/entity/address.entity';
 import { Uf } from '../uf/entity/uf.entity';
-
 
 @Module({
   imports: [

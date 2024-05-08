@@ -7,14 +7,14 @@ import { UfController } from './controller/uf.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-    imports: [
-        DatabaseModule,
-        UfModule,
-        UfSeeder,
-        Uf,
-        TypeOrmModule.forFeature([Uf]),
-    ],
-    providers: [UfService],
-    controllers: [UfController],
+  imports: [
+    DatabaseModule,
+    UfModule,
+    UfSeeder,
+    Uf,
+    TypeOrmModule.forFeature([Uf]),
+  ],
+  providers: [UfService],
+  controllers: [UfController],
 })
 export class UfModule {}

@@ -6,26 +6,24 @@ import { CategoryNotFoundException } from '../domain/errors/CategoryNotFound.exc
 
 @Injectable()
 export class JobCategoryService {
-    constructor(
-        @InjectRepository(JobCategory)
-        private jobCategoryRepository: Repository<JobCategory>,
-    )   {}
+  constructor(
+    @InjectRepository(JobCategory)
+    private jobCategoryRepository: Repository<JobCategory>,
+  ) {}
 
-    async findAll (): Promise<JobCategory[] | CategoryNotFoundException>  {
-        const jobCategories =  await this.jobCategoryRepository.find()
+  async findAll(): Promise<JobCategory[] | CategoryNotFoundException> {
+    const jobCategories = await this.jobCategoryRepository.find();
 
-        if(jobCategories.length === 0) throw new CategoryNotFoundException()
+    if (jobCategories.length === 0) throw new CategoryNotFoundException();
+    else return jobCategories;
+  }
 
-        else return jobCategories
-    }
+  async findOne(id: number): Promise<JobCategory | CategoryNotFoundException> {
+    const jobCategory = await this.jobCategoryRepository.findOne({
+      where: { id_category: id },
+    });
 
-    async findOne (id: number): Promise<JobCategory | CategoryNotFoundException>  {
-        const jobCategory = await this.jobCategoryRepository.findOne({
-            where: { id_category: id}
-        })
-
-        if (!jobCategory) throw new CategoryNotFoundException()
-
-        else return jobCategory
-    }
+    if (!jobCategory) throw new CategoryNotFoundException();
+    else return jobCategory;
+  }
 }

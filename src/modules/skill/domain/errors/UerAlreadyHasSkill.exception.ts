@@ -1,7 +1,7 @@
-import { HttpException, HttpStatus } from '@nestjs/common'
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 export class UserAlreadyHasSkillException extends HttpException {
   constructor() {
-    super('Usuário não encontrado.', HttpStatus.CONFLICT)
+    super('Usuário não encontrado.', HttpStatus.CONFLICT);
   }
 }

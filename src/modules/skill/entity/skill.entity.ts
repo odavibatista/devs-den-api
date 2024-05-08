@@ -1,50 +1,56 @@
 import { Job } from 'src/modules/job/entity/job.entity';
 import { Candidate } from 'src/modules/candidate/entity/candidate.entity';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
 
 @Entity()
 export class Skill {
-    @PrimaryGeneratedColumn()
-    id_skill: number
+  @PrimaryGeneratedColumn()
+  id_skill: number;
 
-    @Column({
-        length: 35
-    })
-    name: string
+  @Column({
+    length: 35,
+  })
+  name: string;
 
-    @ManyToMany(()  =>  Candidate, user => user.id_user)
-    @JoinTable({
-        name: 'user_skills',
-        joinColumn: {
-            name: 'skill_id',
-            referencedColumnName: 'id_skill'
-        },
-        inverseJoinColumn:  {
-            name: 'user_id',
-            referencedColumnName: 'id_user'
-        }
-    })
+  @ManyToMany(() => Candidate, (user) => user.id_user)
+  @JoinTable({
+    name: 'user_skills',
+    joinColumn: {
+      name: 'skill_id',
+      referencedColumnName: 'id_skill',
+    },
+    inverseJoinColumn: {
+      name: 'user_id',
+      referencedColumnName: 'id_user',
+    },
+  })
+  @ManyToMany(() => Job, (job) => job.id_job)
+  @JoinTable({
+    name: 'job_skills',
+    joinColumn: {
+      name: 'skill_id',
+      referencedColumnName: 'id_skill',
+    },
+    inverseJoinColumn: {
+      name: 'job_id',
+      referencedColumnName: 'id_job',
+    },
+  })
+  @CreateDateColumn({
+    nullable: false,
+  })
+  created_at: Date;
 
-    @ManyToMany(()  =>  Job, job => job.id_job)
-    @JoinTable({
-        name: 'job_skills',
-        joinColumn: {
-            name: 'skill_id',
-            referencedColumnName: 'id_skill'
-        },
-        inverseJoinColumn:  {
-            name: 'job_id',
-            referencedColumnName: 'id_job'
-        }
-    })
-
-    @CreateDateColumn({
-        nullable: false
-    })
-    created_at: Date
-
-    @UpdateDateColumn({
-        nullable: false
-    })
-    updated_at: Date
+  @UpdateDateColumn({
+    nullable: false,
+  })
+  updated_at: Date;
 }

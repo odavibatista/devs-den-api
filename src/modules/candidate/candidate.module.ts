@@ -9,11 +9,11 @@ import { User } from '../user/entity/user.entity';
 import { Uf } from '../uf/entity/uf.entity';
 
 @Module({
-  imports:  [
+  imports: [
     DatabaseModule,
     TypeOrmModule.forFeature([Candidate, Address, User, Uf]),
   ],
   providers: [CandidateService],
-  controllers: [CandidateController]
+  controllers: [CandidateController],
 })
 export class CandidateModule {}

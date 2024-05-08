@@ -1,7 +1,7 @@
-import { HttpException, HttpStatus } from '@nestjs/common'
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 export class UFNotFoundException extends HttpException {
   constructor() {
-    super('UF não encontrada.', HttpStatus.NOT_FOUND)
+    super('UF não encontrada.', HttpStatus.NOT_FOUND);
   }
 }
