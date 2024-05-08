@@ -22,15 +22,14 @@ import { HashProvider } from '../providers/hash.provider';
 @Injectable()
 export class UserService {
   constructor(
-    private hashProvider: HashProvider,
     @InjectRepository(User)
     private userRepository: Repository<User>,
     @InjectRepository(Candidate)
     private candidateRepository: Repository<Candidate>,
     @InjectRepository(Company)
     private companyRepository: Repository<Company>,
-
     private jwtProvider: JWTProvider,
+    private hashProvider: HashProvider,
   ) {}
 
   async findAll(): Promise<User[] | UserNotFoundException> {
@@ -125,19 +124,7 @@ export class UserService {
         return new UserNotFoundException();
       }
 
-      const isPasswordValid = loginDto.inserted_password === user.password;
-      /*
-      const isPasswordValid = await this.checkPassword(loginDto.inserted_password, user.password, (err, isSame) => {
-        if (!isSame) {
-          throw new WrongPasswordException()
-        }
-  
-        if (err) {
-          throw new HttpException('Erro ao verificar a senha.', HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-  
-        return true
-      });*/
+      const isPasswordValid: boolean = await this.hashProvider.compare(loginDto.inserted_password, user.password);
 
       if (!isPasswordValid) {
         return new WrongPasswordException();

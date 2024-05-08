@@ -68,16 +68,13 @@ export class CandidateService {
         throw new UFNotFoundException();
       }
 
-      const user: User = await this.userService.create({
+      await this.userService.create({
         email: params.credentials.email,
         password: params.credentials.password,
         role: 'candidate',
       })
 
-      console.log(user)
-
-
-      const address = await this.addressRepository.save({
+      await this.addressRepository.save({
         uf: uf,
         cep: params.address.cep,
         city: params.address.city,
@@ -90,12 +87,11 @@ export class CandidateService {
         where: { email: params.credentials.email },
       })
 
-      const candidate = await this.candidateRepository.save({
+      await this.candidateRepository.save({
         id_user: userToBeFound.id_user,
         name: params.name,
         gender: params.gender,
         birth_date: params.birth_date,
-        address_id: (await address).id_address,
       });
 
       const token = this.JwtProvider.generate({
@@ -108,8 +104,8 @@ export class CandidateService {
 
       const response = {
         user: {
-          id: candidate.id_user,
-          name: candidate.name,
+          id: userToBeFound.id_user,
+          name: params.name,
           role: 'candidate',
         },
         token: token,

@@ -10,14 +10,17 @@ import { Company } from './entity/company.entity';
 import { User } from '../user/entity/user.entity';
 import { Address } from '../address/entity/address.entity';
 import { Uf } from '../uf/entity/uf.entity';
+import { JWTProvider } from '../user/providers/JWT.provider';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
     DatabaseModule,
     CompanyModule,
     TypeOrmModule.forFeature([Company, User, Address, Uf]),
+    UserModule
   ],
   controllers: [ConjunctCompanyController, IndividualCompanyController],
-  providers: [CompanyService],
+  providers: [CompanyService, JWTProvider],
 })
 export class CompanyModule {}

@@ -13,10 +13,13 @@ import { emailValidate } from 'src/shared/utils/emailValidate';
 import { UnformattedPasswordException } from 'src/modules/user/domain/errors/UnformattedPassword.exception';
 import { UnformattedEmailException } from 'src/modules/user/domain/errors/UnformattedEmail.exception';
 import { InvalidCNPJException } from '../domain/errors/InvalidCNPJ.exception';
-import { RegisterCompanyBodyDTO } from '../domain/requests/RegisterCompany.request.dto';
+import { RegisterCompanyBodyDTO, RegisterCompanyResponseDTO } from '../domain/requests/RegisterCompany.request.dto';
 import { Address } from 'src/modules/address/entity/address.entity';
 import { Uf } from 'src/modules/uf/entity/uf.entity';
 import { UFNotFoundException } from 'src/modules/uf/domain/errors/UfNotFound.exception';
+import { JWTProvider } from 'src/modules/user/providers/JWT.provider';
+import { UserService } from 'src/modules/user/service/user.service';
+import { HashProvider } from 'src/modules/user/providers/hash.provider';
 
 @Injectable()
 export class CompanyService {
@@ -29,6 +32,9 @@ export class CompanyService {
     private readonly addressRepository: Repository<Address>,
     @InjectRepository(Uf)
     private readonly ufRepository: Repository<Uf>,
+    private readonly JwtProvider: JWTProvider,
+    private readonly userService: UserService,
+    private readonly hashProvider: HashProvider,
   ) {}
 
   async findAll(): Promise<Company[]> {
@@ -46,7 +52,7 @@ export class CompanyService {
   async create(
     params: RegisterCompanyBodyDTO,
   ): Promise<
-    | Company
+    | RegisterCompanyResponseDTO
     | EmailAlreadyRegisteredException
     | UnformattedPasswordException
     | CompanyNameAlreadyRegisteredException
@@ -97,13 +103,17 @@ export class CompanyService {
 
       if (!isCNPJValid) throw new InvalidCNPJException();
 
-      const user = await this.userRepository.save({
+      await this.userService.create({
         email: params.credentials.email,
         password: params.credentials.password,
         role: 'company',
       });
 
-      const address = await this.addressRepository.save({
+      const userToBeFound: User = await this.userRepository.findOne({
+        where: { email: params.credentials.email },
+      })
+
+      await this.addressRepository.save({
         uf: uf,
         cep: params.address.cep,
         city: params.address.city,
@@ -112,13 +122,28 @@ export class CompanyService {
         number: params.address.number,
       });
 
-      const createdCompany = await this.companyRepository.save({
-        id_user: user.id_user,
+      await this.companyRepository.save({
+        id_user: userToBeFound.id_user,
         name: params.company_name,
         cnpj: params.cnpj,
       });
 
-      return createdCompany;
+      const token = this.JwtProvider.generate({
+        payload: {
+          id: userToBeFound.id_user,
+          email: params.credentials.email,
+          role: params.credentials.role
+        }
+      })
+
+      return {
+        user: {
+          id: userToBeFound.id_user,
+          name: params.company_name,
+          role: 'company',
+        },
+        token: token,
+      };
     } catch (error) {
       throw new HttpException(error, error.status);
     }
