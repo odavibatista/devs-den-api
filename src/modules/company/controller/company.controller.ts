@@ -1,3 +1,4 @@
+import { Request, Response } from 'express';
 import {
   Body,
   Controller,
@@ -7,6 +8,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Req,
   Res,
 } from '@nestjs/common';
 import { CompanyService } from '../service/company.service';
@@ -24,11 +26,11 @@ import { InvalidCNPJException } from '../domain/errors/InvalidCNPJ.exception';
 import { EmailAlreadyRegisteredException } from 'src/modules/user/domain/errors/EmailAlreadyRegistered.exception';
 import { UnformattedEmailException } from 'src/modules/user/domain/errors/UnformattedEmail.exception';
 import { UnformattedPasswordException } from 'src/modules/user/domain/errors/UnformattedPassword.exception';
-import { Response } from 'express';
 import {
   RegisterCompanyBodyDTO,
   RegisterCompanyResponseDTO,
 } from '../domain/requests/RegisterCompany.request.dto';
+import { IGetUserAuthInfoRequest } from 'src/shared/utils/IGetUserAuthInfoRequest';
 
 @Controller('companies')
 @ApiTags('Empresas')
@@ -145,7 +147,11 @@ export class IndividualCompanyController {
     description: 'Empresa deletada com sucesso',
     type: DeleteCompanyResponseDTO,
   })
-  async delete(@Param('company_id') id: number): Promise<any> {
+  async delete(
+    @Req() req: IGetUserAuthInfoRequest,
+    @Res()  res: Response,
+    @Param('company_id') id: number): Promise<any> {
+    const user = req.user
     return this.companyService.delete(id);
   }
 }

@@ -1,12 +1,13 @@
 export type JWTProviderDTO = {
   payload: {
-    [key: string]: any;
-  };
-  secret?: string;
-  expiresIn?: number | string;
-};
+    id: number,
+    role: string
+  }
+  secret?: string
+  expiresIn?: number | string
+}
 
 export interface JWTValidateDTO {
-  token: string;
-  secret: string;
+  token: string
+  secret: string
 }

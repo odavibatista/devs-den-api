@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { CompanyService } from './service/company.service';
 import {
   ConjunctCompanyController,
@@ -12,6 +12,7 @@ import { Address } from '../address/entity/address.entity';
 import { Uf } from '../uf/entity/uf.entity';
 import { JWTProvider } from '../user/providers/JWT.provider';
 import { UserModule } from '../user/user.module';
+import { AuthenticationMiddleware } from '../user/middlewares/Auth.middleware';
 
 @Module({
   imports: [
@@ -23,4 +24,8 @@ import { UserModule } from '../user/user.module';
   controllers: [ConjunctCompanyController, IndividualCompanyController],
   providers: [CompanyService, JWTProvider],
 })
-export class CompanyModule {}
+export class CompanyModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+      consumer.apply(AuthenticationMiddleware).forRoutes(IndividualCompanyController)
+  }
+}
