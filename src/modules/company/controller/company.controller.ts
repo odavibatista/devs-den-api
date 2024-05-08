@@ -1,3 +1,4 @@
+
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Res } from '@nestjs/common';
 import { CompanyService } from '../service/company.service';
 import { Company } from '../entity/company.entity';
@@ -16,6 +17,7 @@ import { UnformattedEmailException } from 'src/modules/user/domain/errors/Unform
 import { UnformattedPasswordException } from 'src/modules/user/domain/errors/UnformattedPassword.exception';
 import { Response } from 'express';
 import { RegisterCompanyBodyDTO, RegisterCompanyResponseDTO } from '../domain/requests/RegisterCompany.request.dto';
+
 
 
 @Controller('companies')

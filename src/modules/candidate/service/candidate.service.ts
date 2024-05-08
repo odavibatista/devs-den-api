@@ -14,6 +14,7 @@ import { JWTProvider } from 'src/modules/user/providers/JWT.provider';
 import { passwordValidate } from 'src/shared/utils/passwordValidate';
 import { emailValidate } from 'src/shared/utils/emailValidate';
 
+
 @Injectable()
 export class CandidateService {
     constructor(

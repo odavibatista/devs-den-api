@@ -104,5 +104,3 @@ import { FindUserResponseDTO } from '../domain/requests/FindUser.request.dto';
       }
     }
   }
-  
-  

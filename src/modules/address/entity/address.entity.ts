@@ -1,6 +1,7 @@
 import { Uf } from "src/modules/uf/entity/uf.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
+
 @Entity()
 export class Address  {
     @PrimaryGeneratedColumn({})

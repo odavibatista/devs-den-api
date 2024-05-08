@@ -8,6 +8,7 @@ import { User } from '../user/entity/user.entity';
 import { Address } from '../address/entity/address.entity';
 import { Uf } from '../uf/entity/uf.entity';
 
+
 @Module({
   imports: [
     DatabaseModule,

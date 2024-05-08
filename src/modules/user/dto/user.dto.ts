@@ -38,6 +38,5 @@ export class LoginDTO   {
     readonly email: string
 
     @IsString()
-    @Length(10, 255)
     readonly inserted_password: string
 }
