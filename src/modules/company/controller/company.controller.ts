@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import {
   Body,
   Controller,
@@ -14,7 +14,7 @@ import {
 import { CompanyService } from '../service/company.service';
 import { Company } from '../entity/company.entity';
 import { CompanyNotFoundException } from '../domain/errors/CompanyNotFound.exception';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AllExceptionsFilterDTO } from 'src/shared/domain/dtos/errors/AllException.filter.dto';
 import { BadTokenException } from 'src/modules/user/domain/errors/BadToken.exception';
 import { NotAuthenticatedException } from 'src/modules/user/domain/errors/NotAuthenticated.exception';
@@ -53,7 +53,7 @@ export class ConjunctCompanyController {
     description: new NotAuthenticatedException().message,
     type: AllExceptionsFilterDTO,
   })
-  async findAll(): Promise<any[]> {
+  async findAll(): Promise<Company[]> {
     return this.companyService.findAll();
   }
 }
@@ -147,11 +147,28 @@ export class IndividualCompanyController {
     description: 'Empresa deletada com sucesso',
     type: DeleteCompanyResponseDTO,
   })
+  @ApiBearerAuth('user-token')
   async delete(
     @Req() req: IGetUserAuthInfoRequest,
     @Res()  res: Response,
-    @Param('company_id') id: number): Promise<any> {
+    @Param('company_id') id: number): Promise<DeleteCompanyResponseDTO | NotAuthenticatedException | BadTokenException | any /* Remove this 'any' later when the delete company service is optimized */> {
     const user = req.user
-    return this.companyService.delete(id);
+
+    if (!user)  {
+      throw new NotAuthenticatedException();
+    }
+    
+    const result = await this.companyService.delete(id);
+
+    if (result instanceof HttpException) {
+      return res.status(result.getStatus()).json({
+        message: result.message,
+        status: result.getStatus(),
+      });
+    } else {
+      return res.status(HttpStatus.NO_CONTENT).json({
+        message: `A empresa com o ID ${id} foi deletada com sucesso`
+      });
+    }
   }
 }
