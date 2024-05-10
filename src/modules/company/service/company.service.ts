@@ -147,20 +147,19 @@ export class CompanyService {
     }
   }
 
-  // NEEDS TO BE FIXED, PROVISORY ONLY
-  async delete(id: number): Promise<Company> {
+  async delete(id: number): Promise<string | CompanyNotFoundException> {
     try {
-      const company = this.companyRepository.findOne({
-        where: { id_user: id },
+      const company = await this.companyRepository.findOne({
+        where: { id_user: id, deleted_at: null },
       });
 
       if (!company) throw new CompanyNotFoundException();
 
-      await this.companyRepository.delete({
-        id_user: id,
-      });
+      company.deleted_at = new Date().toISOString();
 
-      return company;
+      await this.companyRepository.save(company);
+
+      return company.name
     } catch (error) {
       throw new HttpException(error, error.status);
     }

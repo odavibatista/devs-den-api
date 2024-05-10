@@ -49,6 +49,11 @@ export class Candidate {
   })
   address_id: number;
 
+  @Column({
+    nullable: true
+  })
+  deleted_at: string;
+
   @ManyToMany(() => Skill, (skill) => skill.id_skill)
   @CreateDateColumn({
     nullable: false,

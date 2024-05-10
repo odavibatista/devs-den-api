@@ -17,6 +17,7 @@ import { JWTProvider } from 'src/modules/user/providers/JWT.provider';
 import { passwordValidate } from 'src/shared/utils/passwordValidate';
 import { emailValidate } from 'src/shared/utils/emailValidate';
 import { UserService } from 'src/modules/user/service/user.service';
+import { CandidateNotFoundException } from '../domain/errors/CandidateNotFound.exception';
 
 @Injectable()
 export class CandidateService {
@@ -111,6 +112,24 @@ export class CandidateService {
       };
 
       return response;
+    } catch (error) {
+      throw new HttpException(error, error.status);
+    }
+  }
+
+  async delete(id: number): Promise<string | CandidateNotFoundException> {
+    try {
+      const candidate = await this.candidateRepository.findOne({
+        where: { id_user: id, deleted_at: null },
+      });
+
+      if (!candidate) throw new CandidateNotFoundException();
+
+      candidate.deleted_at = new Date().toISOString();
+
+      await this.candidateRepository.save(candidate);
+
+      return candidate.name
     } catch (error) {
       throw new HttpException(error, error.status);
     }
