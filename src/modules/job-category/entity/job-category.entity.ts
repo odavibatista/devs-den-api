@@ -16,6 +16,11 @@ export class JobCategory {
   })
   name: string;
 
+  @Column({
+    length: 300
+  })
+  image_url: string
+  
   @CreateDateColumn({
     nullable: false,
   })

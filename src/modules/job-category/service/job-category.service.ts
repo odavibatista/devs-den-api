@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { JobCategory } from '../entity/job-category.entity';
 import { Repository } from 'typeorm';
 import { CategoryNotFoundException } from '../domain/errors/CategoryNotFound.exception';
+import { FindJobCategoriesResponseDTO } from '../domain/requests/FindJobCategories.request.dto';
 
 @Injectable()
 export class JobCategoryService {
@@ -11,7 +12,7 @@ export class JobCategoryService {
     private jobCategoryRepository: Repository<JobCategory>,
   ) {}
 
-  async findAll(): Promise<JobCategory[] | CategoryNotFoundException> {
+  async findAll(): Promise<FindJobCategoriesResponseDTO | CategoryNotFoundException> {
     const jobCategories = await this.jobCategoryRepository.find();
 
     if (jobCategories.length === 0) throw new CategoryNotFoundException();
