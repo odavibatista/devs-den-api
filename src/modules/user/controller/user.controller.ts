@@ -21,12 +21,11 @@ import {
   LoginUserBodyDTO,
   LoginUserResponseDTO,
 } from '../domain/requests/LoginUser.request.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { FindUserResponseDTO } from '../domain/requests/FindUser.request.dto';
 import { CompanyNotFoundException } from 'src/modules/company/domain/errors/CompanyNotFound.exception';
 import { NotAuthenticatedException } from '../domain/errors/NotAuthenticated.exception';
 import { BadTokenException } from '../domain/errors/BadToken.exception';
-import { IGetUserAuthInfoRequest } from 'src/shared/utils/IGetUserAuthInfoRequest';
 import { CompanyService } from 'src/modules/company/service/company.service';
 import { CandidateService } from 'src/modules/candidate/service/candidate.service';
 
@@ -139,16 +138,19 @@ export class UserController {
     description: 'Usuário deletado com sucesso',
     type: FindUserResponseDTO, // -> needs to be fixed
   })
-  @ApiBearerAuth('user-token')
   async delete(
-    @Req() req: IGetUserAuthInfoRequest,
+    @Req() req: Request,
     @Res()  res: Response,
     @Param('id') id: number,
   ): Promise<any> {
       const user = req.user
 
-      if (user.id !== id) {
-        throw new NotAuthenticatedException()
+      console.log(user)
+      console.log(typeof user.id)
+      console.log(typeof id)
+
+      if (user.id != id) {
+        throw new BadTokenException()
       }
 
       if (user.role === 'company') {

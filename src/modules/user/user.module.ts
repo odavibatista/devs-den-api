@@ -27,11 +27,8 @@ import { AuthenticationMiddleware } from './middlewares/Auth.middleware';
 })
 export class UserModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthenticationMiddleware).exclude(
-      {
-        path: 'login',
-        method: RequestMethod.ALL,
-      },
-  )
-}
+    consumer.apply(AuthenticationMiddleware).forRoutes(
+      { path: 'user/:id/delete', method: RequestMethod.DELETE },
+    )
+  }
 }

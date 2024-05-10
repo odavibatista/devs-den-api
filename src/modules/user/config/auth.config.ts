@@ -12,7 +12,7 @@ let authConfig: z.infer<typeof authConfigSchema> = {};
 try {
   authConfig = authConfigSchema.parse({
     token: {
-      secret: String(process.env.JWT_SECRET),
+      secret: String(process.env.JWT_KEY),
       expiresIn: '6h',
     },
   });

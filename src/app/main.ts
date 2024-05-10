@@ -3,7 +3,6 @@ import { AppModule } from './app.module';
 import { patchNestJsSwagger } from 'nestjs-zod';
 import { SwaggerModule } from '@nestjs/swagger';
 import { sharedSwaggerConfig } from '../shared/config/swagger.config';
-import { HttpException, HttpStatus, ValidationPipe } from '@nestjs/common';
 import * as cors from 'cors';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
