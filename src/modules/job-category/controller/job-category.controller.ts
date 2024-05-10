@@ -44,7 +44,7 @@ export class JobCategoryController {
         type: FindJobCategoryResponseDTO,
     })
     @ApiBearerAuth('user-token')
-    @Get(':id')
+    @Get(':id/find')
     async findOne(@Param('id') id: number): Promise<FindJobCategoryResponseDTO | CategoryNotFoundException> {
         const result = await this.jobCategoriesService.findOne(id)
 

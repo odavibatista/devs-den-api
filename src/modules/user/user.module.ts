@@ -12,14 +12,15 @@ import { HashProvider } from './providers/hash.provider';
 import { CompanyModule } from '../company/company.module';
 import { CandidateModule } from '../candidate/candidate.module';
 import { AuthenticationMiddleware } from './middlewares/Auth.middleware';
+import { JobCategoryModule } from '../job-category/job-category.module';
 
 @Module({
   imports: [
     DatabaseModule,
     TypeOrmModule.forFeature([User, Address, Candidate, Company]),
     forwardRef(() => CandidateModule),
-    forwardRef(() => CompanyModule)
-    
+    forwardRef(() => CompanyModule),
+    forwardRef(() => JobCategoryModule),
   ],
   controllers: [UserController],
   providers: [UserService, JWTProvider, HashProvider],
