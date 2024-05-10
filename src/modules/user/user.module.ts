@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseModule } from 'src/database/database.module';
 import { User } from './entity/user.entity';
@@ -9,11 +9,16 @@ import { JWTProvider } from './providers/JWT.provider';
 import { Candidate } from '../candidate/entity/candidate.entity';
 import { Company } from '../company/entity/company.entity';
 import { HashProvider } from './providers/hash.provider';
+import { CompanyModule } from '../company/company.module';
+import { CandidateModule } from '../candidate/candidate.module';
 
 @Module({
   imports: [
     DatabaseModule,
     TypeOrmModule.forFeature([User, Address, Candidate, Company]),
+    forwardRef(() => CandidateModule),
+    forwardRef(() => CompanyModule)
+    
   ],
   controllers: [UserController],
   providers: [UserService, JWTProvider, HashProvider],

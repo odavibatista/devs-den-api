@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod, forwardRef } from '@nestjs/common';
 import { CompanyService } from './service/company.service';
 import {
   ConjunctCompanyController,
@@ -19,13 +19,23 @@ import { AuthenticationMiddleware } from '../user/middlewares/Auth.middleware';
     DatabaseModule,
     CompanyModule,
     TypeOrmModule.forFeature([Company, User, Address, Uf]),
-    UserModule
+    forwardRef(() => UserModule),
   ],
   controllers: [ConjunctCompanyController, IndividualCompanyController],
   providers: [CompanyService, JWTProvider],
+  exports: [CompanyService],
 })
 export class CompanyModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-      consumer.apply(AuthenticationMiddleware).forRoutes(IndividualCompanyController)
+      consumer.apply(AuthenticationMiddleware).exclude(
+        {
+          path: 'companies/browse',
+          method: RequestMethod.ALL,
+        },
+        {
+          path: 'company/create',
+          method: RequestMethod.ALL,
+        },
+    )
   }
 }

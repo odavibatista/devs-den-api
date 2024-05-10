@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { CandidateService } from './service/candidate.service';
 import { CandidateController } from './controller/candidate.controller';
 import { DatabaseModule } from 'src/database/database.module';
@@ -14,9 +14,10 @@ import { JWTProvider } from '../user/providers/JWT.provider';
   imports: [
     DatabaseModule,
     TypeOrmModule.forFeature([Candidate, Address, User, Uf]),
-    UserModule,
+    forwardRef(() => UserModule),
   ],
   providers: [CandidateService, JWTProvider],
   controllers: [CandidateController],
+  exports: [CandidateService],
 })
 export class CandidateModule {}

@@ -8,12 +8,12 @@ import {
   Param,
   Post,
   Put,
+  Req,
   Res,
 } from '@nestjs/common';
 import { UserService } from '../service/user.service';
-import { JWTProvider } from '../providers/JWT.provider';
 import { UserNotFoundException } from '../domain/errors/UserNotFound.exception';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AllExceptionsFilterDTO } from 'src/shared/domain/dtos/errors/AllException.filter.dto';
 import { UnformattedEmailException } from '../domain/errors/UnformattedEmail.exception';
 import { WrongPasswordException } from '../domain/errors/WrongPassword.exception';
@@ -23,13 +23,20 @@ import {
 } from '../domain/requests/LoginUser.request.dto';
 import { Response } from 'express';
 import { FindUserResponseDTO } from '../domain/requests/FindUser.request.dto';
+import { CompanyNotFoundException } from 'src/modules/company/domain/errors/CompanyNotFound.exception';
+import { NotAuthenticatedException } from '../domain/errors/NotAuthenticated.exception';
+import { BadTokenException } from '../domain/errors/BadToken.exception';
+import { IGetUserAuthInfoRequest } from 'src/shared/utils/IGetUserAuthInfoRequest';
+import { CompanyService } from 'src/modules/company/service/company.service';
+import { CandidateService } from 'src/modules/candidate/service/candidate.service';
 
 @Controller('user')
 @ApiTags('Usuário')
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    private JwtProvider: JWTProvider,
+    private readonly companyService: CompanyService,
+    private readonly candidateService: CandidateService,
   ) {}
 
   @Get(':id')
@@ -91,7 +98,6 @@ export class UserController {
     @Res() res: Response,
     @Body() body: LoginUserBodyDTO,
   ): Promise<LoginUserResponseDTO | AllExceptionsFilterDTO> {
-    try {
       const result = await this.userService.login(body);
 
       if (result instanceof HttpException) {
@@ -102,8 +108,61 @@ export class UserController {
       } else {
         return res.status(HttpStatus.OK).json(result);
       }
-    } catch (error) {
-      return error.getStatus();
-    }
+  }
+
+  @Delete('delete/:id')
+  @ApiResponse({
+    status: new UserNotFoundException().getStatus(),
+    description: new UserNotFoundException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new CompanyNotFoundException().getStatus(),
+    description: new CompanyNotFoundException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new NotAuthenticatedException().getStatus(),
+    description: new NotAuthenticatedException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new BadTokenException().getStatus(),
+    description: new BadTokenException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  
+  @ApiResponse({
+    status: 204,
+    description: 'Usuário deletado com sucesso',
+    type: FindUserResponseDTO,
+  })
+  @ApiBearerAuth('user-token')
+  async delete(
+    @Req() req: IGetUserAuthInfoRequest,
+    @Res()  res: Response,
+    @Param('id') id: number,
+  ): Promise<any> {
+      const user = req.user
+
+      if (user.id !== id) {
+        throw new NotAuthenticatedException()
+      }
+
+      if (user.role === 'company') {
+        await this.userService.delete(id)
+
+        await this.companyService.delete(id)
+
+        return res.status(HttpStatus.NO_CONTENT).json()
+      }
+
+      if (user.role === 'candidate') {
+        await this.userService.delete(id)
+
+        await this.candidateService.delete(id)
+
+        return res.status(HttpStatus.NO_CONTENT).json()
+      }
   }
 }
