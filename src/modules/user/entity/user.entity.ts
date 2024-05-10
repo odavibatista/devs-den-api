@@ -12,7 +12,7 @@ export enum Role {
 }
 
 @Entity()
-export class User {
+class Users {
   @PrimaryGeneratedColumn()
   id_user: number;
 
@@ -50,3 +50,5 @@ export class User {
   })
   updated_at: Date;
 }
+
+export { Users as User };

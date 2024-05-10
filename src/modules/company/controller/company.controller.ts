@@ -30,7 +30,6 @@ import {
   RegisterCompanyBodyDTO,
   RegisterCompanyResponseDTO,
 } from '../domain/requests/RegisterCompany.request.dto';
-import { IGetUserAuthInfoRequest } from 'src/shared/utils/IGetUserAuthInfoRequest';
 
 @Controller('companies')
 @ApiTags('Empresas')
@@ -62,7 +61,7 @@ export class ConjunctCompanyController {
 @ApiTags('Empresas')
 export class IndividualCompanyController {
   constructor(private readonly companyService: CompanyService) {}
-  @Post('/create')
+  @Post('/register')
   @ApiResponse({
     status: new CNPJAlreadyRegisteredException().getStatus(),
     description: new CNPJAlreadyRegisteredException().message,
@@ -109,7 +108,7 @@ export class IndividualCompanyController {
     }
   }
 
-  @Get(':id')
+  @Get(':id/search')
   @ApiResponse({
     status: new CompanyNotFoundException().getStatus(),
     description: new CompanyNotFoundException().message,
@@ -126,49 +125,4 @@ export class IndividualCompanyController {
     return this.companyService.findOne(id);
   }
 
-  @Delete(':company_id/delete')
-  @ApiResponse({
-    status: new CompanyNotFoundException().getStatus(),
-    description: new CompanyNotFoundException().message,
-    type: AllExceptionsFilterDTO,
-  })
-  @ApiResponse({
-    status: new BadTokenException().getStatus(),
-    description: new BadTokenException().message,
-    type: AllExceptionsFilterDTO,
-  })
-  @ApiResponse({
-    status: new NotAuthenticatedException().getStatus(),
-    description: new NotAuthenticatedException().message,
-    type: AllExceptionsFilterDTO,
-  })
-  @ApiResponse({
-    status: 204,
-    description: 'Empresa deletada com sucesso',
-    type: DeleteCompanyResponseDTO,
-  })
-  @ApiBearerAuth('user-token')
-  async delete(
-    @Req() req: IGetUserAuthInfoRequest,
-    @Res()  res: Response,
-    @Param('company_id') id: number): Promise<DeleteCompanyResponseDTO | NotAuthenticatedException | BadTokenException | any /* Remove this 'any' later when the delete company service is optimized */> {
-    const user = req.user
-
-    if (!user)  {
-      throw new NotAuthenticatedException();
-    }
-    
-    const result = await this.companyService.delete(id);
-
-    if (result instanceof HttpException) {
-      return res.status(result.getStatus()).json({
-        message: result.message,
-        status: result.getStatus(),
-      });
-    } else {
-      return res.status(HttpStatus.NO_CONTENT).json({
-        message: `A empresa com o ID ${id} foi deletada com sucesso`
-      });
-    }
-  }
 }

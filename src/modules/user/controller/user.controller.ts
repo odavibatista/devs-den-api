@@ -39,7 +39,7 @@ export class UserController {
     private readonly candidateService: CandidateService,
   ) {}
 
-  @Get(':id')
+  @Get(':id/search')
   @ApiBearerAuth('user-token')
   @ApiResponse({
     status: new UserNotFoundException().getStatus(),
@@ -111,7 +111,7 @@ export class UserController {
       }
   }
 
-  @Delete('delete/:id')
+  @Delete(':id/delete')
   @ApiBearerAuth('user-token')
   @ApiResponse({
     status: new UserNotFoundException().getStatus(),
@@ -137,7 +137,7 @@ export class UserController {
   @ApiResponse({
     status: 204,
     description: 'Usuário deletado com sucesso',
-    type: FindUserResponseDTO,
+    type: FindUserResponseDTO, // -> needs to be fixed
   })
   @ApiBearerAuth('user-token')
   async delete(

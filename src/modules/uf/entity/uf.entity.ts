@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class Uf {
+class Ufs {
   @PrimaryGeneratedColumn()
   id_uf: number;
 
@@ -31,3 +31,5 @@ export class Uf {
   })
   updated_at: Date;
 }
+
+export { Ufs as Uf };

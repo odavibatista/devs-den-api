@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class JobCategory {
+class JobCategories {
   @PrimaryGeneratedColumn()
   id_category: number;
 
@@ -31,3 +31,5 @@ export class JobCategory {
   })
   updated_at: Date;
 }
+
+export { JobCategories as JobCategory }

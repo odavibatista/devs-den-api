@@ -17,7 +17,7 @@ enum Gender {
 }
 
 @Entity()
-export class Candidate {
+class Candidates {
   @PrimaryColumn()
   @OneToOne(() => User, (user) => user.id_user, {
     nullable: false,
@@ -65,3 +65,5 @@ export class Candidate {
   })
   updated_at: Date;
 }
+
+export { Candidates as Candidate }
