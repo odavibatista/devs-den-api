@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-enum Role {
+export enum Role {
   COMPANY = 'company',
   CANDIDATE = 'candidate',
 }
@@ -34,6 +34,11 @@ export class User {
     enumName: 'role',
   })
   role: string;
+
+  @Column({
+    nullable: true,
+  })
+  deleted_at: string;
 
   @CreateDateColumn({
     nullable: false,

@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entity/user.entity';
 import { CreateUserDTO } from '../dto/user.dto';
-import * as bcrypt from 'bcrypt';
 import { JWTProvider } from '../providers/JWT.provider';
 import { UserNotFoundException } from '../domain/errors/UserNotFound.exception';
 import { EmailAlreadyRegisteredException } from '../domain/errors/EmailAlreadyRegistered.exception';
@@ -18,6 +17,8 @@ import { Candidate } from 'src/modules/candidate/entity/candidate.entity';
 import { Company } from 'src/modules/company/entity/company.entity';
 import { FindUserResponseDTO } from '../domain/requests/FindUser.request.dto';
 import { HashProvider } from '../providers/hash.provider';
+import { NotAuthenticatedException } from '../domain/errors/NotAuthenticated.exception';
+import { BadTokenException } from '../domain/errors/BadToken.exception';
 
 @Injectable()
 export class UserService {
@@ -170,18 +171,21 @@ export class UserService {
     }
   }
 
-  /* TO BE REMOVED */
-  public async checkPassword(
-    password: string,
-    otherPassword: string,
-    callbackfn: (err?: Error, isSame?: boolean) => void,
-  ) {
-    bcrypt.compare(password, otherPassword, (err, isSame) => {
-      if (err) {
-        callbackfn(err);
-      } else {
-        callbackfn(err, isSame);
-      }
-    });
+  public async delete(id: number): Promise<number | UserNotFoundException | NotAuthenticatedException | BadTokenException> {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { id_user: id, deleted_at: null },
+      })
+
+      if (!user) throw new UserNotFoundException();
+
+      user.deleted_at = new Date().toISOString();
+
+      await this.userRepository.save(user);
+
+      return user.id_user
+    } catch (error) {
+      throw new HttpException(error, error.status);
+    }
   }
 }

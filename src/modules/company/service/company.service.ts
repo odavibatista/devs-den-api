@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Company } from '../entity/company.entity';
 import { Repository } from 'typeorm';
@@ -34,7 +34,6 @@ export class CompanyService {
     private readonly ufRepository: Repository<Uf>,
     private readonly JwtProvider: JWTProvider,
     private readonly userService: UserService,
-    private readonly hashProvider: HashProvider,
   ) {}
 
   async findAll(): Promise<Company[]> {
