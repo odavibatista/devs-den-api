@@ -40,6 +40,7 @@ export class UserController {
   ) {}
 
   @Get(':id')
+  @ApiBearerAuth('user-token')
   @ApiResponse({
     status: new UserNotFoundException().getStatus(),
     description: new UserNotFoundException().message,
@@ -111,6 +112,7 @@ export class UserController {
   }
 
   @Delete('delete/:id')
+  @ApiBearerAuth('user-token')
   @ApiResponse({
     status: new UserNotFoundException().getStatus(),
     description: new UserNotFoundException().message,

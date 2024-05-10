@@ -4,14 +4,12 @@ import { JWTProvider } from '../providers/JWT.provider'
 import { BadTokenException } from '../domain/errors/BadToken.exception'
 import { NotAuthenticatedException } from '../domain/errors/NotAuthenticated.exception'
 import { IGetUserAuthInfoRequest } from 'src/shared/utils/IGetUserAuthInfoRequest'
-import { UserService } from '../service/user.service'
 import { JwtPayload } from 'jsonwebtoken'
 
 @Injectable()
 export class AuthenticationMiddleware implements NestMiddleware {
   constructor(
     private jwtProvider: JWTProvider,
-    private userService: UserService
   ) {}
   async use(req: IGetUserAuthInfoRequest, _res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization
@@ -28,10 +26,11 @@ export class AuthenticationMiddleware implements NestMiddleware {
         secret: String(process.env.JWT_KEY),
       })
 
-      const { id, role } = decoded as JwtPayload
+      const { id, name, role } = decoded as JwtPayload
 
       req.user = {
         id,
+        name,
         role
       }
 

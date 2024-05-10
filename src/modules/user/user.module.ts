@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseModule } from 'src/database/database.module';
 import { User } from './entity/user.entity';
@@ -11,6 +11,7 @@ import { Company } from '../company/entity/company.entity';
 import { HashProvider } from './providers/hash.provider';
 import { CompanyModule } from '../company/company.module';
 import { CandidateModule } from '../candidate/candidate.module';
+import { AuthenticationMiddleware } from './middlewares/Auth.middleware';
 
 @Module({
   imports: [
@@ -24,4 +25,13 @@ import { CandidateModule } from '../candidate/candidate.module';
   providers: [UserService, JWTProvider, HashProvider],
   exports: [JWTProvider, HashProvider, UserService],
 })
-export class UserModule {}
+export class UserModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthenticationMiddleware).exclude(
+      {
+        path: 'login',
+        method: RequestMethod.ALL,
+      },
+  )
+}
+}
