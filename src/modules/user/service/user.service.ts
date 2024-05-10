@@ -45,10 +45,10 @@ export class UserService {
   ): Promise<FindUserResponseDTO | UserNotFoundException> {
     try {
       const user = await this.userRepository.findOne({
-        where: { id_user: id },
+        where: { id_user: id }
       });
   
-      if (!user) {
+      if (!user || user.deleted_at !== null) {
         throw new UserNotFoundException();
       }
   
@@ -74,7 +74,7 @@ export class UserService {
         id: user.id_user,
         email: user.email,
         name: name,
-        role: user.role,
+        role: user.role
       };
     } catch (error) {
       throw new HttpException(error, error.status);

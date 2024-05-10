@@ -27,14 +27,10 @@ import { AuthenticationMiddleware } from '../user/middlewares/Auth.middleware';
 })
 export class CompanyModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-      consumer.apply(AuthenticationMiddleware).exclude(
+      consumer.apply(AuthenticationMiddleware).forRoutes(
         {
-          path: 'companies/browse',
-          method: RequestMethod.ALL,
-        },
-        {
-          path: 'company/create',
-          method: RequestMethod.ALL,
+          path: 'company/:id/search',
+          method: RequestMethod.GET,
         },
     )
   }

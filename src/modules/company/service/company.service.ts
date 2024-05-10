@@ -19,7 +19,6 @@ import { Uf } from 'src/modules/uf/entity/uf.entity';
 import { UFNotFoundException } from 'src/modules/uf/domain/errors/UfNotFound.exception';
 import { JWTProvider } from 'src/modules/user/providers/JWT.provider';
 import { UserService } from 'src/modules/user/service/user.service';
-import { HashProvider } from 'src/modules/user/providers/hash.provider';
 
 @Injectable()
 export class CompanyService {

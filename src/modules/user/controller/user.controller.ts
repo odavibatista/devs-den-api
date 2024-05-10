@@ -132,7 +132,6 @@ export class UserController {
     description: new BadTokenException().message,
     type: AllExceptionsFilterDTO,
   })
-  
   @ApiResponse({
     status: 204,
     description: 'Usuário deletado com sucesso',

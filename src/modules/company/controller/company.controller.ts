@@ -18,7 +18,6 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AllExceptionsFilterDTO } from 'src/shared/domain/dtos/errors/AllException.filter.dto';
 import { BadTokenException } from 'src/modules/user/domain/errors/BadToken.exception';
 import { NotAuthenticatedException } from 'src/modules/user/domain/errors/NotAuthenticated.exception';
-import { DeleteCompanyResponseDTO } from '../domain/requests/DeleteCompany.request.dto';
 import { FindCompaniesResponseDTO } from '../domain/requests/FindCompanies.request.dto';
 import { FindCompanyResponseDTO } from '../domain/requests/FindCompanies.request.dto';
 import { CNPJAlreadyRegisteredException } from '../domain/errors/CNPJAlreadyRegistered.exception';
@@ -109,6 +108,7 @@ export class IndividualCompanyController {
   }
 
   @Get(':id/search')
+  @ApiBearerAuth('user-token')
   @ApiResponse({
     status: new CompanyNotFoundException().getStatus(),
     description: new CompanyNotFoundException().message,
