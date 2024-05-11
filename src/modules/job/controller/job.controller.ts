@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JobService } from '../service/job.service';
 import { JobNotFoundException } from '../domain/errors/JobNotFound.exception';
 import { Request, Response } from 'express';
@@ -47,6 +47,7 @@ export class ConjunctJobsController {
 export class IndividualJobController {
     constructor(private readonly jobService: JobService) {}
 
+    @ApiBearerAuth('user-token')
     @ApiResponse({
         status: new JobNotFoundException().getStatus(),
         description: new JobNotFoundException().message,
