@@ -29,4 +29,4 @@ class Skills {
   updated_at: Date;
 }
 
-export { Skills as Skill }
+export { Skills as Skill };

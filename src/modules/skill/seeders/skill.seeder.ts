@@ -10,138 +10,138 @@ export default class SkillSeeder implements Seeder {
     const repository = dataSource.getRepository(Skill);
     const skills = [
       {
-        name: 'Java'
+        name: 'Java',
       },
       {
-        name: 'HTML'
+        name: 'HTML',
       },
       {
-        name: 'CSS'
+        name: 'CSS',
       },
       {
-        name: 'Javascript'
+        name: 'Javascript',
       },
       {
-        name: 'Typescript'
+        name: 'Typescript',
       },
       {
-        name: 'React'
+        name: 'React',
       },
       {
-        name: 'Angular'
+        name: 'Angular',
       },
       {
-        name: 'Vue'
+        name: 'Vue',
       },
       {
-        name: 'Node'
+        name: 'Node',
       },
       {
-        name: 'Python'
+        name: 'Python',
       },
       {
-        name: 'Django'
+        name: 'Django',
       },
       {
-        name: "C#"
+        name: 'C#',
       },
       {
-        name: 'C++'
+        name: 'C++',
       },
       {
-        name: '.NET'
+        name: '.NET',
       },
       {
-        name: 'Ruby'
+        name: 'Ruby',
       },
       {
-        name: 'Ruby on Rails'
+        name: 'Ruby on Rails',
       },
       {
-        name: 'PHP'
+        name: 'PHP',
       },
       {
-        name: "COBOL"
+        name: 'COBOL',
       },
       {
-        name: 'Swift'
+        name: 'Swift',
       },
       {
-        name: 'Kotlin'
+        name: 'Kotlin',
       },
       {
-        name: 'Laravel'
+        name: 'Laravel',
       },
       {
-        name: 'Git'
+        name: 'Git',
       },
       {
-        name: 'Docker'
+        name: 'Docker',
       },
       {
-        name: 'Kubernetes'
+        name: 'Kubernetes',
       },
       {
-        name: "GCP"
+        name: 'GCP',
       },
       {
-        name: 'AWS'
+        name: 'AWS',
       },
       {
-        name: 'Microsoft Azure'
+        name: 'Microsoft Azure',
       },
       {
-        name: 'SQL'
+        name: 'SQL',
       },
       {
-        name: 'NoSQL'
+        name: 'NoSQL',
       },
       {
-        name: 'MongoDB'
+        name: 'MongoDB',
       },
       {
-        name: 'PostgreSQL'
+        name: 'PostgreSQL',
       },
       {
-        name: 'MySQL'
+        name: 'MySQL',
       },
       {
-        name: 'Oracle'
+        name: 'Oracle',
       },
       {
-        name: 'Firebase'
+        name: 'Firebase',
       },
       {
-        name: 'SQLite'
+        name: 'SQLite',
       },
       {
-        name: 'Redis'
+        name: 'Redis',
       },
       {
-        name: 'Elasticsearch'
+        name: 'Elasticsearch',
       },
       {
-        name: 'Kibana'
+        name: 'Kibana',
       },
       {
-        name: 'Logstash'
+        name: 'Logstash',
       },
       {
-        name: 'Nginx'
+        name: 'Nginx',
       },
       {
-        name: 'Apache'
+        name: 'Apache',
       },
       {
-        name: 'IIS'
+        name: 'IIS',
       },
       {
-        name: 'Jenkins'
+        name: 'Jenkins',
       },
       {
-        name: 'RabbitMQ'
-      }
-    ]
+        name: 'RabbitMQ',
+      },
+    ];
     // ---------------------------------------------------
 
     const newSkill = await repository.create(skills);

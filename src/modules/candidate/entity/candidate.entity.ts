@@ -51,7 +51,7 @@ class Candidates {
   address_id: number;
 
   @Column({
-    nullable: true
+    nullable: true,
   })
   deleted_at: string;
 
@@ -73,11 +73,10 @@ class Candidates {
       referencedColumnName: 'id_skill',
     },
   })
-
   @UpdateDateColumn({
     nullable: false,
   })
   updated_at: Date;
 }
 
-export { Candidates as Candidate }
+export { Candidates as Candidate };

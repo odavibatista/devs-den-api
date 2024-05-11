@@ -1,4 +1,10 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod, forwardRef } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+  forwardRef,
+} from '@nestjs/common';
 import { JobCategoryController } from './controller/job-category.controller';
 import { JobCategoryService } from './service/job-category.service';
 import { CategoryNotFoundException } from './domain/errors/CategoryNotFound.exception';
@@ -21,15 +27,15 @@ import { UserModule } from '../user/user.module';
 })
 export class JobCategoryModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-      consumer.apply(AuthenticationMiddleware).forRoutes(
-        {
-          path: 'job-category/browse',
-          method: RequestMethod.GET,
-        },
-        {
-          path: 'job-category/:id/find',
-          method: RequestMethod.GET,
-        }
-    )
+    consumer.apply(AuthenticationMiddleware).forRoutes(
+      {
+        path: 'job-category/browse',
+        method: RequestMethod.GET,
+      },
+      {
+        path: 'job-category/:id/find',
+        method: RequestMethod.GET,
+      },
+    );
   }
 }

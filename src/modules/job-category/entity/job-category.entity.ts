@@ -17,10 +17,10 @@ class JobCategories {
   name: string;
 
   @Column({
-    length: 300
+    length: 300,
   })
-  image_url: string
-  
+  image_url: string;
+
   @CreateDateColumn({
     nullable: false,
   })
@@ -32,4 +32,4 @@ class JobCategories {
   updated_at: Date;
 }
 
-export { JobCategories as JobCategory }
+export { JobCategories as JobCategory };

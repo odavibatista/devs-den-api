@@ -11,11 +11,11 @@ export class MainSeeder implements Seeder {
     factoryManager: SeederFactoryManager,
   ): Promise<void> {
     await runSeeder(dataSource, UfSeeder);
-    
-    await runSeeder(dataSource, SkillSeeder)
+
+    await runSeeder(dataSource, SkillSeeder);
 
     await runSeeder(dataSource, JobCategorySeeder);
 
-    await runSeeder(dataSource, UserSeeder)
+    await runSeeder(dataSource, UserSeeder);
   }
 }

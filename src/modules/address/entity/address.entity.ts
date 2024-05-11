@@ -59,4 +59,4 @@ class Addresses {
   updated_at: Date;
 }
 
-export { Addresses as Address }
+export { Addresses as Address };

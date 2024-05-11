@@ -73,7 +73,6 @@ class Jobs {
       referencedColumnName: 'id_skill',
     },
   })
-  
   @CreateDateColumn({
     nullable: false,
   })
@@ -83,8 +82,6 @@ class Jobs {
     nullable: false,
   })
   updated_at: Date;
-
-
 }
 
-export { Jobs as Job }
+export { Jobs as Job };

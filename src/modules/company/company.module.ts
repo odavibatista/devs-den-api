@@ -1,4 +1,10 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod, forwardRef } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+  forwardRef,
+} from '@nestjs/common';
 import { CompanyService } from './service/company.service';
 import {
   ConjunctCompanyController,
@@ -27,11 +33,9 @@ import { AuthenticationMiddleware } from '../user/middlewares/Auth.middleware';
 })
 export class CompanyModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-      consumer.apply(AuthenticationMiddleware).forRoutes(
-        {
-          path: 'company/:id/search',
-          method: RequestMethod.GET,
-        },
-    )
+    consumer.apply(AuthenticationMiddleware).forRoutes({
+      path: 'company/:id/search',
+      method: RequestMethod.GET,
+    });
   }
 }
