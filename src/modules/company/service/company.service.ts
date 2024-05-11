@@ -13,7 +13,10 @@ import { emailValidate } from 'src/shared/utils/emailValidate';
 import { UnformattedPasswordException } from 'src/modules/user/domain/errors/UnformattedPassword.exception';
 import { UnformattedEmailException } from 'src/modules/user/domain/errors/UnformattedEmail.exception';
 import { InvalidCNPJException } from '../domain/errors/InvalidCNPJ.exception';
-import { RegisterCompanyBodyDTO, RegisterCompanyResponseDTO } from '../domain/requests/RegisterCompany.request.dto';
+import {
+  RegisterCompanyBodyDTO,
+  RegisterCompanyResponseDTO,
+} from '../domain/requests/RegisterCompany.request.dto';
 import { Address } from 'src/modules/address/entity/address.entity';
 import { Uf } from 'src/modules/uf/entity/uf.entity';
 import { UFNotFoundException } from 'src/modules/uf/domain/errors/UfNotFound.exception';
@@ -40,18 +43,20 @@ export class CompanyService {
     return await this.companyRepository.find();
   }
 
-  async findOne(id: number): Promise<FindCompanyResponseDTO | CompanyNotFoundException> {
+  async findOne(
+    id: number,
+  ): Promise<FindCompanyResponseDTO | CompanyNotFoundException> {
     const company = await this.companyRepository.findOne({
       where: { id_user: id },
     });
 
-    if (!company) throw new CompanyNotFoundException()
-
-    else return {
-      id_user: company.id_user,
-      name: company.name,
-      cnpj: company.cnpj,
-    }
+    if (!company) throw new CompanyNotFoundException();
+    else
+      return {
+        id_user: company.id_user,
+        name: company.name,
+        cnpj: company.cnpj,
+      };
   }
 
   async create(
@@ -116,7 +121,7 @@ export class CompanyService {
 
       const userToBeFound: User = await this.userRepository.findOne({
         where: { email: params.credentials.email },
-      })
+      });
 
       await this.addressRepository.save({
         uf: uf,
@@ -136,9 +141,9 @@ export class CompanyService {
       const token = this.JwtProvider.generate({
         payload: {
           id: userToBeFound.id_user,
-          role: params.credentials.role
-        }
-      })
+          role: params.credentials.role,
+        },
+      });
 
       return {
         user: {
@@ -159,13 +164,17 @@ export class CompanyService {
         where: { id_user: id },
       });
 
-      if (!company || company.deleted_at !== null) throw new CompanyNotFoundException();
+      if (!company || company.deleted_at !== null)
+        throw new CompanyNotFoundException();
 
-      await this.companyRepository.update({ id_user: id }, {
-        deleted_at: new Date().toISOString()
-      });
+      await this.companyRepository.update(
+        { id_user: id },
+        {
+          deleted_at: new Date().toISOString(),
+        },
+      );
 
-      return company.name
+      return company.name;
     } catch (error) {
       throw new HttpException(error, error.status);
     }

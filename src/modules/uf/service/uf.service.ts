@@ -22,6 +22,6 @@ export class UfService {
       };
     });
 
-    return response
+    return response;
   }
 }

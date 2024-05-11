@@ -15,7 +15,10 @@ import {
 } from '../domain/requests/LoginUser.request.dto';
 import { Candidate } from 'src/modules/candidate/entity/candidate.entity';
 import { Company } from 'src/modules/company/entity/company.entity';
-import { FindCandidateUserResponseDTO, FindCompanyUserResponseDTO } from '../domain/requests/FindUser.request.dto';
+import {
+  FindCandidateUserResponseDTO,
+  FindCompanyUserResponseDTO,
+} from '../domain/requests/FindUser.request.dto';
 import { HashProvider } from '../providers/hash.provider';
 import { NotAuthenticatedException } from '../domain/errors/NotAuthenticated.exception';
 import { BadTokenException } from '../domain/errors/BadToken.exception';
@@ -42,38 +45,42 @@ export class UserService {
 
   async findOne(
     id: number,
-  ): Promise<FindCandidateUserResponseDTO | FindCompanyUserResponseDTO | UserNotFoundException> {
+  ): Promise<
+    | FindCandidateUserResponseDTO
+    | FindCompanyUserResponseDTO
+    | UserNotFoundException
+  > {
     try {
       const user = await this.userRepository.findOne({
-        where: { id_user: id }
+        where: { id_user: id },
       });
-  
+
       if (!user || user.deleted_at !== null) {
         throw new UserNotFoundException();
       }
-  
+
       let name: string;
-  
+
       if (user.role === 'candidate') {
         const candidateUser = await this.candidateRepository.findOne({
           where: { id_user: user.id_user },
         });
-  
+
         name = candidateUser.name;
 
         return {
           id: user.id_user,
           name: name,
           email: user.email,
-          role: user.role
+          role: user.role,
         };
       }
-  
+
       if (user.role === 'company') {
         const companyUser = await this.companyRepository.findOne({
           where: { id_user: user.id_user },
         });
-  
+
         name = companyUser.name;
 
         return {
@@ -81,10 +88,9 @@ export class UserService {
           name: name,
           email: user.email,
           role: user.role,
-          cnpj: companyUser.cnpj
+          cnpj: companyUser.cnpj,
         };
       }
-
     } catch (error) {
       throw new HttpException(error, error.status);
     }
@@ -99,19 +105,19 @@ export class UserService {
     | UnformattedPasswordException
     | any
   > {
-    const hashedPassword = await this.hashProvider.hash(params.password)
+    const hashedPassword = await this.hashProvider.hash(params.password);
 
     try {
-        const user = await this.userRepository.save({
-          email: params.email,
-          password: hashedPassword,
-          role: params.role,
-        });
-        
-        return {
-          user: user,
-          id: user.id_user
-        }
+      const user = await this.userRepository.save({
+        email: params.email,
+        password: hashedPassword,
+        role: params.role,
+      });
+
+      return {
+        user: user,
+        id: user.id_user,
+      };
     } catch (error) {
       throw new HttpException(error, error.status);
     }
@@ -134,7 +140,10 @@ export class UserService {
         return new UserNotFoundException();
       }
 
-      const isPasswordValid: boolean = await this.hashProvider.compare(loginDto.inserted_password, user.password);
+      const isPasswordValid: boolean = await this.hashProvider.compare(
+        loginDto.inserted_password,
+        user.password,
+      );
 
       if (!isPasswordValid) {
         return new WrongPasswordException();
@@ -180,11 +189,18 @@ export class UserService {
     }
   }
 
-  public async delete(id: number): Promise<number | UserNotFoundException | NotAuthenticatedException | BadTokenException> {
+  public async delete(
+    id: number,
+  ): Promise<
+    | number
+    | UserNotFoundException
+    | NotAuthenticatedException
+    | BadTokenException
+  > {
     try {
       const user = await this.userRepository.findOne({
         where: { id_user: id, deleted_at: null },
-      })
+      });
 
       if (!user) throw new UserNotFoundException();
 
@@ -192,7 +208,7 @@ export class UserService {
 
       await this.userRepository.save(user);
 
-      return user.id_user
+      return user.id_user;
     } catch (error) {
       throw new HttpException(error, error.status);
     }

@@ -106,5 +106,4 @@ export class IndividualCompanyController {
       return res.status(HttpStatus.CREATED).json(result);
     }
   }
-
 }

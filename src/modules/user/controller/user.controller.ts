@@ -22,7 +22,10 @@ import {
   LoginUserResponseDTO,
 } from '../domain/requests/LoginUser.request.dto';
 import { Request, Response } from 'express';
-import { FindCandidateUserResponseDTO, FindCompanyUserResponseDTO } from '../domain/requests/FindUser.request.dto';
+import {
+  FindCandidateUserResponseDTO,
+  FindCompanyUserResponseDTO,
+} from '../domain/requests/FindUser.request.dto';
 import { CompanyNotFoundException } from 'src/modules/company/domain/errors/CompanyNotFound.exception';
 import { NotAuthenticatedException } from '../domain/errors/NotAuthenticated.exception';
 import { BadTokenException } from '../domain/errors/BadToken.exception';
@@ -53,7 +56,11 @@ export class UserController {
   async findOne(
     @Param('id') id: number,
     @Res() res: Response,
-  ): Promise<FindCandidateUserResponseDTO | FindCompanyUserResponseDTO | AllExceptionsFilterDTO> {
+  ): Promise<
+    | FindCandidateUserResponseDTO
+    | FindCompanyUserResponseDTO
+    | AllExceptionsFilterDTO
+  > {
     const result = await this.userService.findOne(id);
 
     if (result instanceof HttpException) {
@@ -63,7 +70,7 @@ export class UserController {
       });
     } else {
       return res.status(HttpStatus.OK).json({
-        user: result
+        user: result,
       });
     }
   }
@@ -93,16 +100,16 @@ export class UserController {
     @Res() res: Response,
     @Body() body: LoginUserBodyDTO,
   ): Promise<LoginUserResponseDTO | AllExceptionsFilterDTO> {
-      const result = await this.userService.login(body);
+    const result = await this.userService.login(body);
 
-      if (result instanceof HttpException) {
-        return res.status(result.getStatus()).json({
-          message: result.message,
-          status: result.getStatus(),
-        });
-      } else {
-        return res.status(HttpStatus.OK).json(result);
-      }
+    if (result instanceof HttpException) {
+      return res.status(result.getStatus()).json({
+        message: result.message,
+        status: result.getStatus(),
+      });
+    } else {
+      return res.status(HttpStatus.OK).json(result);
+    }
   }
 
   @Delete(':id/delete')
@@ -134,33 +141,33 @@ export class UserController {
   })
   async delete(
     @Req() req: Request,
-    @Res()  res: Response,
+    @Res() res: Response,
     @Param('id') id: number,
   ): Promise<any> {
-      const user = req.user
+    const user = req.user;
 
-      console.log(user)
-      console.log(typeof user.id)
-      console.log(typeof id)
+    console.log(user);
+    console.log(typeof user.id);
+    console.log(typeof id);
 
-      if (user.id != id) {
-        throw new BadTokenException()
-      }
+    if (user.id != id) {
+      throw new BadTokenException();
+    }
 
-      if (user.role === 'company') {
-        await this.userService.delete(id)
+    if (user.role === 'company') {
+      await this.userService.delete(id);
 
-        await this.companyService.delete(id)
+      await this.companyService.delete(id);
 
-        return res.status(HttpStatus.NO_CONTENT).json()
-      }
+      return res.status(HttpStatus.NO_CONTENT).json();
+    }
 
-      if (user.role === 'candidate') {
-        await this.userService.delete(id)
+    if (user.role === 'candidate') {
+      await this.userService.delete(id);
 
-        await this.candidateService.delete(id)
+      await this.candidateService.delete(id);
 
-        return res.status(HttpStatus.NO_CONTENT).json()
-      }
+      return res.status(HttpStatus.NO_CONTENT).json();
+    }
   }
 }

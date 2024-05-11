@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
   ManyToMany,
   OneToOne,
   PrimaryColumn,
@@ -50,7 +51,7 @@ class Candidates {
   address_id: number;
 
   @Column({
-    nullable: true
+    nullable: true,
   })
   deleted_at: string;
 
@@ -60,10 +61,22 @@ class Candidates {
   })
   created_at: Date;
 
+  @ManyToMany(() => Skill, (skill) => skill.id_skill)
+  @JoinTable({
+    name: 'user_skills',
+    joinColumn: {
+      name: 'user_id',
+      referencedColumnName: 'id_user',
+    },
+    inverseJoinColumn: {
+      name: 'skill_id',
+      referencedColumnName: 'id_skill',
+    },
+  })
   @UpdateDateColumn({
     nullable: false,
   })
   updated_at: Date;
 }
 
-export { Candidates as Candidate }
+export { Candidates as Candidate };

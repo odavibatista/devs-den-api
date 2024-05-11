@@ -1,5 +1,3 @@
-import { Job } from 'src/modules/job/entity/job.entity';
-import { Candidate } from 'src/modules/candidate/entity/candidate.entity';
 import {
   Entity,
   Column,
@@ -20,30 +18,6 @@ class Skills {
   })
   name: string;
 
-  @ManyToMany(() => Candidate, (user) => user.id_user)
-  @JoinTable({
-    name: 'user_skills',
-    joinColumn: {
-      name: 'skill_id',
-      referencedColumnName: 'id_skill',
-    },
-    inverseJoinColumn: {
-      name: 'user_id',
-      referencedColumnName: 'id_user',
-    },
-  })
-  @ManyToMany(() => Job, (job) => job.id_job)
-  @JoinTable({
-    name: 'job_skills',
-    joinColumn: {
-      name: 'skill_id',
-      referencedColumnName: 'id_skill',
-    },
-    inverseJoinColumn: {
-      name: 'job_id',
-      referencedColumnName: 'id_job',
-    },
-  })
   @CreateDateColumn({
     nullable: false,
   })
@@ -55,4 +29,4 @@ class Skills {
   updated_at: Date;
 }
 
-export { Skills as Skill }
+export { Skills as Skill };

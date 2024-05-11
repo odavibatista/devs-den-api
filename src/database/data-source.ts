@@ -10,8 +10,7 @@ const options: DataSourceOptions & SeederOptions = {
   password: appConfigurations.DB_PASSWORD,
   host: appConfigurations.DB_HOST,
   port: appConfigurations.DB_PORT,
-  // I want all the files that ends with .entity.ts
-  entities: [`./**/{uf,job-category}.entity.ts`],
+  entities: [`./**/{uf,job-category,skill,user}.entity.ts`],
   logging: appConfigurations.DB_LOGGING,
   synchronize: appConfigurations.DB_SYNCHRONIZE,
 

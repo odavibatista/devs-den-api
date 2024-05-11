@@ -23,5 +23,5 @@ import { JobCategoryModule } from '../modules/job-category/job-category.module';
   providers: [],
 })
 export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) { }
+  configure(consumer: MiddlewareConsumer) {}
 }

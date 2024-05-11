@@ -8,7 +8,9 @@ export const FindCandidateUserResponseSchema = z.object({
   role: z.string().min(7).max(9).describe('Papel do usuário'),
 });
 
-export class FindCandidateUserResponseDTO extends createZodDto(FindCandidateUserResponseSchema) {}
+export class FindCandidateUserResponseDTO extends createZodDto(
+  FindCandidateUserResponseSchema,
+) {}
 
 export const FindCompanyUserResponseSchema = z.object({
   id: z.number().int().positive().describe('ID do usuário'),
@@ -18,4 +20,6 @@ export const FindCompanyUserResponseSchema = z.object({
   cnpj: z.string().length(16).describe('CNPJ da empresa'),
 });
 
-export class FindCompanyUserResponseDTO extends createZodDto(FindCompanyUserResponseSchema) {}
+export class FindCompanyUserResponseDTO extends createZodDto(
+  FindCompanyUserResponseSchema,
+) {}

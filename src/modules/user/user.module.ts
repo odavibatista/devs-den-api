@@ -1,4 +1,10 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod, forwardRef } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+  forwardRef,
+} from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseModule } from 'src/database/database.module';
 import { User } from './entity/user.entity';
@@ -28,9 +34,11 @@ import { JobCategoryModule } from '../job-category/job-category.module';
 })
 export class UserModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthenticationMiddleware).forRoutes(
-      { path: 'user/:id/delete', method: RequestMethod.DELETE },
-      { path: 'user/:id/search', method: RequestMethod.GET },
-    )
+    consumer
+      .apply(AuthenticationMiddleware)
+      .forRoutes(
+        { path: 'user/:id/delete', method: RequestMethod.DELETE },
+        { path: 'user/:id/search', method: RequestMethod.GET },
+      );
   }
 }

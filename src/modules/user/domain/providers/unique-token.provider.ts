@@ -1,3 +1,3 @@
 export interface UniqueTokenProviderInterface {
-    createToken(): string
+  createToken(): string;
 }

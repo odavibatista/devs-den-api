@@ -45,4 +45,4 @@ class Companies {
   updated_at: Date;
 }
 
-export { Companies as Company }
+export { Companies as Company };

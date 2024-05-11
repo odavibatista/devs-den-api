@@ -3,6 +3,8 @@ import {
   Get,
   HttpStatus,
   Param,
+  Req,
+  Res,
   UnauthorizedException,
 } from '@nestjs/common';
 import { SkillService } from '../service/skill.service';
@@ -15,6 +17,8 @@ import {
 } from '../domain/requests/FindSkills.request.dto';
 import { Skill } from '../entity/skill.entity';
 import { BadTokenException } from 'src/modules/user/domain/errors/BadToken.exception';
+import { Request, Response } from 'express';
+import { CommonException } from 'src/shared/domain/errors/Common.exception';
 
 @Controller('skills')
 @ApiTags('Skills')
@@ -27,8 +31,17 @@ export class ConjunctSkillController {
     description: 'Skills encontradas com sucesso.',
     type: FindSkillsResponseDTO,
   })
-  async findAll(): Promise<Skill[]> {
-    return this.skillService.findAll();
+  async findAll(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<FindSkillsResponseDTO | AllExceptionsFilterDTO> {
+    const result = await this.skillService.findAll();
+
+    if (result instanceof AllExceptionsFilterDTO) {
+      throw new CommonException();
+    } else {
+      return res.status(HttpStatus.OK).json(result);
+    }
   }
 }
 

@@ -31,7 +31,7 @@ export class CandidateService {
     @InjectRepository(Uf)
     private readonly ufRepository: Repository<Uf>,
     private readonly JwtProvider: JWTProvider,
-    private readonly userService: UserService
+    private readonly userService: UserService,
   ) {}
 
   async create(
@@ -73,7 +73,7 @@ export class CandidateService {
         email: params.credentials.email,
         password: params.credentials.password,
         role: 'candidate',
-      })
+      });
 
       await this.addressRepository.save({
         uf: uf,
@@ -86,7 +86,7 @@ export class CandidateService {
 
       const userToBeFound: User = await this.userRepository.findOne({
         where: { email: params.credentials.email },
-      })
+      });
 
       await this.candidateRepository.save({
         id_user: userToBeFound.id_user,
@@ -98,9 +98,9 @@ export class CandidateService {
       const token = this.JwtProvider.generate({
         payload: {
           id: userToBeFound.id_user,
-          role: params.credentials.role
-        }
-      })
+          role: params.credentials.role,
+        },
+      });
 
       const response = {
         user: {
@@ -125,12 +125,14 @@ export class CandidateService {
 
       if (!candidate) throw new CandidateNotFoundException();
 
+      await this.candidateRepository.update(
+        { id_user: id },
+        {
+          deleted_at: new Date().toISOString(),
+        },
+      );
 
-      await this.candidateRepository.update({ id_user: id }, {
-        deleted_at: new Date().toISOString()
-      });
-
-      return candidate.name
+      return candidate.name;
     } catch (error) {
       throw new HttpException(error, error.status);
     }

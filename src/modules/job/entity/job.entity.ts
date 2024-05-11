@@ -6,11 +6,12 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
-  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { JobCategory } from 'src/modules/job-category/entity/job-category.entity';
+import { Skill } from 'src/modules/skill/entity/skill.entity';
 
 enum Modality {
   PRESENTIAL = 'presential',
@@ -20,6 +21,7 @@ enum Modality {
 
 @Entity()
 class Jobs {
+  @ManyToMany(() => Candidate, (user) => user.id_user)
   @PrimaryGeneratedColumn()
   id_job: number;
 
@@ -34,14 +36,16 @@ class Jobs {
   })
   description: string;
 
-  @ManyToOne(() => Company, (company) => company.id_user, {
+  @OneToMany(() => Company, (company) => company.id_user, {
     nullable: false,
   })
+  @Column()
   company_id: number;
 
-  @ManyToOne(() => JobCategory, (jobCategory) => jobCategory.id_category, {
+  @OneToMany(() => JobCategory, (jobCategory) => jobCategory.id_category, {
     nullable: false,
   })
+  @Column()
   job_category_id: number;
 
   @Column({
@@ -57,16 +61,16 @@ class Jobs {
   })
   modality: string;
 
-  @ManyToMany(() => Candidate, (user) => user.id_user)
+  @ManyToMany(() => Skill, (skill) => skill.id_skill)
   @JoinTable({
-    name: 'job_subscribes',
+    name: 'job_skills',
     joinColumn: {
       name: 'job_id',
       referencedColumnName: 'id_job',
     },
     inverseJoinColumn: {
-      name: 'user_id',
-      referencedColumnName: 'id_user',
+      name: 'skill_id',
+      referencedColumnName: 'id_skill',
     },
   })
   @CreateDateColumn({
@@ -80,4 +84,4 @@ class Jobs {
   updated_at: Date;
 }
 
-export { Jobs as Job }
+export { Jobs as Job };
