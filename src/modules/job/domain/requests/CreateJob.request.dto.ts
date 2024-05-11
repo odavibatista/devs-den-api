@@ -4,7 +4,6 @@ import { z } from 'nestjs-zod/z';
 export const CreateJobBodySchema = z.object({
   title: z.string().min(5).max(100).describe('Título da vaga'),
   description: z.string().min(20).max(500).describe('Descrição da vaga'),
-  company_id: z.number().int().positive().describe('ID da empresa'),
   job_category_id: z.number().int().positive().describe('ID da categoria da vaga'),
   wage: z.number().int().positive().describe('Salário da vaga'),
   modality: z

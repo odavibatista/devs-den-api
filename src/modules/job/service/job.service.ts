@@ -65,10 +65,10 @@ export class JobService {
     else return jobsByGivenModality;
   }
 
-  async createJob (params: CreateJobBodyDTO): Promise<CreateJobResponseDTO> {
+  async createJob (params: CreateJobBodyDTO, companyId: number): Promise<CreateJobResponseDTO> {
     
     const jobCompany = await this.companyRepository.findOne({
-      where: { id_user: params.company_id }
+      where: { id_user: companyId }
     })
 
     if (!jobCompany || jobCompany.deleted_at !== null) throw new CompanyNotFoundException()
@@ -84,7 +84,7 @@ export class JobService {
     const job = await this.jobRepository.save({
       title: params.title,
       description: params.description,
-      company_id: params.company_id,
+      company_id: companyId,
       job_category_id: params.job_category_id,
       wage: params.wage,
       modality: params.modality,

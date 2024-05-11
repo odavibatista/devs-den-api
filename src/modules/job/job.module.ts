@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { JobService } from './service/job.service';
-import { JobController } from './controller/job.controller';
+import { ConjunctJobsController, IndividualJobController } from './controller/job.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Job } from './entity/job.entity';
 import { JobCategory } from '../job-category/entity/job-category.entity';
@@ -17,6 +17,6 @@ import { Company } from '../company/entity/company.entity';
 
   providers: [JobService, JobCategory],
 
-  controllers: [JobController],
+  controllers: [ConjunctJobsController, IndividualJobController],
 })
 export class JobModule {}
