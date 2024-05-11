@@ -7,6 +7,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -20,6 +21,7 @@ enum Modality {
 
 @Entity()
 class Jobs {
+  @ManyToMany(() => Candidate, (user) => user.id_user)
   @PrimaryGeneratedColumn()
   id_job: number;
 
@@ -34,14 +36,16 @@ class Jobs {
   })
   description: string;
 
-  @ManyToOne(() => Company, (company) => company.id_user, {
+  @OneToMany(() => Company, (company) => company.id_user, {
     nullable: false,
   })
+  @Column()
   company_id: number;
 
-  @ManyToOne(() => JobCategory, (jobCategory) => jobCategory.id_category, {
+  @OneToMany(() => JobCategory, (jobCategory) => jobCategory.id_category, {
     nullable: false,
   })
+  @Column()
   job_category_id: number;
 
   @Column({
@@ -57,18 +61,6 @@ class Jobs {
   })
   modality: string;
 
-  @ManyToMany(() => Candidate, (user) => user.id_user)
-  @JoinTable({
-    name: 'job_subscribes',
-    joinColumn: {
-      name: 'job_id',
-      referencedColumnName: 'id_job',
-    },
-    inverseJoinColumn: {
-      name: 'user_id',
-      referencedColumnName: 'id_user',
-    },
-  })
   @CreateDateColumn({
     nullable: false,
   })
