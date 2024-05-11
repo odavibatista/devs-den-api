@@ -1,5 +1,3 @@
-import { Job } from 'src/modules/job/entity/job.entity';
-import { Candidate } from 'src/modules/candidate/entity/candidate.entity';
 import {
   Entity,
   Column,
