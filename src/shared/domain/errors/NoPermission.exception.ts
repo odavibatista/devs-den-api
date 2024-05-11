@@ -1,10 +1,10 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException } from '@nestjs/common';
 
 export class NoPermisionException extends HttpException {
   constructor() {
     super(
       'Você não tem permissão para utilizar esse recurso.',
-      HttpStatus.UNAUTHORIZED,
+      401,
     );
   }
 }

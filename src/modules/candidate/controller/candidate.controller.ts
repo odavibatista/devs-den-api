@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   HttpException,
-  HttpStatus,
   Post,
   Req,
   Res,
@@ -41,14 +40,14 @@ export class CandidateController {
     type: AllExceptionsFilterDTO,
   })
   @ApiResponse({
-    status: HttpStatus.CREATED,
+    status: 201,
     description: 'Usuário criado com sucesso',
     type: RegisterCandidateResponseDTO,
   })
   async register(
     @Body() body: RegisterCandidateBodyDTO,
     @Res() res: Response,
-  ): Promise<any> {
+  ): Promise<RegisterCandidateResponseDTO | AllExceptionsFilterDTO> {
     const result = await this.candidateService.create(body);
 
     if (result instanceof HttpException) {

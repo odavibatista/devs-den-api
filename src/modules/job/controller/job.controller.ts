@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, Param, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JobService } from '../service/job.service';
 import { JobNotFoundException } from '../domain/errors/JobNotFound.exception';
@@ -21,7 +21,7 @@ export class ConjunctJobsController {
         type: AllExceptionsFilterDTO,
     })
     @ApiResponse({
-        status: HttpStatus.OK,
+        status: 200,
         description: 'Vagas encontradas com sucesso',
         type: FindJobsResponseDTO,
     })
@@ -29,7 +29,7 @@ export class ConjunctJobsController {
     async findAll(
         @Req() req: Request,
         @Res() res: Response,
-    ): Promise <FindJobsResponseDTO | UserIsNotCompanyException | InvalidModalityException | AllExceptionsFilterDTO> {
+    ): Promise <FindJobsResponseDTO | AllExceptionsFilterDTO> {
         const result = await this.jobService.findAll();
 
         if (result instanceof HttpException) {
@@ -54,7 +54,7 @@ export class IndividualJobController {
         type: AllExceptionsFilterDTO,
     })
     @ApiResponse({
-        status: HttpStatus.OK,
+        status: 200,
         description: 'Vaga encontrada com sucesso',
         type: FindJobResponseDTO,
     })
@@ -87,7 +87,7 @@ export class IndividualJobController {
         type: AllExceptionsFilterDTO,
     })
     @ApiResponse({
-        status: HttpStatus.OK,
+        status: 200,
         description: 'Vaga criada com sucesso!'
     })
     @Post('/create')

@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   HttpException,
-  HttpStatus,
   Param,
   Post,
   Put,
@@ -31,6 +30,7 @@ import { NotAuthenticatedException } from '../domain/errors/NotAuthenticated.exc
 import { BadTokenException } from '../domain/errors/BadToken.exception';
 import { CompanyService } from 'src/modules/company/service/company.service';
 import { CandidateService } from 'src/modules/candidate/service/candidate.service';
+import { z } from 'zod';
 
 @Controller('user')
 @ApiTags('Usuário')
@@ -49,7 +49,7 @@ export class UserController {
     type: AllExceptionsFilterDTO,
   })
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: 200,
     description: 'Usuário encontrado com sucesso',
     type: FindCandidateUserResponseDTO,
   })
@@ -69,7 +69,7 @@ export class UserController {
         status: result.getStatus(),
       });
     } else {
-      return res.status(HttpStatus.OK).json({
+      return res.status(200).json({
         user: result,
       });
     }
@@ -92,7 +92,7 @@ export class UserController {
     type: AllExceptionsFilterDTO,
   })
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: 200,
     description: 'Usuário logado com sucesso',
     type: LoginUserResponseDTO,
   })
@@ -108,7 +108,7 @@ export class UserController {
         status: result.getStatus(),
       });
     } else {
-      return res.status(HttpStatus.OK).json(result);
+      return res.status(200).json(result);
     }
   }
 
@@ -137,37 +137,64 @@ export class UserController {
   @ApiResponse({
     status: 204,
     description: 'Usuário deletado com sucesso',
-    type: FindCandidateUserResponseDTO, // -> needs to be fixed
   })
   async delete(
     @Req() req: Request,
     @Res() res: Response,
     @Param('id') id: number,
-  ): Promise<any> {
+  ): Promise<{} | AllExceptionsFilterDTO> {
     const user = req.user;
 
-    console.log(user);
-    console.log(typeof user.id);
-    console.log(typeof id);
+    if (!user) {
+      throw new NotAuthenticatedException();
+    }
 
     if (user.id != id) {
       throw new BadTokenException();
     }
 
     if (user.role === 'company') {
-      await this.userService.delete(id);
+      const deleteUser = await this.userService.delete(id);
 
-      await this.companyService.delete(id);
+      const deleteCompany = await this.companyService.delete(id);
 
-      return res.status(HttpStatus.NO_CONTENT).json();
+      if (deleteUser instanceof HttpException) {
+        return res.status(deleteUser.getStatus()).json({
+          message: deleteUser.message,
+          status: deleteUser.getStatus(),
+        });
+      }
+
+      if (deleteCompany instanceof HttpException) {
+        return res.status(deleteCompany.getStatus()).json({
+          message: deleteCompany.message,
+          status: deleteCompany.getStatus(),
+        });
+      }
+
+      else return res.status(204).json();
     }
 
     if (user.role === 'candidate') {
-      await this.userService.delete(id);
+      const deleteUser = await this.userService.delete(id);
 
-      await this.candidateService.delete(id);
+      const deleteCandidate = await this.candidateService.delete(id);
 
-      return res.status(HttpStatus.NO_CONTENT).json();
+      if (deleteUser instanceof HttpException) {
+        return res.status(deleteUser.getStatus()).json({
+          message: deleteUser.message,
+          status: deleteUser.getStatus(),
+        });
+      }
+
+      if (deleteCandidate instanceof HttpException) {
+        return res.status(deleteCandidate.getStatus()).json({
+          message: deleteCandidate.message,
+          status: deleteCandidate.getStatus(),
+        });
+      }
+
+      else return res.status(204).json();
     }
   }
 }

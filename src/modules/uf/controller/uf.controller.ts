@@ -1,9 +1,10 @@
-import { Controller, Get, HttpStatus } from '@nestjs/common';
+import { Controller, Get, HttpException, Res } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UfService } from '../service/uf.service';
 import { UFNotFoundException } from '../domain/errors/UfNotFound.exception';
 import { AllExceptionsFilterDTO } from 'src/shared/domain/dtos/errors/AllException.filter.dto';
 import { FindUFsResponseDTO } from '../domain/requests/FindUfs.request.dto';
+import { Response } from 'express';
 
 @Controller('ufs')
 @ApiTags('UFs')
@@ -17,11 +18,22 @@ export class UfController {
     type: AllExceptionsFilterDTO,
   })
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: 200,
     description: 'UFs encontradas',
     type: FindUFsResponseDTO,
   })
-  async findAll(): Promise<any> {
-    return await this.ufService.findAll();
+  async findAll(
+    @Res() res: Response,
+  ): Promise<FindUFsResponseDTO | AllExceptionsFilterDTO> {
+    const result = await this.ufService.findAll();
+    
+    if (result instanceof HttpException) {
+      return res.status(result.getStatus()).json({
+        message: result.message,
+        status: result.getStatus(),
+      });
+    } else {
+      return res.status(200).json(result);
+    }
   }
 }

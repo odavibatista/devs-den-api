@@ -1,7 +1,7 @@
 import {
   Controller,
   Get,
-  HttpStatus,
+  HttpException,
   Param,
   Req,
   Res,
@@ -27,7 +27,7 @@ export class ConjunctSkillController {
 
   @Get()
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: 200,
     description: 'Skills encontradas com sucesso.',
     type: FindSkillsResponseDTO,
   })
@@ -37,10 +37,13 @@ export class ConjunctSkillController {
   ): Promise<FindSkillsResponseDTO | AllExceptionsFilterDTO> {
     const result = await this.skillService.findAll();
 
-    if (result instanceof AllExceptionsFilterDTO) {
-      throw new CommonException();
+    if (result instanceof HttpException) {
+      return res.status(result.getStatus()).json({
+        message: result.message,
+        status: result.getStatus(),
+      });
     } else {
-      return res.status(HttpStatus.OK).json(result);
+      return res.status(200).json(result);
     }
   }
 }
@@ -67,11 +70,24 @@ export class IndividualSkillController {
     type: AllExceptionsFilterDTO,
   })
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: 200,
     description: 'Skill encontrada com sucesso',
     type: FindSkillResponseDTO,
   })
-  async findOne(@Param('id') id: number): Promise<Skill> {
-    return this.skillService.findOne(id);
+  async findOne(
+    @Param('id') id: number,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<FindSkillResponseDTO | AllExceptionsFilterDTO> {
+    const result = await this.skillService.findAll();
+
+    if (result instanceof HttpException) {
+      return res.status(result.getStatus()).json({
+        message: result.message,
+        status: result.getStatus(),
+      });
+    } else {
+      return res.status(200).json(result);
+    }
   }
 }
