@@ -65,15 +65,13 @@ export class JobService {
     else return jobsByGivenModality;
   }
 
-  async createJob (params: CreateJobBodyDTO, companyId: number): Promise<CreateJobResponseDTO> {
+  async createJob (params: CreateJobBodyDTO, companyId: number): Promise<CreateJobResponseDTO | CompanyNotFoundException | InvalidModalityException | CategoryNotFoundException> {
     
     const jobCompany = await this.companyRepository.findOne({
       where: { id_user: companyId }
     })
 
     if (!jobCompany || jobCompany.deleted_at !== null) throw new CompanyNotFoundException()
-
-    if (params.modality !== 'hybrid' || 'presential' || 'remote') throw new InvalidModalityException()
 
     const jobCategory = await this.jobCategoryRepository.findOne({
       where: { id_category: params.job_category_id }

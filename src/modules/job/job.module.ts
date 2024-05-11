@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { JobService } from './service/job.service';
 import { ConjunctJobsController, IndividualJobController } from './controller/job.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -7,16 +7,26 @@ import { JobCategory } from '../job-category/entity/job-category.entity';
 import { DatabaseModule } from 'src/database/database.module';
 import { Skill } from '../skill/entity/skill.entity';
 import { Company } from '../company/entity/company.entity';
+import { UserModule } from '../user/user.module';
+import { AuthenticationMiddleware } from '../user/middlewares/Auth.middleware';
 
 @Module({
   imports: [
     DatabaseModule,
     JobModule,
     TypeOrmModule.forFeature([Job, JobCategory, Skill, Company]),
+    UserModule
   ],
 
   providers: [JobService, JobCategory],
 
   controllers: [ConjunctJobsController, IndividualJobController],
 })
-export class JobModule {}
+export class JobModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthenticationMiddleware).forRoutes({
+      path: 'job/create',
+      method: RequestMethod.POST,
+    });
+  }
+}

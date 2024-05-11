@@ -19,9 +19,9 @@ export class CreateJobBodyDTO extends createZodDto(
 
 export const CreateJobResponseSchema = z.object({
   id: z.number().int().positive().describe('ID da vaga'),
+  company_id: z.number().int().positive().describe('ID da empresa'),
   title: z.string().min(5).max(100).describe('Título da vaga'),
   description: z.string().min(20).max(500).describe('Descrição da vaga'),
-  company_id: z.number().int().positive().describe('ID da empresa'),
   job_category_id: z.number().int().positive().describe('ID da categoria da vaga'),
   wage: z.number().int().positive().describe('Salário da vaga'),
   modality: z

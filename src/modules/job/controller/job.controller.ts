@@ -1,4 +1,4 @@
-import { Controller, Get, HttpException, HttpStatus, Param, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JobService } from '../service/job.service';
 import { JobNotFoundException } from '../domain/errors/JobNotFound.exception';
@@ -7,6 +7,8 @@ import { FindJobResponseDTO, FindJobsResponseDTO } from '../domain/requests/Find
 import { UserIsNotCompanyException } from '../domain/errors/UserIsNotCompany.exception';
 import { InvalidModalityException } from '../domain/errors/InvalidModality.exception';
 import { AllExceptionsFilterDTO } from 'src/shared/domain/dtos/errors/AllException.filter.dto';
+import { CreateJobBodyDTO } from '../domain/requests/CreateJob.request.dto';
+import { NotAuthenticatedException } from 'src/modules/user/domain/errors/NotAuthenticated.exception';
 
 @Controller('jobs')
 @ApiTags('Vagas')
@@ -16,16 +18,6 @@ export class ConjunctJobsController {
     @ApiResponse({
         status: new JobNotFoundException().getStatus(),
         description: new JobNotFoundException().message,
-        type: AllExceptionsFilterDTO,
-    })
-    @ApiResponse({
-        status: new UserIsNotCompanyException().getStatus(),
-        description: new UserIsNotCompanyException().message,
-        type: AllExceptionsFilterDTO,
-    })
-    @ApiResponse({
-        status: new InvalidModalityException().getStatus(),
-        description: new InvalidModalityException().message,
         type: AllExceptionsFilterDTO,
     })
     @ApiResponse({
@@ -72,6 +64,54 @@ export class IndividualJobController {
         @Res() res: Response,
     ): Promise<FindJobResponseDTO | JobNotFoundException | AllExceptionsFilterDTO>  {
         const result = await this.jobService.findOne(id);
+
+        if (result instanceof HttpException) {
+            return res.status(result.getStatus()).json({
+              message: result.message,
+              status: result.getStatus(),
+            });
+          } else {
+            return res.status(res.statusCode).json(result);
+          }
+    }
+
+    @ApiResponse({
+        status: new InvalidModalityException().getStatus(),
+        description: new InvalidModalityException().message,
+        type: AllExceptionsFilterDTO,
+    })
+    @ApiResponse({
+        status: new UserIsNotCompanyException().getStatus(),
+        description: new UserIsNotCompanyException().message,
+        type: AllExceptionsFilterDTO,
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Vaga criada com sucesso!'
+    })
+    @Post('/create')
+    async create(
+        @Req() req: Request,
+        @Res() res: Response,
+        @Body() body: CreateJobBodyDTO,
+    ): Promise<UserIsNotCompanyException | UnauthorizedException | AllExceptionsFilterDTO> {
+        const user = req.user
+
+        if (!user) {
+            return res.status(new NotAuthenticatedException().getStatus()).json({
+                message: new UnauthorizedException().message,
+                status: new UnauthorizedException().getStatus()
+            });
+        }
+
+        if (user.role !== 'company') {
+            return res.status(new UserIsNotCompanyException().getStatus()).json({
+                message: new UserIsNotCompanyException().message,
+                status: new UserIsNotCompanyException().getStatus(),
+            });
+        }
+
+        const result = await this.jobService.createJob(body, user.id);
 
         if (result instanceof HttpException) {
             return res.status(result.getStatus()).json({

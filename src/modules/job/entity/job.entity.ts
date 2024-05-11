@@ -4,8 +4,10 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -36,16 +38,16 @@ class Jobs {
   })
   description: string;
 
-  @OneToMany(() => Company, (company) => company.id_user, {
+  @ManyToOne(() => Company, (company) => company.id_user, {
     nullable: false,
   })
-  @Column()
+  @JoinColumn({ name: 'company_id' })
   company_id: number;
 
-  @OneToMany(() => JobCategory, (jobCategory) => jobCategory.id_category, {
+  @ManyToOne(() => JobCategory, (jobCategory) => jobCategory.id_category, {
     nullable: false,
   })
-  @Column()
+  @JoinColumn({ name: 'job_category_id' })
   job_category_id: number;
 
   @Column({
