@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   HttpException,
-  HttpStatus,
   Param,
   Post,
   Put,
@@ -50,7 +49,7 @@ export class UserController {
     type: AllExceptionsFilterDTO,
   })
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: 200,
     description: 'Usuário encontrado com sucesso',
     type: FindCandidateUserResponseDTO,
   })
@@ -70,7 +69,7 @@ export class UserController {
         status: result.getStatus(),
       });
     } else {
-      return res.status(HttpStatus.OK).json({
+      return res.status(200).json({
         user: result,
       });
     }
@@ -93,7 +92,7 @@ export class UserController {
     type: AllExceptionsFilterDTO,
   })
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: 200,
     description: 'Usuário logado com sucesso',
     type: LoginUserResponseDTO,
   })
@@ -109,7 +108,7 @@ export class UserController {
         status: result.getStatus(),
       });
     } else {
-      return res.status(HttpStatus.OK).json(result);
+      return res.status(200).json(result);
     }
   }
 
@@ -173,7 +172,7 @@ export class UserController {
         });
       }
 
-      else return res.status(HttpStatus.NO_CONTENT).json();
+      else return res.status(204).json();
     }
 
     if (user.role === 'candidate') {
@@ -195,7 +194,7 @@ export class UserController {
         });
       }
 
-      else return res.status(HttpStatus.NO_CONTENT).json();
+      else return res.status(204).json();
     }
   }
 }

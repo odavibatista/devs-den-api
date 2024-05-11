@@ -1,4 +1,4 @@
-import { Controller, Get, HttpException, HttpStatus, Param, Req, Res } from '@nestjs/common';
+import { Controller, Get, HttpException, Param, Req, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   FindJobCategoriesResponseDTO,
@@ -15,12 +15,12 @@ export class JobCategoryController {
   constructor(private readonly jobCategoriesService: JobCategoryService) {}
   @Get('/browse')
   @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
+    status: new CategoryNotFoundException().getStatus(),
     description: new CategoryNotFoundException().message,
     type: AllExceptionsFilterDTO,
   })
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: 200,
     description: 'Categorias de emprego encontradas com sucesso',
     type: FindJobCategoriesResponseDTO,
   })
@@ -38,7 +38,7 @@ export class JobCategoryController {
         status: result.getStatus(),
       });
     } else {
-      return res.status(HttpStatus.OK).json(result);
+      return res.status(200).json(result);
     }
   }
 
@@ -48,7 +48,7 @@ export class JobCategoryController {
     type: AllExceptionsFilterDTO,
   })
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: 200,
     description: 'Categoria de emprego encontrada com sucesso',
     type: FindJobCategoryResponseDTO,
   })
@@ -70,7 +70,7 @@ export class JobCategoryController {
         status: result.getStatus(),
       });
     } else {
-      return res.status(HttpStatus.OK).json(result);
+      return res.status(200).json(result);
     }
   }
 }

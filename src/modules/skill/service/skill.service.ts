@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Skill } from '../entity/skill.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -33,7 +33,7 @@ export class SkillService {
     });
 
     if (!skill)
-      throw new HttpException(`Empresa não encontrada.`, HttpStatus.NOT_FOUND);
+      throw new SkillNotFoundException()
 
     return skill;
   }

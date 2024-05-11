@@ -5,7 +5,6 @@ import {
   Delete,
   Get,
   HttpException,
-  HttpStatus,
   Param,
   Post,
   Req,
@@ -13,13 +12,11 @@ import {
 } from '@nestjs/common';
 import { CompanyService } from '../service/company.service';
 import { Company } from '../entity/company.entity';
-import { CompanyNotFoundException } from '../domain/errors/CompanyNotFound.exception';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AllExceptionsFilterDTO } from 'src/shared/domain/dtos/errors/AllException.filter.dto';
 import { BadTokenException } from 'src/modules/user/domain/errors/BadToken.exception';
 import { NotAuthenticatedException } from 'src/modules/user/domain/errors/NotAuthenticated.exception';
 import { FindCompaniesResponseDTO } from '../domain/requests/FindCompanies.request.dto';
-import { FindCompanyResponseDTO } from '../domain/requests/FindCompanies.request.dto';
 import { CNPJAlreadyRegisteredException } from '../domain/errors/CNPJAlreadyRegistered.exception';
 import { InvalidCNPJException } from '../domain/errors/InvalidCNPJ.exception';
 import { EmailAlreadyRegisteredException } from 'src/modules/user/domain/errors/EmailAlreadyRegistered.exception';
@@ -37,7 +34,7 @@ export class ConjunctCompanyController {
 
   @Get('/browse')
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: 200,
     description: 'Empresas encontradas com sucesso',
     type: FindCompaniesResponseDTO,
   })
@@ -87,7 +84,7 @@ export class IndividualCompanyController {
     type: AllExceptionsFilterDTO,
   })
   @ApiResponse({
-    status: HttpStatus.CREATED,
+    status: 201,
     description: 'Empresa criada com sucesso',
     type: RegisterCompanyResponseDTO,
   })
@@ -103,7 +100,7 @@ export class IndividualCompanyController {
         status: result.getStatus(),
       });
     } else {
-      return res.status(HttpStatus.CREATED).json(result);
+      return res.status(201).json(result);
     }
   }
 }

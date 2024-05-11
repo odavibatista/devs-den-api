@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   HttpException,
-  HttpStatus,
   Param,
   Req,
   Res,
@@ -28,7 +27,7 @@ export class ConjunctSkillController {
 
   @Get()
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: 200,
     description: 'Skills encontradas com sucesso.',
     type: FindSkillsResponseDTO,
   })
@@ -44,7 +43,7 @@ export class ConjunctSkillController {
         status: result.getStatus(),
       });
     } else {
-      return res.status(HttpStatus.OK).json(result);
+      return res.status(200).json(result);
     }
   }
 }
@@ -71,7 +70,7 @@ export class IndividualSkillController {
     type: AllExceptionsFilterDTO,
   })
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: 200,
     description: 'Skill encontrada com sucesso',
     type: FindSkillResponseDTO,
   })
@@ -88,7 +87,7 @@ export class IndividualSkillController {
         status: result.getStatus(),
       });
     } else {
-      return res.status(HttpStatus.OK).json(result);
+      return res.status(200).json(result);
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, HttpException, HttpStatus, Res } from '@nestjs/common';
+import { Controller, Get, HttpException, Res } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UfService } from '../service/uf.service';
 import { UFNotFoundException } from '../domain/errors/UfNotFound.exception';
@@ -18,7 +18,7 @@ export class UfController {
     type: AllExceptionsFilterDTO,
   })
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: 200,
     description: 'UFs encontradas',
     type: FindUFsResponseDTO,
   })
@@ -33,7 +33,7 @@ export class UfController {
         status: result.getStatus(),
       });
     } else {
-      return res.status(HttpStatus.OK).json(result);
+      return res.status(200).json(result);
     }
   }
 }
