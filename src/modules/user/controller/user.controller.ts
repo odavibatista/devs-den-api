@@ -22,7 +22,7 @@ import {
   LoginUserResponseDTO,
 } from '../domain/requests/LoginUser.request.dto';
 import { Request, Response } from 'express';
-import { FindUserResponseDTO } from '../domain/requests/FindUser.request.dto';
+import { FindCandidateUserResponseDTO, FindCompanyUserResponseDTO } from '../domain/requests/FindUser.request.dto';
 import { CompanyNotFoundException } from 'src/modules/company/domain/errors/CompanyNotFound.exception';
 import { NotAuthenticatedException } from '../domain/errors/NotAuthenticated.exception';
 import { BadTokenException } from '../domain/errors/BadToken.exception';
@@ -48,12 +48,12 @@ export class UserController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Usuário encontrado com sucesso',
-    type: FindUserResponseDTO,
+    type: FindCandidateUserResponseDTO,
   })
   async findOne(
     @Param('id') id: number,
     @Res() res: Response,
-  ): Promise<FindUserResponseDTO | AllExceptionsFilterDTO> {
+  ): Promise<FindCandidateUserResponseDTO | FindCompanyUserResponseDTO | AllExceptionsFilterDTO> {
     const result = await this.userService.findOne(id);
 
     if (result instanceof HttpException) {
@@ -63,12 +63,7 @@ export class UserController {
       });
     } else {
       return res.status(HttpStatus.OK).json({
-        user: {
-          id: result.id,
-          name: result.name,
-          email: result.email,
-          role: result.role,
-        },
+        user: result
       });
     }
   }
@@ -135,7 +130,7 @@ export class UserController {
   @ApiResponse({
     status: 204,
     description: 'Usuário deletado com sucesso',
-    type: FindUserResponseDTO, // -> needs to be fixed
+    type: FindCandidateUserResponseDTO, // -> needs to be fixed
   })
   async delete(
     @Req() req: Request,

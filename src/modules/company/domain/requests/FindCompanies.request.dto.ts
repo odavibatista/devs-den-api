@@ -20,7 +20,7 @@ export class FindCompaniesResponseDTO extends createZodDto(
 ) {}
 
 export const FindCompanyResponseSchema = z.object({
-  id: z.number().int().positive().describe('ID da empresa'),
+  id_user: z.number().int().positive().describe('ID da empresa'),
   name: z.string().max(50).describe('Nome da empresa'),
   cnpj: z.string().length(14).describe('CNPJ da empresa'),
   email: z.string().email().max(50).describe('E-mail da empresa'),

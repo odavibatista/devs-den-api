@@ -19,6 +19,7 @@ import { Uf } from 'src/modules/uf/entity/uf.entity';
 import { UFNotFoundException } from 'src/modules/uf/domain/errors/UfNotFound.exception';
 import { JWTProvider } from 'src/modules/user/providers/JWT.provider';
 import { UserService } from 'src/modules/user/service/user.service';
+import { FindCompanyResponseDTO } from '../domain/requests/FindCompanies.request.dto';
 
 @Injectable()
 export class CompanyService {
@@ -39,12 +40,18 @@ export class CompanyService {
     return await this.companyRepository.find();
   }
 
-  async findOne(id: number): Promise<Company | Company> {
+  async findOne(id: number): Promise<FindCompanyResponseDTO | CompanyNotFoundException> {
     const company = await this.companyRepository.findOne({
       where: { id_user: id },
     });
 
-    return company;
+    if (!company) throw new CompanyNotFoundException()
+
+    else return {
+      id_user: company.id_user,
+      name: company.name,
+      cnpj: company.cnpj,
+    }
   }
 
   async create(
@@ -149,14 +156,14 @@ export class CompanyService {
   async delete(id: number): Promise<string | CompanyNotFoundException> {
     try {
       const company = await this.companyRepository.findOne({
-        where: { id_user: id, deleted_at: null },
+        where: { id_user: id },
       });
 
-      if (!company) throw new CompanyNotFoundException();
+      if (!company || company.deleted_at !== null) throw new CompanyNotFoundException();
 
-      company.deleted_at = new Date().toISOString();
-
-      await this.companyRepository.save(company);
+      await this.companyRepository.update({ id_user: id }, {
+        deleted_at: new Date().toISOString()
+      });
 
       return company.name
     } catch (error) {

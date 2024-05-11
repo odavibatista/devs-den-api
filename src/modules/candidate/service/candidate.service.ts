@@ -125,9 +125,10 @@ export class CandidateService {
 
       if (!candidate) throw new CandidateNotFoundException();
 
-      candidate.deleted_at = new Date().toISOString();
 
-      await this.candidateRepository.save(candidate);
+      await this.candidateRepository.update({ id_user: id }, {
+        deleted_at: new Date().toISOString()
+      });
 
       return candidate.name
     } catch (error) {

@@ -107,22 +107,4 @@ export class IndividualCompanyController {
     }
   }
 
-  @Get(':id/search')
-  @ApiBearerAuth('user-token')
-  @ApiResponse({
-    status: new CompanyNotFoundException().getStatus(),
-    description: new CompanyNotFoundException().message,
-    type: AllExceptionsFilterDTO,
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Empresa encontrada com sucesso',
-    type: FindCompanyResponseDTO,
-  })
-  async findOne(
-    @Param('id') id: number,
-  ): Promise<Company | CompanyNotFoundException> {
-    return this.companyService.findOne(id);
-  }
-
 }

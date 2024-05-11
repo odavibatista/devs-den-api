@@ -15,7 +15,7 @@ import {
 } from '../domain/requests/LoginUser.request.dto';
 import { Candidate } from 'src/modules/candidate/entity/candidate.entity';
 import { Company } from 'src/modules/company/entity/company.entity';
-import { FindUserResponseDTO } from '../domain/requests/FindUser.request.dto';
+import { FindCandidateUserResponseDTO, FindCompanyUserResponseDTO } from '../domain/requests/FindUser.request.dto';
 import { HashProvider } from '../providers/hash.provider';
 import { NotAuthenticatedException } from '../domain/errors/NotAuthenticated.exception';
 import { BadTokenException } from '../domain/errors/BadToken.exception';
@@ -42,7 +42,7 @@ export class UserService {
 
   async findOne(
     id: number,
-  ): Promise<FindUserResponseDTO | UserNotFoundException> {
+  ): Promise<FindCandidateUserResponseDTO | FindCompanyUserResponseDTO | UserNotFoundException> {
     try {
       const user = await this.userRepository.findOne({
         where: { id_user: id }
@@ -60,6 +60,13 @@ export class UserService {
         });
   
         name = candidateUser.name;
+
+        return {
+          id: user.id_user,
+          name: name,
+          email: user.email,
+          role: user.role
+        };
       }
   
       if (user.role === 'company') {
@@ -68,14 +75,16 @@ export class UserService {
         });
   
         name = companyUser.name;
+
+        return {
+          id: user.id_user,
+          name: name,
+          email: user.email,
+          role: user.role,
+          cnpj: companyUser.cnpj
+        };
       }
-  
-      return {
-        id: user.id_user,
-        email: user.email,
-        name: name,
-        role: user.role
-      };
+
     } catch (error) {
       throw new HttpException(error, error.status);
     }
