@@ -194,8 +194,6 @@ export class UserService {
   ): Promise<
     | number
     | UserNotFoundException
-    | NotAuthenticatedException
-    | BadTokenException
   > {
     try {
       const user = await this.userRepository.findOne({

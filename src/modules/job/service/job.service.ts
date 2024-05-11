@@ -21,11 +21,10 @@ export class JobService {
     private companyRepository: Repository<Company>,
   ) {}
 
-  async findAll(): Promise<Job[] | JobNotFoundException> {
+  async findAll(): Promise<Job[]> {
     const jobs = await this.jobRepository.find();
 
-    if (jobs.length === 0) throw new JobNotFoundException();
-    else return jobs;
+    return jobs
   }
 
   async findOne(id: number): Promise<Job | JobNotFoundException> {

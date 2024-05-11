@@ -48,7 +48,7 @@ export class CandidateController {
   async register(
     @Body() body: RegisterCandidateBodyDTO,
     @Res() res: Response,
-  ): Promise<any> {
+  ): Promise<RegisterCandidateResponseDTO | AllExceptionsFilterDTO> {
     const result = await this.candidateService.create(body);
 
     if (result instanceof HttpException) {

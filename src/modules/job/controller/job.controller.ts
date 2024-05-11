@@ -29,7 +29,7 @@ export class ConjunctJobsController {
     async findAll(
         @Req() req: Request,
         @Res() res: Response,
-    ): Promise <FindJobsResponseDTO | UserIsNotCompanyException | InvalidModalityException | AllExceptionsFilterDTO> {
+    ): Promise <FindJobsResponseDTO | AllExceptionsFilterDTO> {
         const result = await this.jobService.findAll();
 
         if (result instanceof HttpException) {

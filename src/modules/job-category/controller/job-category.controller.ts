@@ -1,4 +1,4 @@
-import { Controller, Get, HttpStatus, Param, Req, Res } from '@nestjs/common';
+import { Controller, Get, HttpException, HttpStatus, Param, Req, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   FindJobCategoriesResponseDTO,
@@ -28,13 +28,15 @@ export class JobCategoryController {
     @Res() res: Response,
   ): Promise<
     | FindJobCategoriesResponseDTO
-    | CategoryNotFoundException
     | AllExceptionsFilterDTO
   > {
     const result = await this.jobCategoriesService.findAll();
 
-    if (result instanceof CategoryNotFoundException) {
-      throw new CategoryNotFoundException();
+    if (result instanceof HttpException) {
+      return res.status(result.getStatus()).json({
+        message: result.message,
+        status: result.getStatus(),
+      });
     } else {
       return res.status(HttpStatus.OK).json(result);
     }
@@ -58,13 +60,15 @@ export class JobCategoryController {
     @Res() res: Response,
   ): Promise<
     | FindJobCategoryResponseDTO
-    | CategoryNotFoundException
     | AllExceptionsFilterDTO
   > {
     const result = await this.jobCategoriesService.findOne(id);
 
-    if (result instanceof CategoryNotFoundException) {
-      throw new CategoryNotFoundException();
+    if (result instanceof HttpException) {
+      return res.status(result.getStatus()).json({
+        message: result.message,
+        status: result.getStatus(),
+      });
     } else {
       return res.status(HttpStatus.OK).json(result);
     }
