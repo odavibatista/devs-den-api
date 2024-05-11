@@ -1,9 +1,8 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entity/user.entity';
 import { CreateUserDTO } from '../dto/user.dto';
-import * as bcrypt from 'bcrypt';
 import { JWTProvider } from '../providers/JWT.provider';
 import { UserNotFoundException } from '../domain/errors/UserNotFound.exception';
 import { EmailAlreadyRegisteredException } from '../domain/errors/EmailAlreadyRegistered.exception';
@@ -16,7 +15,10 @@ import {
 } from '../domain/requests/LoginUser.request.dto';
 import { Candidate } from 'src/modules/candidate/entity/candidate.entity';
 import { Company } from 'src/modules/company/entity/company.entity';
-import { FindUserResponseDTO } from '../domain/requests/FindUser.request.dto';
+import { FindCandidateUserResponseDTO, FindCompanyUserResponseDTO } from '../domain/requests/FindUser.request.dto';
+import { HashProvider } from '../providers/hash.provider';
+import { NotAuthenticatedException } from '../domain/errors/NotAuthenticated.exception';
+import { BadTokenException } from '../domain/errors/BadToken.exception';
 
 @Injectable()
 export class UserService {
@@ -27,8 +29,8 @@ export class UserService {
     private candidateRepository: Repository<Candidate>,
     @InjectRepository(Company)
     private companyRepository: Repository<Company>,
-
     private jwtProvider: JWTProvider,
+    private hashProvider: HashProvider,
   ) {}
 
   async findAll(): Promise<User[] | UserNotFoundException> {
@@ -40,68 +42,78 @@ export class UserService {
 
   async findOne(
     id: number,
-  ): Promise<FindUserResponseDTO | UserNotFoundException> {
-    const user = await this.userRepository.findOne({
-      where: { id_user: id },
-    });
-
-    if (!user) {
-      throw new UserNotFoundException();
-    }
-
-    let name: string;
-
-    if (user.role === 'candidate') {
-      const candidateUser = await this.candidateRepository.findOne({
-        where: { id_user: user.id_user },
+  ): Promise<FindCandidateUserResponseDTO | FindCompanyUserResponseDTO | UserNotFoundException> {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { id_user: id }
       });
+  
+      if (!user || user.deleted_at !== null) {
+        throw new UserNotFoundException();
+      }
+  
+      let name: string;
+  
+      if (user.role === 'candidate') {
+        const candidateUser = await this.candidateRepository.findOne({
+          where: { id_user: user.id_user },
+        });
+  
+        name = candidateUser.name;
 
-      name = candidateUser.name;
+        return {
+          id: user.id_user,
+          name: name,
+          email: user.email,
+          role: user.role
+        };
+      }
+  
+      if (user.role === 'company') {
+        const companyUser = await this.companyRepository.findOne({
+          where: { id_user: user.id_user },
+        });
+  
+        name = companyUser.name;
+
+        return {
+          id: user.id_user,
+          name: name,
+          email: user.email,
+          role: user.role,
+          cnpj: companyUser.cnpj
+        };
+      }
+
+    } catch (error) {
+      throw new HttpException(error, error.status);
     }
-
-    if (user.role === 'company') {
-      const companyUser = await this.companyRepository.findOne({
-        where: { id_user: user.id_user },
-      });
-
-      name = companyUser.name;
-    }
-
-    return {
-      id: user.id_user,
-      email: user.email,
-      name: name,
-      role: user.role,
-    };
   }
 
   async create(
-    createUserDto: CreateUserDTO,
+    params: CreateUserDTO,
   ): Promise<
     | User
     | EmailAlreadyRegisteredException
     | UnformattedEmailException
     | UnformattedPasswordException
+    | any
   > {
-    try {
-      const saltOrRounds = 10;
-      const hash = await bcrypt.hash(createUserDto.password, saltOrRounds);
+    const hashedPassword = await this.hashProvider.hash(params.password)
 
-      return await this.userRepository.create({
-        email: createUserDto.email,
-        password: hash,
-        role: createUserDto.role,
-      });
+    try {
+        const user = await this.userRepository.save({
+          email: params.email,
+          password: hashedPassword,
+          role: params.role,
+        });
+        
+        return {
+          user: user,
+          id: user.id_user
+        }
     } catch (error) {
-      if (error.code === 'ER_DUP_ENTRY') {
-        throw new EmailAlreadyRegisteredException();
-      } else {
-        console.log(error);
-        throw new HttpException(
-          'Erro ao criar o registro. Tente novamente mais tarde.',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
+      throw new HttpException(error, error.status);
     }
   }
 
@@ -122,25 +134,16 @@ export class UserService {
         return new UserNotFoundException();
       }
 
-      const isPasswordValid = loginDto.inserted_password === user.password;
-      /*
-      const isPasswordValid = await this.checkPassword(loginDto.inserted_password, user.password, (err, isSame) => {
-        if (!isSame) {
-          throw new WrongPasswordException()
-        }
-  
-        if (err) {
-          throw new HttpException('Erro ao verificar a senha.', HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-  
-        return true
-      });*/
+      const isPasswordValid: boolean = await this.hashProvider.compare(loginDto.inserted_password, user.password);
 
       if (!isPasswordValid) {
         return new WrongPasswordException();
       } else {
         const token = this.jwtProvider.generate({
-          payload: { id: user.id_user },
+          payload: {
+            id: user.id_user,
+            role: user.role,
+          },
           expiresIn: '6h',
         });
 
@@ -173,22 +176,25 @@ export class UserService {
         return response;
       }
     } catch (error) {
-      console.log(error);
+      throw new HttpException(error, error.status);
     }
   }
 
-  /* TO BE REMOVED */
-  public async checkPassword(
-    password: string,
-    otherPassword: string,
-    callbackfn: (err?: Error, isSame?: boolean) => void,
-  ) {
-    bcrypt.compare(password, otherPassword, (err, isSame) => {
-      if (err) {
-        callbackfn(err);
-      } else {
-        callbackfn(err, isSame);
-      }
-    });
+  public async delete(id: number): Promise<number | UserNotFoundException | NotAuthenticatedException | BadTokenException> {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { id_user: id, deleted_at: null },
+      })
+
+      if (!user) throw new UserNotFoundException();
+
+      user.deleted_at = new Date().toISOString();
+
+      await this.userRepository.save(user);
+
+      return user.id_user
+    } catch (error) {
+      throw new HttpException(error, error.status);
+    }
   }
 }

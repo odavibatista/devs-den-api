@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { DatabaseModule } from '../database/database.module';
 import { CompanyModule } from '../modules/company/company.module';
 import { UserModule } from '../modules/user/user.module';
@@ -22,4 +22,6 @@ import { JobCategoryModule } from '../modules/job-category/job-category.module';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) { }
+}

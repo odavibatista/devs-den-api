@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class Address {
+class Addresses {
   @PrimaryGeneratedColumn({})
   id_address: number;
 
@@ -58,3 +58,5 @@ export class Address {
   })
   updated_at: Date;
 }
+
+export { Addresses as Address }

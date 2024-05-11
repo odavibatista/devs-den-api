@@ -17,7 +17,7 @@ enum Gender {
 }
 
 @Entity()
-export class Candidate {
+class Candidates {
   @PrimaryColumn()
   @OneToOne(() => User, (user) => user.id_user, {
     nullable: false,
@@ -49,6 +49,11 @@ export class Candidate {
   })
   address_id: number;
 
+  @Column({
+    nullable: true
+  })
+  deleted_at: string;
+
   @ManyToMany(() => Skill, (skill) => skill.id_skill)
   @CreateDateColumn({
     nullable: false,
@@ -60,3 +65,5 @@ export class Candidate {
   })
   updated_at: Date;
 }
+
+export { Candidates as Candidate }

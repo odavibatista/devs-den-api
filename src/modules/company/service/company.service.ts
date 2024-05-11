@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Company } from '../entity/company.entity';
 import { Repository } from 'typeorm';
@@ -13,10 +13,13 @@ import { emailValidate } from 'src/shared/utils/emailValidate';
 import { UnformattedPasswordException } from 'src/modules/user/domain/errors/UnformattedPassword.exception';
 import { UnformattedEmailException } from 'src/modules/user/domain/errors/UnformattedEmail.exception';
 import { InvalidCNPJException } from '../domain/errors/InvalidCNPJ.exception';
-import { RegisterCompanyBodyDTO } from '../domain/requests/RegisterCompany.request.dto';
+import { RegisterCompanyBodyDTO, RegisterCompanyResponseDTO } from '../domain/requests/RegisterCompany.request.dto';
 import { Address } from 'src/modules/address/entity/address.entity';
 import { Uf } from 'src/modules/uf/entity/uf.entity';
 import { UFNotFoundException } from 'src/modules/uf/domain/errors/UfNotFound.exception';
+import { JWTProvider } from 'src/modules/user/providers/JWT.provider';
+import { UserService } from 'src/modules/user/service/user.service';
+import { FindCompanyResponseDTO } from '../domain/requests/FindCompanies.request.dto';
 
 @Injectable()
 export class CompanyService {
@@ -29,24 +32,32 @@ export class CompanyService {
     private readonly addressRepository: Repository<Address>,
     @InjectRepository(Uf)
     private readonly ufRepository: Repository<Uf>,
+    private readonly JwtProvider: JWTProvider,
+    private readonly userService: UserService,
   ) {}
 
   async findAll(): Promise<Company[]> {
     return await this.companyRepository.find();
   }
 
-  async findOne(id: number): Promise<Company | Company> {
+  async findOne(id: number): Promise<FindCompanyResponseDTO | CompanyNotFoundException> {
     const company = await this.companyRepository.findOne({
       where: { id_user: id },
     });
 
-    return company;
+    if (!company) throw new CompanyNotFoundException()
+
+    else return {
+      id_user: company.id_user,
+      name: company.name,
+      cnpj: company.cnpj,
+    }
   }
 
   async create(
     params: RegisterCompanyBodyDTO,
   ): Promise<
-    | Company
+    | RegisterCompanyResponseDTO
     | EmailAlreadyRegisteredException
     | UnformattedPasswordException
     | CompanyNameAlreadyRegisteredException
@@ -97,13 +108,17 @@ export class CompanyService {
 
       if (!isCNPJValid) throw new InvalidCNPJException();
 
-      const user = await this.userRepository.save({
+      await this.userService.create({
         email: params.credentials.email,
         password: params.credentials.password,
         role: 'company',
       });
 
-      const address = await this.addressRepository.save({
+      const userToBeFound: User = await this.userRepository.findOne({
+        where: { email: params.credentials.email },
+      })
+
+      await this.addressRepository.save({
         uf: uf,
         cep: params.address.cep,
         city: params.address.city,
@@ -112,32 +127,45 @@ export class CompanyService {
         number: params.address.number,
       });
 
-      const createdCompany = await this.companyRepository.save({
-        id_user: user.id_user,
+      await this.companyRepository.save({
+        id_user: userToBeFound.id_user,
         name: params.company_name,
         cnpj: params.cnpj,
       });
 
-      return createdCompany;
+      const token = this.JwtProvider.generate({
+        payload: {
+          id: userToBeFound.id_user,
+          role: params.credentials.role
+        }
+      })
+
+      return {
+        user: {
+          id: userToBeFound.id_user,
+          name: params.company_name,
+          role: 'company',
+        },
+        token: token,
+      };
     } catch (error) {
       throw new HttpException(error, error.status);
     }
   }
 
-  // NEEDS TO BE FIXED, PROVISORY ONLY
-  async delete(id: number): Promise<Company> {
+  async delete(id: number): Promise<string | CompanyNotFoundException> {
     try {
-      const company = this.companyRepository.findOne({
+      const company = await this.companyRepository.findOne({
         where: { id_user: id },
       });
 
-      if (!company) throw new CompanyNotFoundException();
+      if (!company || company.deleted_at !== null) throw new CompanyNotFoundException();
 
-      await this.companyRepository.delete({
-        id_user: id,
+      await this.companyRepository.update({ id_user: id }, {
+        deleted_at: new Date().toISOString()
       });
 
-      return company;
+      return company.name
     } catch (error) {
       throw new HttpException(error, error.status);
     }

@@ -6,13 +6,13 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-enum Role {
+export enum Role {
   COMPANY = 'company',
   CANDIDATE = 'candidate',
 }
 
 @Entity()
-export class User {
+class Users {
   @PrimaryGeneratedColumn()
   id_user: number;
 
@@ -23,7 +23,7 @@ export class User {
   email: string;
 
   @Column({
-    length: 250,
+    length: 500,
   })
   password: string;
 
@@ -35,6 +35,11 @@ export class User {
   })
   role: string;
 
+  @Column({
+    nullable: true,
+  })
+  deleted_at: string;
+
   @CreateDateColumn({
     nullable: false,
   })
@@ -45,3 +50,5 @@ export class User {
   })
   updated_at: Date;
 }
+
+export { Users as User };

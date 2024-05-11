@@ -18,7 +18,7 @@ export class CreateUserDTO {
   email: string;
 
   @IsString()
-  @Length(15, 255)
+  @Length(15, 500)
   password: string;
 
   @IsString()

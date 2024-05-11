@@ -16,6 +16,8 @@ import { UFNotFoundException } from 'src/modules/uf/domain/errors/UfNotFound.exc
 import { JWTProvider } from 'src/modules/user/providers/JWT.provider';
 import { passwordValidate } from 'src/shared/utils/passwordValidate';
 import { emailValidate } from 'src/shared/utils/emailValidate';
+import { UserService } from 'src/modules/user/service/user.service';
+import { CandidateNotFoundException } from '../domain/errors/CandidateNotFound.exception';
 
 @Injectable()
 export class CandidateService {
@@ -28,8 +30,8 @@ export class CandidateService {
     private readonly addressRepository: Repository<Address>,
     @InjectRepository(Uf)
     private readonly ufRepository: Repository<Uf>,
-    @InjectDataSource()
     private readonly JwtProvider: JWTProvider,
+    private readonly userService: UserService
   ) {}
 
   async create(
@@ -67,13 +69,13 @@ export class CandidateService {
         throw new UFNotFoundException();
       }
 
-      const user = await this.userRepository.save({
+      await this.userService.create({
         email: params.credentials.email,
         password: params.credentials.password,
         role: 'candidate',
-      });
+      })
 
-      const address = await this.addressRepository.save({
+      await this.addressRepository.save({
         uf: uf,
         cep: params.address.cep,
         city: params.address.city,
@@ -82,33 +84,53 @@ export class CandidateService {
         number: params.address.number,
       });
 
-      const candidate = await this.candidateRepository.save({
-        id_user: user.id_user,
+      const userToBeFound: User = await this.userRepository.findOne({
+        where: { email: params.credentials.email },
+      })
+
+      await this.candidateRepository.save({
+        id_user: userToBeFound.id_user,
         name: params.name,
         gender: params.gender,
         birth_date: params.birth_date,
-        address_id: (await address).id_address,
       });
 
-      // Not working, needs to be investigated
-      // const token = this.JwtProvider.generate({
-      //     payload: {
-      //         // id: user.id_login,
-      //         email: createCandidateParams.credentials.email,
-      //         role: createCandidateParams.credentials.role
-      //     }
-      // })
+      const token = this.JwtProvider.generate({
+        payload: {
+          id: userToBeFound.id_user,
+          role: params.credentials.role
+        }
+      })
 
       const response = {
         user: {
-          id: user.id_user,
-          name: candidate.name,
-          role: user.role,
+          id: userToBeFound.id_user,
+          name: params.name,
+          role: 'candidate',
         },
-        //token: token,
+        token: token,
       };
 
       return response;
+    } catch (error) {
+      throw new HttpException(error, error.status);
+    }
+  }
+
+  async delete(id: number): Promise<string | CandidateNotFoundException> {
+    try {
+      const candidate = await this.candidateRepository.findOne({
+        where: { id_user: id, deleted_at: null },
+      });
+
+      if (!candidate) throw new CandidateNotFoundException();
+
+
+      await this.candidateRepository.update({ id_user: id }, {
+        deleted_at: new Date().toISOString()
+      });
+
+      return candidate.name
     } catch (error) {
       throw new HttpException(error, error.status);
     }

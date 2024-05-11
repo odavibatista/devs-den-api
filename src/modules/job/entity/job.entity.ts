@@ -19,7 +19,7 @@ enum Modality {
 }
 
 @Entity()
-export class Job {
+class Jobs {
   @PrimaryGeneratedColumn()
   id_job: number;
 
@@ -79,3 +79,5 @@ export class Job {
   })
   updated_at: Date;
 }
+
+export { Jobs as Job }

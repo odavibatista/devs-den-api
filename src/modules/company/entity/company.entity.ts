@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class Company {
+class Companies {
   @PrimaryColumn()
   @OneToOne(() => User, (user) => user.id_user, {
     nullable: false,
@@ -29,6 +29,11 @@ export class Company {
   })
   cnpj: string;
 
+  @Column({
+    nullable: true,
+  })
+  deleted_at: string;
+
   @CreateDateColumn({
     nullable: false,
   })
@@ -39,3 +44,5 @@ export class Company {
   })
   updated_at: Date;
 }
+
+export { Companies as Company }

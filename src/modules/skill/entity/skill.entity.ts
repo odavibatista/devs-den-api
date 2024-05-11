@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class Skill {
+class Skills {
   @PrimaryGeneratedColumn()
   id_skill: number;
 
@@ -54,3 +54,5 @@ export class Skill {
   })
   updated_at: Date;
 }
+
+export { Skills as Skill }
