@@ -12,6 +12,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { JobCategory } from 'src/modules/job-category/entity/job-category.entity';
+import { Skill } from 'src/modules/skill/entity/skill.entity';
 
 enum Modality {
   PRESENTIAL = 'presential',
@@ -61,6 +62,19 @@ class Jobs {
   })
   modality: string;
 
+  @ManyToMany(() => Skill, (skill) => skill.id_skill)
+  @JoinTable({
+    name: 'job_skills',
+    joinColumn: {
+      name: 'job_id',
+      referencedColumnName: 'id_job',
+    },
+    inverseJoinColumn: {
+      name: 'skill_id',
+      referencedColumnName: 'id_skill',
+    },
+  })
+  
   @CreateDateColumn({
     nullable: false,
   })
@@ -70,6 +84,8 @@ class Jobs {
     nullable: false,
   })
   updated_at: Date;
+
+
 }
 
 export { Jobs as Job }
