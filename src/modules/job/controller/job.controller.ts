@@ -47,7 +47,6 @@ export class ConjunctJobsController {
 export class IndividualJobController {
     constructor(private readonly jobService: JobService) {}
 
-    @ApiBearerAuth('user-token')
     @ApiResponse({
         status: new JobNotFoundException().getStatus(),
         description: new JobNotFoundException().message,
@@ -60,7 +59,7 @@ export class IndividualJobController {
     })
     @Get('/:id/find')
     async findOne(
-        @Param() id: number,
+        @Param('id') id: number,
         @Req() req: Request,
         @Res() res: Response,
     ): Promise<FindJobResponseDTO | JobNotFoundException | AllExceptionsFilterDTO>  {
