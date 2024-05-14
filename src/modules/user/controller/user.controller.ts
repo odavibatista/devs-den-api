@@ -9,6 +9,7 @@ import {
   Put,
   Req,
   Res,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UserService } from '../service/user.service';
 import { UserNotFoundException } from '../domain/errors/UserNotFound.exception';
@@ -30,7 +31,8 @@ import { NotAuthenticatedException } from '../domain/errors/NotAuthenticated.exc
 import { BadTokenException } from '../domain/errors/BadToken.exception';
 import { CompanyService } from 'src/modules/company/service/company.service';
 import { CandidateService } from 'src/modules/candidate/service/candidate.service';
-import { z } from 'zod';
+import { CommonException } from 'src/shared/domain/errors/Common.exception';
+import { HomeDataResponseDTO } from '../domain/requests/HomeData.request.dto';
 
 @Controller('user')
 @ApiTags('Usuário')
@@ -47,6 +49,11 @@ export class UserController {
     status: new UserNotFoundException().getStatus(),
     description: new UserNotFoundException().message,
     type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new CommonException().getStatus(),
+    description: new CommonException().message,
+    type: AllExceptionsFilterDTO
   })
   @ApiResponse({
     status: 200,
@@ -92,6 +99,11 @@ export class UserController {
     type: AllExceptionsFilterDTO,
   })
   @ApiResponse({
+    status: new CommonException().getStatus(),
+    description: new CommonException().message,
+    type: AllExceptionsFilterDTO
+  })
+  @ApiResponse({
     status: 200,
     description: 'Usuário logado com sucesso',
     type: LoginUserResponseDTO,
@@ -110,6 +122,51 @@ export class UserController {
     } else {
       return res.status(200).json(result);
     }
+  }
+  
+  @ApiBearerAuth('user-token')
+  @Get('home-data')
+  @ApiResponse({
+    status: new NotAuthenticatedException().getStatus(),
+    description: new NotAuthenticatedException().message,
+    type: AllExceptionsFilterDTO
+  })
+  @ApiResponse({
+    status: new CommonException().getStatus(),
+    description: new CommonException().message,
+    type: AllExceptionsFilterDTO
+  })
+  @ApiResponse({
+    status: 304,
+    description: 'Dados trazidos com sucesso.',
+    type: HomeDataResponseDTO
+  })
+  async homeData (
+    @Req() req: Request,
+    @Res() res: Response
+  ): Promise<HomeDataResponseDTO | AllExceptionsFilterDTO> {
+    const user = req.user
+
+    if (!user) {
+      return res.status(new NotAuthenticatedException().getStatus()).json({
+          message: new NotAuthenticatedException().message,
+          status: new NotAuthenticatedException().getStatus()
+      });
+    }
+
+    const result = await this.userService.findOne(user.id);
+
+    if (result instanceof HttpException) {
+      return res.status(result.getStatus()).json({
+        message: result.message,
+        status: result.getStatus(),
+      });
+    } else {
+      return res.status(200).json({
+        user: result,
+      });
+    }
+
   }
 
   @Delete(':id/delete')
@@ -133,6 +190,11 @@ export class UserController {
     status: new BadTokenException().getStatus(),
     description: new BadTokenException().message,
     type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new CommonException().getStatus(),
+    description: new CommonException().message,
+    type: AllExceptionsFilterDTO
   })
   @ApiResponse({
     status: 204,

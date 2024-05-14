@@ -39,6 +39,7 @@ export class UserModule implements NestModule {
       .forRoutes(
         { path: 'user/:id/delete', method: RequestMethod.DELETE },
         { path: 'user/:id/search', method: RequestMethod.GET },
+        { path: 'user/home-data', method: RequestMethod.GET },
       );
   }
 }
