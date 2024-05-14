@@ -29,10 +29,6 @@ export class JobCategoryModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(AuthenticationMiddleware).forRoutes(
       {
-        path: 'job-category/browse',
-        method: RequestMethod.GET,
-      },
-      {
         path: 'job-category/:id/find',
         method: RequestMethod.GET,
       },

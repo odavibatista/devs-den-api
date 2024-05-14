@@ -11,11 +11,13 @@ async function bootstrap() {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
 
-  app.use(
-    cors({
+  app.enableCors(
+    {
       origin: '*',
-    }),
-  );
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    }
+  )
 
   const PORT = process.env.API_PORT;
 
