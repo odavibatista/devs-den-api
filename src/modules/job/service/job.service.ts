@@ -9,6 +9,7 @@ import { Company } from 'src/modules/company/entity/company.entity';
 import { CompanyNotFoundException } from 'src/modules/company/domain/errors/CompanyNotFound.exception';
 import { InvalidModalityException } from '../domain/errors/InvalidModality.exception';
 import { CreateJobBodyDTO, CreateJobResponseDTO } from '../domain/requests/CreateJob.request.dto';
+import { FindJobResponseDTO } from '../domain/requests/FindJobs.request.dto';
 
 @Injectable()
 export class JobService {
@@ -27,13 +28,43 @@ export class JobService {
     return jobs
   }
 
-  async findOne(id: number): Promise<Job | JobNotFoundException> {
+  async findOne(id: number): Promise<FindJobResponseDTO | JobNotFoundException> {
     const job = await this.jobRepository.findOne({
       where: { id_job: id },
     });
 
-    if (!job) throw new JobNotFoundException();
-    else return job;
+    const jobCompany = await this.companyRepository.findOne({
+      where: { id_user: job.company_id }
+    })
+
+    const jobCategory = await this.jobCategoryRepository.findOne({
+      where: { id_category: job.job_category_id }
+    })
+
+    if (!job) throw new JobNotFoundException()
+
+    if (!jobCompany) throw new CompanyNotFoundException()
+
+    if (!jobCategory) throw new CategoryNotFoundException()
+
+    return {
+      job: {
+        job_id: job.id_job,
+        title: job.title,
+        description: job.description,
+        wage: job.wage,
+        modality: job.modality,
+        job_category: {
+          id_category: jobCategory.id_category,
+          name: jobCategory.name,
+          image_url: jobCategory.image_url
+        }
+      },
+      company:  {
+        company_id: jobCompany.id_user,
+        name: jobCompany.name,
+      }
+    }
   }
 
   async findJobsByJobCategory(
