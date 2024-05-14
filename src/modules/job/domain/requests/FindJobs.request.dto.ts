@@ -3,10 +3,9 @@ import { z } from 'nestjs-zod/z';
 
 export const FindJobResponseSchema = z.object({
     job: z.object({
-        job_id: z.number().int().positive().describe('ID da vaga'),
+        id_job: z.number().int().positive().describe('ID da vaga'),
         title: z.string().min(5).max(100).describe('Título da vaga'),
         description: z.string().min(20).max(500).describe('Descrição da vaga'),
-        company_id: z.number().int().positive().describe('ID da empresa'),
         wage: z.number().int().positive().describe('Salário da vaga'),
         modality: z
         .string()
@@ -20,7 +19,7 @@ export const FindJobResponseSchema = z.object({
         }),
     }),
     company: z.object({
-        company_id: z.number().int().positive().describe('ID da vaga'),
+        id_company: z.number().int().positive().describe('ID da vaga'),
         name: z.string().min(5).max(100).describe('Nome da empresa'),
     })
 });

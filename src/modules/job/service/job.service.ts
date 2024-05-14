@@ -49,19 +49,21 @@ export class JobService {
 
     return {
       job: {
-        job_id: job.id_job,
+        id_job: job.id_job,
         title: job.title,
         description: job.description,
         wage: job.wage,
         modality: job.modality,
+
         job_category: {
           id_category: jobCategory.id_category,
           name: jobCategory.name,
           image_url: jobCategory.image_url
         }
       },
+      
       company:  {
-        company_id: jobCompany.id_user,
+        id_company: jobCompany.id_user,
         name: jobCompany.name,
       }
     }
