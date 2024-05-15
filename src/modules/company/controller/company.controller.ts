@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { CompanyService } from '../service/company.service';
 import { Company } from '../entity/company.entity';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AllExceptionsFilterDTO } from 'src/shared/domain/dtos/errors/AllException.filter.dto';
 import { BadTokenException } from 'src/modules/user/domain/errors/BadToken.exception';
 import { NotAuthenticatedException } from 'src/modules/user/domain/errors/NotAuthenticated.exception';
@@ -26,6 +26,7 @@ import {
   RegisterCompanyBodyDTO,
   RegisterCompanyResponseDTO,
 } from '../domain/requests/RegisterCompany.request.dto';
+import { CommonException } from 'src/shared/domain/errors/Common.exception';
 
 @Controller('companies')
 @ApiTags('Empresas')
@@ -47,6 +48,11 @@ export class ConjunctCompanyController {
     status: new NotAuthenticatedException().getStatus(),
     description: new NotAuthenticatedException().message,
     type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new CommonException().getStatus(),
+    description: new CommonException().message,
+    type: AllExceptionsFilterDTO
   })
   async findAll(): Promise<Company[]> {
     return this.companyService.findAll();
@@ -82,6 +88,11 @@ export class IndividualCompanyController {
     status: new UnformattedPasswordException().getStatus(),
     description: new UnformattedPasswordException().message,
     type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new CommonException().getStatus(),
+    description: new CommonException().message,
+    type: AllExceptionsFilterDTO
   })
   @ApiResponse({
     status: 201,

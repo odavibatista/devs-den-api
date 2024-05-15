@@ -27,6 +27,11 @@ export class ConjunctSkillController {
 
   @Get()
   @ApiResponse({
+    status: new CommonException().getStatus(),
+    description: new CommonException().message,
+    type: AllExceptionsFilterDTO
+  })
+  @ApiResponse({
     status: 200,
     description: 'Skills encontradas com sucesso.',
     type: FindSkillsResponseDTO,
@@ -68,6 +73,11 @@ export class IndividualSkillController {
     status: new UnauthorizedException().getStatus(),
     description: new UnauthorizedException().message,
     type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new CommonException().getStatus(),
+    description: new CommonException().message,
+    type: AllExceptionsFilterDTO
   })
   @ApiResponse({
     status: 200,

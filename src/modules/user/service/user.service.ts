@@ -20,8 +20,6 @@ import {
   FindCompanyUserResponseDTO,
 } from '../domain/requests/FindUser.request.dto';
 import { HashProvider } from '../providers/hash.provider';
-import { NotAuthenticatedException } from '../domain/errors/NotAuthenticated.exception';
-import { BadTokenException } from '../domain/errors/BadToken.exception';
 
 @Injectable()
 export class UserService {
