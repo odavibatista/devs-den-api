@@ -10,7 +10,12 @@ export const CreateJobBodySchema = z.object({
   .string()
   .min(9)
   .max(9)
-  .describe('Modalidade da vaga')
+  .describe('Modalidade da vaga'),
+  contract: z
+  .string()
+  .min(2)
+  .max(6)
+  .describe('Tipo de contrato')
 });
 
 export class CreateJobBodyDTO extends createZodDto(
@@ -18,7 +23,7 @@ export class CreateJobBodyDTO extends createZodDto(
 ) {}
 
 export const CreateJobResponseSchema = z.object({
-  id: z.number().int().positive().describe('ID da vaga'),
+  id_job: z.number().int().positive().describe('ID da vaga'),
   company_id: z.number().int().positive().describe('ID da empresa'),
   title: z.string().min(5).max(100).describe('Título da vaga'),
   description: z.string().min(20).max(500).describe('Descrição da vaga'),
@@ -28,7 +33,12 @@ export const CreateJobResponseSchema = z.object({
   .string()
   .min(9)
   .max(9)
-  .describe('Modalidade da vaga')
+  .describe('Modalidade da vaga'),
+  contract: z
+  .string()
+  .min(2)
+  .max(6)
+  .describe('Tipo de contrato')
 });
 
 export class CreateJobResponseDTO extends createZodDto(

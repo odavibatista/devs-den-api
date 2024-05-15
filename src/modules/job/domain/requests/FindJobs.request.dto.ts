@@ -12,6 +12,11 @@ export const FindJobResponseSchema = z.object({
         .min(9)
         .max(9)
         .describe('Modalidade da vaga'),
+        contract: z
+        .string()
+        .min(2)
+        .max(6)
+        .describe('Tipo de contrato'),
         job_category:  z.object({
             id_category: z.number().int().positive().describe('ID da Categoria da Vaga'),
             name: z.string().min(5).max(100).describe('Nome da Categoria'),

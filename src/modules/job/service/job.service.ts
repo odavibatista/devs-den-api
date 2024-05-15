@@ -54,6 +54,7 @@ export class JobService {
         description: job.description,
         wage: job.wage,
         modality: job.modality,
+        contract: job.contract,
 
         job_category: {
           id_category: jobCategory.id_category,
@@ -61,7 +62,7 @@ export class JobService {
           image_url: jobCategory.image_url
         }
       },
-      
+
       company:  {
         id_company: jobCompany.id_user,
         name: jobCompany.name,

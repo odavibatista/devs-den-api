@@ -21,6 +21,12 @@ enum Modality {
   REMOTE = 'remote',
 }
 
+enum Contract {
+  CLT = 'clt',
+  PJ = 'pj',
+  INTERN = 'intern',
+}
+
 @Entity()
 class Jobs {
   @ManyToMany(() => Candidate, (user) => user.id_user)
@@ -62,6 +68,14 @@ class Jobs {
     enumName: 'modality',
   })
   modality: string;
+
+  @Column({
+    name: 'contract',
+    type: 'enum',
+    enum: [Contract.CLT, Contract.INTERN, Contract.PJ],
+    enumName: 'contract',
+  })
+  contract: string;
 
   @ManyToMany(() => Skill, (skill) => skill.id_skill)
   @JoinTable({
