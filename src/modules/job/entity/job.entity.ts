@@ -48,12 +48,18 @@ class Jobs {
     nullable: false,
   })
   @JoinColumn({ name: 'company_id' })
+  @Column({
+    nullable: false,
+  })
   company_id: number;
 
   @ManyToOne(() => JobCategory, (jobCategory) => jobCategory.id_category, {
     nullable: false,
   })
   @JoinColumn({ name: 'job_category_id' })
+  @Column({
+    nullable: false,
+  })
   job_category_id: number;
 
   @Column({

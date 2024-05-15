@@ -33,17 +33,18 @@ export class JobService {
       where: { id_job: id },
     });
 
+    if (!job) throw new JobNotFoundException()
+
     const jobCompany = await this.companyRepository.findOne({
       where: { id_user: job.company_id }
     })
 
+    if (!jobCompany) throw new CompanyNotFoundException()
+
+
     const jobCategory = await this.jobCategoryRepository.findOne({
       where: { id_category: job.job_category_id }
     })
-
-    if (!job) throw new JobNotFoundException()
-
-    if (!jobCompany) throw new CompanyNotFoundException()
 
     if (!jobCategory) throw new CategoryNotFoundException()
 
