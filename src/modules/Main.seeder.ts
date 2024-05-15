@@ -16,6 +16,6 @@ export class MainSeeder implements Seeder {
 
     await runSeeder(dataSource, JobCategorySeeder);
 
-    await runSeeder(dataSource, UserSeeder);
+    // await runSeeder(dataSource, UserSeeder);
   }
 }
