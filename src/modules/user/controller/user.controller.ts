@@ -137,7 +137,7 @@ export class UserController {
     type: AllExceptionsFilterDTO
   })
   @ApiResponse({
-    status: 304,
+    status: 300,
     description: 'Dados trazidos com sucesso.',
     type: HomeDataResponseDTO
   })
@@ -162,8 +162,12 @@ export class UserController {
         status: result.getStatus(),
       });
     } else {
-      return res.status(200).json({
-        user: result,
+      return res.status(300).json({
+        user: {
+          id: result.id,
+          name: result.name,
+          role: result.role,
+        },
       });
     }
 
