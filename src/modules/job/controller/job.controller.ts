@@ -74,7 +74,8 @@ export class IndividualJobController {
             return res.status(res.statusCode).json(result);
           }
     }
-
+    
+    @ApiBearerAuth('user-token')
     @ApiResponse({
         status: new InvalidModalityException().getStatus(),
         description: new InvalidModalityException().message,
