@@ -83,34 +83,6 @@ class Jobs {
   })
   contract: string;
 
-  @ManyToMany(() => Skill, (skill) => skill.id_skill, { cascade: true })
-  @JoinTable({
-    name: 'job_skills',
-    joinColumn: {
-      name: 'job_id',
-      referencedColumnName: 'id_job',
-    },
-    inverseJoinColumn: {
-      name: 'skill_id',
-      referencedColumnName: 'id_skill',
-    },
-  })
-  skills: Skill[]
-
-  @ManyToMany(() => Candidate, (candidate) => candidate.id_user, { cascade: true })
-  @JoinTable({
-    name: 'job_applications',
-    joinColumn: {
-      name: 'job_id',
-      referencedColumnName: 'id_job',
-    },
-    inverseJoinColumn: {
-      name: 'candidate_id',
-      referencedColumnName: 'id_user',
-    },
-  })
-  applications: Candidate[]
-
   @Column({
     nullable: true,
   })

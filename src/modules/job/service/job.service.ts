@@ -159,13 +159,5 @@ export class JobService {
     const job = await this.jobRepository.findOne({
       where: { id_job: params.job_id },
     });
-
-    if (!job) throw new JobNotFoundException()
-
-    if (job.deleted_at !== null) throw new JobHasBeenExpiredException()
-
-    const userAlreadyApplied = job.applications.filter((application) => application.id_user === params.candidate_id)
-
-    if (userAlreadyApplied) throw new AlreadyAppliedToJobException()
   }
 }
