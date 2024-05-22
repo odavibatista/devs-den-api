@@ -144,20 +144,4 @@ export class JobService {
 
     return response
   }
-
-  async applyToJob (params: ApplyToJobDTO): Promise<any | AlreadyAppliedToJobException | UserIsNotCandidateException | JobHasBeenExpiredException | JobNotFoundException | UserNotFoundException> {
-    
-    const user = await this.userRepository.findOne({
-      where: { id_user: params.candidate_id }
-    })
-
-    if (user.deleted_at !== null) throw new UserNotFoundException()
-
-    if (user.role !== 'candidate') throw new UserIsNotCandidateException()
-
-
-    const job = await this.jobRepository.findOne({
-      where: { id_job: params.job_id },
-    });
-  }
 }

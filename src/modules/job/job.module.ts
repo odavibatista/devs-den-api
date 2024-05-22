@@ -18,7 +18,6 @@ import { Candidate } from '../candidate/entity/candidate.entity';
     JobModule,
     TypeOrmModule.forFeature([Job, JobCategory, Skill, Company, User, Candidate]),
     forwardRef(() => UserModule),
-
   ],
 
   providers: [JobService, JobCategory],

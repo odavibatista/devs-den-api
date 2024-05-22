@@ -11,6 +11,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from 'src/modules/user/entity/user.entity';
+import { Job } from 'src/modules/job/entity/job.entity';
 
 enum Gender {
   MALE = 'male',
@@ -55,7 +56,6 @@ class Candidates {
   })
   deleted_at: string;
 
-  @ManyToMany(() => Skill, (skill) => skill.id_skill)
   @CreateDateColumn({
     nullable: false,
   })
@@ -73,6 +73,22 @@ class Candidates {
       referencedColumnName: 'id_skill',
     },
   })
+  skills: Skill[]
+
+  @ManyToMany(() => Job, (job) => job.id_job, { cascade: true })
+  @JoinTable({
+    name: 'job_applications',
+    joinColumn: {
+      name: 'candidate_id',
+      referencedColumnName: 'id_user',
+    },
+    inverseJoinColumn: {
+      name: 'job_id',
+      referencedColumnName: 'id_job',
+    },
+  })
+  applications: Job[]
+
   @UpdateDateColumn({
     nullable: false,
   })
