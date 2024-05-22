@@ -10,6 +10,9 @@ import { CompanyNotFoundException } from 'src/modules/company/domain/errors/Comp
 import { InvalidModalityException } from '../domain/errors/InvalidModality.exception';
 import { CreateJobBodyDTO, CreateJobResponseDTO } from '../domain/requests/CreateJob.request.dto';
 import { FindJobResponseDTO } from '../domain/requests/FindJobs.request.dto';
+import { JobHasBeenExpiredException } from '../domain/errors/JobHasBeenExpired.exception';
+import { UserIsNotCandidateException } from '../domain/errors/UserIsNotCandidate.exception';
+import { ApplyToJobDTO } from '../domain/requests/ApplyToJob.request.dto';
 
 @Injectable()
 export class JobService {
@@ -133,5 +136,15 @@ export class JobService {
     }
 
     return response
+  }
+
+  async applyToJob (params: ApplyToJobDTO): Promise<any | UserIsNotCandidateException | JobHasBeenExpiredException | JobNotFoundException> {
+    const job = await this.jobRepository.findOne({
+      where: { id_job: params.job_id },
+    });
+
+    if (!job) throw new JobNotFoundException()
+    
+    // Remember to add expiration here later...
   }
 }
