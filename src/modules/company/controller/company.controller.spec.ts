@@ -1,18 +1,24 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CompanyController } from './company.controller';
+import { ConjunctCompanyController, IndividualCompanyController } from './company.controller';
 
 describe('CompanyController', () => {
-  let controller: CompanyController;
+  let conjunctController: ConjunctCompanyController;
+  let individualController: IndividualCompanyController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [CompanyController],
+      controllers: [ConjunctCompanyController, IndividualCompanyController],
     }).compile();
 
-    controller = module.get<CompanyController>(CompanyController);
+    conjunctController = module.get<ConjunctCompanyController>(ConjunctCompanyController);
+    individualController = module.get<IndividualCompanyController>(IndividualCompanyController);
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
+  it('conjunct controller should be defined', () => {
+    expect(conjunctController).toBeDefined();
+  });
+
+  it('individual controller should be defined', () => {
+    expect(individualController).toBeDefined();
   });
 });
