@@ -3,7 +3,7 @@ import { Job } from "src/modules/job/entity/job.entity";
 import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 
 @Entity()
-export class JobApplications {
+class JobApplications {
     @PrimaryColumn({ name: 'job_id' })
     job_id: number
 
@@ -26,3 +26,5 @@ export class JobApplications {
       @JoinColumn([{ name: 'candidate_id', referencedColumnName: 'id_user' }])
       courses: Candidate[];
 }
+
+export { JobApplications as JobApplicaton }
