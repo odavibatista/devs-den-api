@@ -111,6 +111,11 @@ class Jobs {
   })
   applications: Candidate[]
 
+  @Column({
+    nullable: true,
+  })
+  deleted_at: string;
+
   @CreateDateColumn({
     nullable: false,
   })

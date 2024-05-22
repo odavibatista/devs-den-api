@@ -35,7 +35,9 @@ export class UserService {
   ) {}
 
   async findAll(): Promise<User[] | UserNotFoundException> {
-    const users = await this.userRepository.find();
+    const users = await this.userRepository.find({
+      where: { deleted_at: null || undefined}
+    });
 
     if (users.length === 0) throw new UserNotFoundException();
     else return users;
@@ -110,6 +112,7 @@ export class UserService {
         email: params.email,
         password: hashedPassword,
         role: params.role,
+        deleted_at: null
       });
 
       return {

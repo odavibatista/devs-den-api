@@ -13,6 +13,7 @@ import { FindJobResponseDTO } from '../domain/requests/FindJobs.request.dto';
 import { JobHasBeenExpiredException } from '../domain/errors/JobHasBeenExpired.exception';
 import { UserIsNotCandidateException } from '../domain/errors/UserIsNotCandidate.exception';
 import { ApplyToJobDTO } from '../domain/requests/ApplyToJob.request.dto';
+import { User } from 'src/modules/user/entity/user.entity';
 
 @Injectable()
 export class JobService {
@@ -23,10 +24,14 @@ export class JobService {
     private jobCategoryRepository: Repository<JobCategory>,
     @InjectRepository(Company)
     private companyRepository: Repository<Company>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
   async findAll(): Promise<Job[]> {
     const jobs = await this.jobRepository.find();
+
+    jobs.filter((job) => job.deleted_at == null)
 
     return jobs
   }
@@ -144,7 +149,15 @@ export class JobService {
     });
 
     if (!job) throw new JobNotFoundException()
+
+    if (job.deleted_at !== null) throw new JobHasBeenExpiredException()
     
     // Remember to add expiration here later...
+
+    const user = await this.userRepository.findOne({
+      where: { id_user: params.candidate_id }
+    })
+
+    if (user.role !== 'candidate') throw new UserIsNotCandidateException()
   }
 }

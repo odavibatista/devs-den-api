@@ -19,6 +19,7 @@ import { CompanyModule } from '../company/company.module';
 import { CandidateModule } from '../candidate/candidate.module';
 import { AuthenticationMiddleware } from './middlewares/Auth.middleware';
 import { JobCategoryModule } from '../job-category/job-category.module';
+import { JobModule } from '../job/job.module';
 
 @Module({
   imports: [
@@ -27,6 +28,8 @@ import { JobCategoryModule } from '../job-category/job-category.module';
     forwardRef(() => CandidateModule),
     forwardRef(() => CompanyModule),
     forwardRef(() => JobCategoryModule),
+    forwardRef(() => JobModule),
+    
   ],
   controllers: [UserController],
   providers: [UserService, JWTProvider, HashProvider],
