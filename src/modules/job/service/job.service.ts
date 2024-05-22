@@ -14,6 +14,8 @@ import { JobHasBeenExpiredException } from '../domain/errors/JobHasBeenExpired.e
 import { UserIsNotCandidateException } from '../domain/errors/UserIsNotCandidate.exception';
 import { ApplyToJobDTO } from '../domain/requests/ApplyToJob.request.dto';
 import { User } from 'src/modules/user/entity/user.entity';
+import { UserNotFoundException } from 'src/modules/user/domain/errors/UserNotFound.exception';
+import { AlreadyAppliedToJobException } from '../domain/errors/AlreadyAppliedToJob.exception';
 
 @Injectable()
 export class JobService {
@@ -143,7 +145,17 @@ export class JobService {
     return response
   }
 
-  async applyToJob (params: ApplyToJobDTO): Promise<any | UserIsNotCandidateException | JobHasBeenExpiredException | JobNotFoundException> {
+  async applyToJob (params: ApplyToJobDTO): Promise<any | AlreadyAppliedToJobException | UserIsNotCandidateException | JobHasBeenExpiredException | JobNotFoundException | UserNotFoundException> {
+    
+    const user = await this.userRepository.findOne({
+      where: { id_user: params.candidate_id }
+    })
+
+    if (user.deleted_at !== null) throw new UserNotFoundException()
+
+    if (user.role !== 'candidate') throw new UserIsNotCandidateException()
+
+
     const job = await this.jobRepository.findOne({
       where: { id_job: params.job_id },
     });
@@ -151,13 +163,9 @@ export class JobService {
     if (!job) throw new JobNotFoundException()
 
     if (job.deleted_at !== null) throw new JobHasBeenExpiredException()
-    
-    // Remember to add expiration here later...
 
-    const user = await this.userRepository.findOne({
-      where: { id_user: params.candidate_id }
-    })
+    const userAlreadyApplied = job.applications.filter((application) => application.id_user === params.candidate_id)
 
-    if (user.role !== 'candidate') throw new UserIsNotCandidateException()
+    if (userAlreadyApplied) throw new AlreadyAppliedToJobException()
   }
 }
