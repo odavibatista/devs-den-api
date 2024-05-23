@@ -1,6 +1,22 @@
+jest.mock("../entity/user.entity", () => {
+  return { User: class User {} };
+});
+
+jest.mock("src/modules/user/entity/user.entity", () => {
+  return { Candidate: class Candidate {} };
+});
+
+const userRepository = {
+  findOne: jest.fn(),
+  find: jest.fn(),
+  save: jest.fn(),
+};
+
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { CreateUserDTO } from '../dto/user.dto';
+import { User } from '../entity/user.entity';
+import { Candidate } from 'src/modules/candidate/entity/candidate.entity';
 
 describe('UserService', () => {
   let service: UserService;
