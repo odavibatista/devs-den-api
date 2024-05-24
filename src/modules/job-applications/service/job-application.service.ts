@@ -43,7 +43,8 @@ export class JobApplicationService {
             where: {candidate_id: params.candidate_id, job_id: params.job_id}
         })
 
-        if (!alreadyAppliedToJob) throw new AlreadyAppliedToJobException()
+        if (alreadyAppliedToJob) throw new AlreadyAppliedToJobException()
+          // Good!
 
         const jobApplication = await this.jobApplicationReopository.save({
             candidate_id: params.candidate_id,
