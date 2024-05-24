@@ -12,13 +12,13 @@ import { AuthenticationMiddleware } from '../user/middlewares/Auth.middleware';
 import { User } from '../user/entity/user.entity';
 import { Candidate } from '../candidate/entity/candidate.entity';
 import { JobApplicationService } from '../job-applications/service/job-application.service';
-import { JobApplicaton } from '../job-applications/entity/job-application.entity';
+import { JobApplication } from '../job-applications/entity/job-application.entity';
 
 @Module({
   imports: [
     DatabaseModule,
     JobModule,
-    TypeOrmModule.forFeature([Job, JobCategory, Skill, Company, User, Candidate, JobApplicaton]),
+    TypeOrmModule.forFeature([Job, JobCategory, Skill, Company, User, Candidate, JobApplication]),
     forwardRef(() => UserModule),
   ],
 

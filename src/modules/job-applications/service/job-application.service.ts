@@ -9,20 +9,20 @@ import { UserIsNotCandidateException } from '../../job/domain/errors/UserIsNotCa
 import { JobHasBeenExpiredException } from '../../job/domain/errors/JobHasBeenExpired.exception';
 import { JobNotFoundException } from '../../job/domain/errors/JobNotFound.exception';
 import { UserNotFoundException } from '../../user/domain/errors/UserNotFound.exception';
-import { JobApplicaton } from '../entity/job-application.entity';
+import { JobApplication } from '../entity/job-application.entity';
 
 @Injectable()
 export class JobApplicationService {
     constructor(
-        @InjectRepository(JobApplicaton)
-        private jobApplicationReopository: Repository<JobApplicaton>,
+        @InjectRepository(JobApplication)
+        private jobApplicationReopository: Repository<JobApplication>,
         @InjectRepository(Job)
         private jobRepository: Repository<Job>,
         @InjectRepository(User)
         private userRepository: Repository<User>,
       ) {}
 
-      async applyToJob (params: ApplyToJobDTO): Promise<any | AlreadyAppliedToJobException | UserIsNotCandidateException | JobHasBeenExpiredException | JobNotFoundException | UserNotFoundException> {
+      async applyToJob (params: ApplyToJobDTO): Promise<void | AlreadyAppliedToJobException | UserIsNotCandidateException | JobHasBeenExpiredException | JobNotFoundException | UserNotFoundException> {
     
         const user = await this.userRepository.findOne({
           where: { id_user: params.candidate_id }
@@ -40,17 +40,28 @@ export class JobApplicationService {
         if (!job || job.deleted_at !== null) throw new JobNotFoundException()
 
         const alreadyAppliedToJob = await this.jobApplicationReopository.findOne({
-            where: {candidate_id: params.candidate_id, job_id: params.job_id}
+            where: { candidate_id: params.candidate_id, job_id: params.job_id }
         })
 
-        if (alreadyAppliedToJob) throw new AlreadyAppliedToJobException()
-          // Good!
-
-        const jobApplication = await this.jobApplicationReopository.save({
+        if (!alreadyAppliedToJob) {
+          await this.jobApplicationReopository.save({
             candidate_id: params.candidate_id,
             job_id: params.job_id
-        })
+          })
+        } 
+        
+        else if (alreadyAppliedToJob.active === true) throw new AlreadyAppliedToJobException() 
+        
+        else if (alreadyAppliedToJob.active === false) {
+            await this.jobApplicationReopository.update({
+                candidate_id: params.candidate_id,
+                job_id: params.job_id
+            },
+            {
+                active: true
+            })
+        } 
 
-        return jobApplication
+        return
       }
 }

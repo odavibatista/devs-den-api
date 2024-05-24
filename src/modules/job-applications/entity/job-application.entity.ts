@@ -1,6 +1,6 @@
 import { Candidate } from "src/modules/candidate/entity/candidate.entity";
 import { Job } from "src/modules/job/entity/job.entity";
-import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 
 @Entity()
 class JobApplications {
@@ -10,21 +10,24 @@ class JobApplications {
     @PrimaryColumn({ name: 'candidate_id' })
     candidate_id: number
 
+    @Column({
+      default: true
+    })
+    active: boolean
+
     @ManyToOne(
         () => Job,
-        job => job.id_job,
-         { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' }
+        job => job.id_job
       )
       @JoinColumn([{ name: 'job_id', referencedColumnName: 'id_job' }])
       jobs: Job[];
     
       @ManyToOne(
         () => Candidate,
-        candidate => candidate.id_user,
-        { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' }
+        candidate => candidate.id_user
       )
       @JoinColumn([{ name: 'candidate_id', referencedColumnName: 'id_user' }])
       courses: Candidate[];
 }
 
-export { JobApplications as JobApplicaton }
+export { JobApplications as JobApplication }
