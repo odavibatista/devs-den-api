@@ -11,24 +11,33 @@ import { UserModule } from '../user/user.module';
 import { AuthenticationMiddleware } from '../user/middlewares/Auth.middleware';
 import { User } from '../user/entity/user.entity';
 import { Candidate } from '../candidate/entity/candidate.entity';
+import { JobApplicationService } from '../job-applications/service/job-application.service';
+import { JobApplicaton } from '../job-applications/entity/job-application.entity';
 
 @Module({
   imports: [
     DatabaseModule,
     JobModule,
-    TypeOrmModule.forFeature([Job, JobCategory, Skill, Company, User, Candidate]),
+    TypeOrmModule.forFeature([Job, JobCategory, Skill, Company, User, Candidate, JobApplicaton]),
     forwardRef(() => UserModule),
   ],
 
-  providers: [JobService, JobCategory],
+  providers: [JobService, JobCategory, JobApplicationService],
 
   controllers: [ConjunctJobsController, IndividualJobController],
 })
 export class JobModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthenticationMiddleware).forRoutes({
-      path: 'job/create',
-      method: RequestMethod.POST,
-    });
+    consumer.apply(AuthenticationMiddleware).forRoutes(
+      {
+        path: 'job/create',
+        method: RequestMethod.POST,
+      },
+      {
+
+        path: 'job/:job_id/apply',
+        method: RequestMethod.POST,
+      },
+  );
   }
 }

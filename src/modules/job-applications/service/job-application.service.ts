@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Job } from '../../job/entity/job.entity';
 import { Repository } from 'typeorm';
-import { Company } from '../../company/entity/company.entity';
 import { User } from '../../user/entity/user.entity';
 import { ApplyToJobDTO } from '../../job/domain/requests/ApplyToJob.request.dto';
 import { AlreadyAppliedToJobException } from '../../job/domain/errors/AlreadyAppliedToJob.exception';
@@ -19,8 +18,6 @@ export class JobApplicationService {
         private jobApplicationReopository: Repository<JobApplicaton>,
         @InjectRepository(Job)
         private jobRepository: Repository<Job>,
-        @InjectRepository(Company)
-        private companyRepository: Repository<Company>,
         @InjectRepository(User)
         private userRepository: Repository<User>,
       ) {}

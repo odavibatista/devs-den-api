@@ -9,6 +9,11 @@ import { InvalidModalityException } from '../domain/errors/InvalidModality.excep
 import { AllExceptionsFilterDTO } from 'src/shared/domain/dtos/errors/AllException.filter.dto';
 import { CreateJobBodyDTO } from '../domain/requests/CreateJob.request.dto';
 import { NotAuthenticatedException } from 'src/modules/user/domain/errors/NotAuthenticated.exception';
+import { UserIsNotCandidateException } from '../domain/errors/UserIsNotCandidate.exception';
+import { AlreadyAppliedToJobException } from '../domain/errors/AlreadyAppliedToJob.exception';
+import { JobHasBeenExpiredException } from '../domain/errors/JobHasBeenExpired.exception';
+import { CommonException } from 'src/shared/domain/errors/Common.exception';
+import { JobApplicationService } from 'src/modules/job-applications/service/job-application.service';
 
 @Controller('jobs')
 @ApiTags('Vagas')
@@ -45,7 +50,10 @@ export class ConjunctJobsController {
 @ApiTags('Vagas')
 @Controller('job')
 export class IndividualJobController {
-    constructor(private readonly jobService: JobService) {}
+    constructor(
+        private readonly jobApplicationService: JobApplicationService,
+        private readonly jobService: JobService
+    ) {}
 
     @ApiResponse({
         status: new JobNotFoundException().getStatus(),
@@ -122,5 +130,85 @@ export class IndividualJobController {
           } else {
             return res.status(res.statusCode).json(result);
           }
+    }
+
+    @Post(':job_id/apply')
+    @ApiBearerAuth('user-token')
+    @ApiResponse({
+        status: new CommonException().getStatus(),
+        description: new CommonException().message,
+        type: AllExceptionsFilterDTO
+    })
+    @ApiResponse({
+        status: new AlreadyAppliedToJobException().getStatus(),
+        description: new AlreadyAppliedToJobException().message,
+        type: AllExceptionsFilterDTO
+    })
+    @ApiResponse({
+        status: new JobHasBeenExpiredException().getStatus(),
+        description: new JobHasBeenExpiredException().message,
+        type: AllExceptionsFilterDTO
+    })
+    @ApiResponse({
+        status: new JobNotFoundException().getStatus(),
+        description: new JobNotFoundException().message,
+        type: AllExceptionsFilterDTO
+    })
+    @ApiResponse({
+        status: new NotAuthenticatedException().getStatus(),
+        description: new NotAuthenticatedException().message,
+        type: AllExceptionsFilterDTO
+    })
+    @ApiResponse({
+        status: new AlreadyAppliedToJobException().getStatus(),
+        description: new AlreadyAppliedToJobException().message,
+        type: AllExceptionsFilterDTO
+    })
+    @ApiResponse({
+        status: new UserIsNotCandidateException().getStatus(),
+        description: new UserIsNotCandidateException().message,
+        type: AllExceptionsFilterDTO
+    })
+    @ApiResponse({
+        status: 201,
+        description: "Inscrição feita com sucesso.",
+    })
+    async applyToJob(
+        @Param('job_id') jobId: number,
+        @Req() req: Request,
+        @Res() res: Response,
+    ): Promise <any | AllExceptionsFilterDTO>    {
+        const user = req.user
+
+        if (!user) {
+            return res.status(new UnauthorizedException().getStatus()).json({
+                message: new UnauthorizedException().message,
+                status: new UnauthorizedException().getStatus()
+            });
+        }
+
+        if (user.role !== 'candidate') {
+            return res.status(new UserIsNotCandidateException().getStatus()).json({
+                message: new UserIsNotCandidateException().message,
+                status: new UserIsNotCandidateException().getStatus()
+            });
+        }
+
+        const result = await this.jobApplicationService.applyToJob({
+            candidate_id: user.id,
+            job_id: jobId
+        })
+
+        if (result instanceof HttpException) {
+            return res.status(result.getStatus()).json({
+                message: result.message,
+                status: result.getStatus()
+            })
+        }   else {
+            return res.status(201).json({
+                message: "Inscrição feita com sucesso.",
+                status: 201
+            })
+        }
     }
 }
