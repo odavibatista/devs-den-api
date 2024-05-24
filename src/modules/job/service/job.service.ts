@@ -10,12 +10,6 @@ import { CompanyNotFoundException } from 'src/modules/company/domain/errors/Comp
 import { InvalidModalityException } from '../domain/errors/InvalidModality.exception';
 import { CreateJobBodyDTO, CreateJobResponseDTO } from '../domain/requests/CreateJob.request.dto';
 import { FindJobResponseDTO } from '../domain/requests/FindJobs.request.dto';
-import { JobHasBeenExpiredException } from '../domain/errors/JobHasBeenExpired.exception';
-import { UserIsNotCandidateException } from '../domain/errors/UserIsNotCandidate.exception';
-import { ApplyToJobDTO } from '../domain/requests/ApplyToJob.request.dto';
-import { User } from 'src/modules/user/entity/user.entity';
-import { UserNotFoundException } from 'src/modules/user/domain/errors/UserNotFound.exception';
-import { AlreadyAppliedToJobException } from '../domain/errors/AlreadyAppliedToJob.exception';
 
 @Injectable()
 export class JobService {
@@ -25,9 +19,7 @@ export class JobService {
     @InjectRepository(JobCategory)
     private jobCategoryRepository: Repository<JobCategory>,
     @InjectRepository(Company)
-    private companyRepository: Repository<Company>,
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private companyRepository: Repository<Company>
   ) {}
 
   async findAll(): Promise<Job[]> {

@@ -15,7 +15,6 @@ import {
   FindSkillResponseDTO,
   FindSkillsResponseDTO,
 } from '../domain/requests/FindSkills.request.dto';
-import { Skill } from '../entity/skill.entity';
 import { BadTokenException } from 'src/modules/user/domain/errors/BadToken.exception';
 import { Request, Response } from 'express';
 import { CommonException } from 'src/shared/domain/errors/Common.exception';
