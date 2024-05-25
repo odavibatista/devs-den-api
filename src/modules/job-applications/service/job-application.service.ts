@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Job } from '../../job/entity/job.entity';
 import { Repository } from 'typeorm';
@@ -10,6 +10,8 @@ import { JobHasBeenExpiredException } from '../../job/domain/errors/JobHasBeenEx
 import { JobNotFoundException } from '../../job/domain/errors/JobNotFound.exception';
 import { UserNotFoundException } from '../../user/domain/errors/UserNotFound.exception';
 import { JobApplication } from '../entity/job-application.entity';
+import { UserIsNotCompanyException } from 'src/modules/job/domain/errors/UserIsNotCompany.exception';
+import { BadTokenException } from 'src/modules/user/domain/errors/BadToken.exception';
 
 @Injectable()
 export class JobApplicationService {
@@ -63,5 +65,19 @@ export class JobApplicationService {
         } 
 
         return
+      }
+
+      async getJobApplications (job_id: number): Promise<JobApplication[] | UnauthorizedException | BadTokenException> {
+        const job = await this.jobRepository.findOne({
+          where: { id_job: job_id }
+        })
+
+        if (!job) throw new JobNotFoundException()
+
+        const applications = await this.jobApplicationReopository.find({
+          where: { job_id: job_id }
+        })
+
+        return applications
       }
 }
