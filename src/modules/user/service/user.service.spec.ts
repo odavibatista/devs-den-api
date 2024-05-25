@@ -13,6 +13,7 @@ import { HashProvider } from '../providers/hash.provider';
 import { UnformattedEmailException } from '../domain/errors/UnformattedEmail.exception';
 import { UnformattedPasswordException } from '../domain/errors/UnformattedPassword.exception';
 import { CreateUserResponseDTO, CreateUserResponseSchema } from '../domain/requests/CreateUser.request.dto';
+import { EmailAlreadyRegisteredException } from '../domain/errors/EmailAlreadyRegistered.exception';
 
 describe('UserService', () => {
   let userService: UserService;
@@ -155,4 +156,17 @@ describe('UserService', () => {
       id: expect.any(Number)
     })
   });
-});
+
+  it('should not create an user with an already registered e-mail', async () => {
+    const user: CreateUserDTO = {
+      email: "fulaninhodasilva@gmail.com",
+      password: "@Algumacoisa123456789101_",
+      role: 'candidate'
+    }
+
+    expect(async () => {
+      await userService.create(user)
+      await userService.create(user)
+    }).rejects.toThrow(EmailAlreadyRegisteredException);
+  });
+})
