@@ -45,6 +45,10 @@ export class JobModule implements NestModule {
       {
         path: 'job/:job_id/remove',
         method: RequestMethod.DELETE,
+      },
+      {
+        path: 'job/application/:job_id/remove',
+        method: RequestMethod.DELETE,
       }
   );
   }

@@ -15,6 +15,8 @@ import { JobHasBeenExpiredException } from '../domain/errors/JobHasBeenExpired.e
 import { CommonException } from '../../../shared/domain/errors/Common.exception';
 import { JobApplicationService } from '../../../modules/job-applications/service/job-application.service';
 import { GetJobStatusResponseDTO } from '../domain/requests/GetJobStatus.request.dto';
+import { ApplicationDoesNotExist } from 'src/modules/job-applications/domain/errors/ApplicationDoesNotExist.exception';
+import { UserNotFoundException } from 'src/modules/user/domain/errors/UserNotFound.exception';
 
 @Controller('jobs')
 @ApiTags('Vagas')
@@ -330,4 +332,73 @@ export class IndividualJobController {
             })
         }
     }
+
+    @Delete('/application/:job_id/remove')
+    @ApiBearerAuth('user-token')
+    @ApiResponse({
+        status: new JobNotFoundException().getStatus(),
+        description: new JobNotFoundException().message,
+        type: AllExceptionsFilterDTO,
+    })
+    @ApiResponse({
+        status: new UserNotFoundException().getStatus(),
+        description: new UserNotFoundException().message,
+        type: AllExceptionsFilterDTO,
+    })
+    @ApiResponse({
+        status: new UserIsNotCandidateException().getStatus(),
+        description: new UserIsNotCandidateException().message,
+        type: AllExceptionsFilterDTO,
+    })
+    @ApiResponse({
+        status: new NotAuthenticatedException().getStatus(),
+        description: new NotAuthenticatedException().message,
+        type: AllExceptionsFilterDTO,
+    })
+    @ApiResponse({
+        status: new ApplicationDoesNotExist().getStatus(),
+        description: new ApplicationDoesNotExist().message,
+        type: AllExceptionsFilterDTO,
+    })
+    @ApiResponse({
+        status: 204,
+        description: 'Inscrição removida com sucesso.',
+    })
+    async removeApplication(
+        @Param('job_id') jobId: number,
+        @Req() req: Request,
+        @Res() res: Response,
+    ): Promise<AllExceptionsFilterDTO> {
+        const user = req.user
+
+        if (!user) {
+            return res.status(new UnauthorizedException().getStatus()).json({
+                message: new UnauthorizedException().message,
+                status: new UnauthorizedException().getStatus()
+            });
+        }
+
+        if (user.role !== 'candidate') {
+            return res.status(new UserIsNotCandidateException().getStatus()).json({
+                message: new UserIsNotCandidateException().message,
+                status: new UserIsNotCandidateException().getStatus()
+            });
+        }
+
+        const result = await this.jobApplicationService.removeApplication(jobId, user.id)
+
+        if (result instanceof HttpException) {
+            return res.status(result.getStatus()).json({
+                message: result.message,
+                status: result.getStatus()
+            })
+        }   else {
+            return res.status(204).json({
+                message: 'Inscrição removida com sucesso.',
+                status: 204
+            })
+        }
+    }
+
+
 }

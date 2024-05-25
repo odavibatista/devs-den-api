@@ -12,6 +12,7 @@ import { UserNotFoundException } from '../../user/domain/errors/UserNotFound.exc
 import { JobApplication } from '../entity/job-application.entity';
 import { UserIsNotCompanyException } from 'src/modules/job/domain/errors/UserIsNotCompany.exception';
 import { BadTokenException } from 'src/modules/user/domain/errors/BadToken.exception';
+import { ApplicationDoesNotExist } from '../domain/errors/ApplicationDoesNotExist.exception';
 
 @Injectable()
 export class JobApplicationService {
@@ -48,7 +49,8 @@ export class JobApplicationService {
         if (!alreadyAppliedToJob) {
           await this.jobApplicationReopository.save({
             candidate_id: params.candidate_id,
-            job_id: params.job_id
+            job_id: params.job_id,
+            active: true
           })
         } 
         
@@ -79,5 +81,36 @@ export class JobApplicationService {
         })
 
         return applications
+      }
+
+      async removeApplication (job_id: number, candidate_id: number): Promise<void | UnauthorizedException | BadTokenException> {
+        const candidate = await this.userRepository.findOne({
+          where: { id_user: candidate_id }
+        })
+
+        if (!candidate) throw new UserNotFoundException()
+
+        const job = await this.jobRepository.findOne({
+          where: { id_job: job_id }
+        })
+
+        if (!job) throw new JobNotFoundException()
+
+        const application = await this.jobApplicationReopository.findOne({
+          where: { job_id: job_id, candidate_id: candidate_id, active: true }
+        })
+
+        if (!application) throw new ApplicationDoesNotExist()
+
+        if (application.candidate_id !== candidate_id) throw new UnauthorizedException()
+
+        await this.jobApplicationReopository.update({
+          job_id: job_id,
+          candidate_id: candidate_id
+        }, {
+          active: false
+        })
+
+        return
       }
 }
