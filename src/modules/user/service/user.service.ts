@@ -223,6 +223,13 @@ export class UserService {
       throw new HttpException(error, error.status);
     }
   }
+}
+
+export class UserClearingService  {
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>
+  ) {}
 
   public async wipe(): Promise<void>  {
     try {

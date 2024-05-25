@@ -9,7 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseModule } from '../../database/database.module';
 import { User } from './entity/user.entity';
 import { Address } from '../address/entity/address.entity';
-import { UserService } from './service/user.service';
+import { UserClearingService, UserService } from './service/user.service';
 import { UserController } from './controller/user.controller';
 import { JWTProvider } from './providers/JWT.provider';
 import { Candidate } from '../candidate/entity/candidate.entity';
@@ -32,8 +32,8 @@ import { JobModule } from '../job/job.module';
     
   ],
   controllers: [UserController],
-  providers: [UserService, JWTProvider, HashProvider],
-  exports: [JWTProvider, HashProvider, UserService],
+  providers: [UserService, UserClearingService, JWTProvider, HashProvider],
+  exports: [JWTProvider, HashProvider, UserService, UserClearingService],
 })
 export class UserModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserService } from './user.service';
+import { UserClearingService, UserService } from './user.service';
 import { CreateUserDTO } from '../dto/user.dto';
 import { User } from '../entity/user.entity';
 import { Candidate } from '../../../modules/candidate/entity/candidate.entity';
@@ -16,6 +16,7 @@ import { CreateUserResponseDTO, CreateUserResponseSchema } from '../domain/reque
 
 describe('UserService', () => {
   let userService: UserService;
+  let clearingService: UserClearingService
   let userRepository: Repository<User>
   let candidateRepository: Repository<Candidate>
   let companyRepository: Repository<Candidate>
@@ -29,15 +30,16 @@ describe('UserService', () => {
         TypeOrmModule.forFeature([User, Address, Candidate, Company]),
         
       ],
-      providers: [UserService, JWTProvider, HashProvider],
-      exports: [JWTProvider, HashProvider, UserService],
+      providers: [UserService, JWTProvider, HashProvider, UserClearingService],
+      exports: [JWTProvider, HashProvider, UserService, UserClearingService],
     }).compile();
 
     userService = module.get<UserService>(UserService);
+    clearingService = module.get<UserClearingService>(UserClearingService)
   });
 
   afterEach(async () => {
-    await userService.wipe()
+    await clearingService.wipe()
   })
 
   it('should not create an user with an e-mail with more than 50 characters', async () => {
