@@ -36,11 +36,9 @@ describe('UserService', () => {
     userService = module.get<UserService>(UserService);
   });
 
-  /*
   afterEach(async () => {
-    await userRepository.clear()
+    await userService.wipe()
   })
-  */
 
   it('should not create an user with an e-mail with more than 50 characters', async () => {
 

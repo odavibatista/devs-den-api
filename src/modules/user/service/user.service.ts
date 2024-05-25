@@ -223,4 +223,12 @@ export class UserService {
       throw new HttpException(error, error.status);
     }
   }
+
+  public async wipe(): Promise<void>  {
+    try {
+      await this.userRepository.clear();
+    } catch (error) {
+      throw new HttpException(error, error.status);
+    }
+  }
 }
