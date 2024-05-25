@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Job } from '../entity/job.entity';
 import { Repository } from 'typeorm';
@@ -140,10 +140,12 @@ export class JobService {
     return response
   }
 
-  async getJobStatus (jobId: number): Promise<GetJobStatusResponseDTO | JobNotFoundException> {
+  async getJobStatus (jobId: number, companyId: number): Promise<GetJobStatusResponseDTO | JobNotFoundException> {
     const job = await this.jobRepository.findOne({
       where: { id_job: jobId }
     })
+
+    if (job.company_id !== companyId) throw new UnauthorizedException()
 
     if (!job) throw new JobNotFoundException()
 

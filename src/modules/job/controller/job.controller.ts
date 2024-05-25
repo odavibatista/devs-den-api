@@ -262,7 +262,7 @@ export class IndividualJobController {
             });
         }
 
-        const result = await this.jobService.getJobStatus(jobId)
+        const result = await this.jobService.getJobStatus(jobId, user.id)
 
         if (result instanceof HttpException) {
             return res.status(result.getStatus()).json({
