@@ -14,6 +14,7 @@ import { AlreadyAppliedToJobException } from '../domain/errors/AlreadyAppliedToJ
 import { JobHasBeenExpiredException } from '../domain/errors/JobHasBeenExpired.exception';
 import { CommonException } from '../../../shared/domain/errors/Common.exception';
 import { JobApplicationService } from '../../../modules/job-applications/service/job-application.service';
+import { GetJobStatusResponseDTO } from '../domain/requests/GetJobStatus.request.dto';
 
 @Controller('jobs')
 @ApiTags('Vagas')
@@ -177,6 +178,7 @@ export class IndividualJobController {
         @Param('job_id') jobId: number,
         @Req() req: Request,
         @Res() res: Response,
+        // Add this type here later
     ): Promise <any | AllExceptionsFilterDTO>    {
         const user = req.user
 
@@ -209,6 +211,66 @@ export class IndividualJobController {
                 message: "Inscrição feita com sucesso.",
                 status: 201
             })
+        }
+    }
+
+    @Get('/:job_id/status')
+    @ApiBearerAuth('user-token')
+    @ApiResponse({
+        status: new JobNotFoundException().getStatus(),
+        description: new JobNotFoundException().message,
+        type: AllExceptionsFilterDTO,
+    })
+    @ApiResponse({
+        status: new UserIsNotCompanyException().getStatus(),
+        description: new UserIsNotCompanyException().message,
+        type: AllExceptionsFilterDTO,
+    })
+    @ApiResponse({
+        status: new UnauthorizedException().getStatus(),
+        description: new UnauthorizedException().message,
+        type: AllExceptionsFilterDTO,
+    })
+    @ApiResponse({
+        status: new NotAuthenticatedException().getStatus(),
+        description: new NotAuthenticatedException().message,
+        type: AllExceptionsFilterDTO,
+    })
+    @ApiResponse({
+        status: 200,
+        description: 'Dados da vaga encontrados com sucesso.',
+        type: GetJobStatusResponseDTO,
+    })
+    async getJobStatus(
+        @Param('job_id') jobId: number,
+        @Req() req: Request,
+        @Res() res: Response,
+    ): Promise<GetJobStatusResponseDTO | AllExceptionsFilterDTO> {
+        const user = req.user
+
+        if (!user) {
+            return res.status(new UnauthorizedException().getStatus()).json({
+                message: new UnauthorizedException().message,
+                status: new UnauthorizedException().getStatus()
+            });
+        }
+
+        if (user.role !== 'company') {
+            return res.status(new UserIsNotCompanyException().getStatus()).json({
+                message: new UserIsNotCompanyException().message,
+                status: new UserIsNotCompanyException().getStatus()
+            });
+        }
+
+        const result = await this.jobService.getJobStatus(jobId)
+
+        if (result instanceof HttpException) {
+            return res.status(result.getStatus()).json({
+                message: result.message,
+                status: result.getStatus()
+            })
+        }   else {
+            return res.status(res.statusCode).json(result)
         }
     }
 }

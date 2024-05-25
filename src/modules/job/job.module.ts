@@ -38,6 +38,10 @@ export class JobModule implements NestModule {
         path: 'job/:job_id/apply',
         method: RequestMethod.POST,
       },
+      {
+        path: 'job/:job_id/status',
+        method: RequestMethod.GET,
+      }
   );
   }
 }
