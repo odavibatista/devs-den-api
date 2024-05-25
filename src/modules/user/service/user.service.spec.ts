@@ -67,10 +67,58 @@ describe('UserService', () => {
     }).rejects.toThrow(UnformattedEmailException);
   });
 
-  it('should not create an user with an unformatted password', async () =>  {
+  it('should not create an user with a password with less then 15 characters', async () =>  {
     const user: CreateUserDTO = {
-      email: "fulaninhodasilvamuitobacanaestoupreenchendocaracteresatoa@gmaaaaaaaaail.com",
+      email: "fulaninhodasilva@gmail.com",
       password: "1234",
+      role: 'candidate'
+    }
+
+    expect(async () => {
+      await userService.create(user)
+    }).rejects.toThrow(UnformattedPasswordException);
+  });
+
+  it('should not create an user with a password without letters', async () =>  {
+    const user: CreateUserDTO = {
+      email: "fulaninhodasilva@gmail.com",
+      password: "1234@4125@@",
+      role: 'candidate'
+    }
+
+    expect(async () => {
+      await userService.create(user)
+    }).rejects.toThrow(UnformattedPasswordException);
+  });
+
+  it('should not create an user with a password without numbers', async () =>  {
+    const user: CreateUserDTO = {
+      email: "fulaninhodasilva@gmail.com",
+      password: "abcdfg@@)$(@)$",
+      role: 'candidate'
+    }
+
+    expect(async () => {
+      await userService.create(user)
+    }).rejects.toThrow(UnformattedPasswordException);
+  });
+
+  it('should not create an user with a password without at least one capital letter', async () =>  {
+    const user: CreateUserDTO = {
+      email: "fulaninhodasilva@gmail.com",
+      password: "abcdfg@@)$(@412412)$",
+      role: 'candidate'
+    }
+
+    expect(async () => {
+      await userService.create(user)
+    }).rejects.toThrow(UnformattedPasswordException);
+  });
+
+  it('should not create an user with a password without special characters', async () =>  {
+    const user: CreateUserDTO = {
+      email: "fulaninhodasilva@gmail.com",
+      password: "abcdfgh21124981024",
       role: 'candidate'
     }
 

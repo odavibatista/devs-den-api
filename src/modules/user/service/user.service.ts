@@ -20,6 +20,8 @@ import {
   FindCompanyUserResponseDTO,
 } from '../domain/requests/FindUser.request.dto';
 import { HashProvider } from '../providers/hash.provider';
+import { passwordValidate } from '../../../shared/utils/passwordValidate';
+import { emailValidate } from '../../../shared/utils/emailValidate';
 
 @Injectable()
 export class UserService {
@@ -106,9 +108,11 @@ export class UserService {
     // Fix this type later adding one for the right return
     | any
   > {
-    if (params.email.length < 10 || params.email.length > 50) {
+    if (!emailValidate(params.email) || params.email.length > 50 || params.email.length < 10) 
       throw new UnformattedEmailException();
-    }
+
+    if (!passwordValidate(params.password) || params.password.length < 15)
+      throw new UnformattedPasswordException();
 
     const hashedPassword = await this.hashProvider.hash(params.password);
 
