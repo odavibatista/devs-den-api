@@ -12,15 +12,16 @@ import { JWTProvider } from '../providers/JWT.provider';
 import { HashProvider } from '../providers/hash.provider';
 import { UnformattedEmailException } from '../domain/errors/UnformattedEmail.exception';
 import { UnformattedPasswordException } from '../domain/errors/UnformattedPassword.exception';
-import { CreateUserResponseDTO, CreateUserResponseSchema } from '../domain/requests/CreateUser.request.dto';
 import { EmailAlreadyRegisteredException } from '../domain/errors/EmailAlreadyRegistered.exception';
 import { CompanyService } from '../../../modules/company/service/company.service';
 import { Uf } from '../../../modules/uf/entity/uf.entity';
+import { CandidateService } from '../../../modules/candidate/service/candidate.service';
 
 describe('UserService', () => {
   let userService: UserService;
   let clearingService: UserClearingService
   let companyService: CompanyService
+  let candidateService: CandidateService
   let userRepository: Repository<User>
   let candidateRepository: Repository<Candidate>
   let companyRepository: Repository<Candidate>
@@ -36,13 +37,14 @@ describe('UserService', () => {
         TypeOrmModule.forFeature([User, Address, Candidate, Company, Uf]),
         
       ],
-      providers: [UserService, JWTProvider, HashProvider, UserClearingService, CompanyService],
-      exports: [JWTProvider, HashProvider, UserService, UserClearingService, CompanyService],
+      providers: [UserService, JWTProvider, HashProvider, UserClearingService, CompanyService, CandidateService],
+      exports: [JWTProvider, HashProvider, UserService, UserClearingService, CompanyService, CandidateService],
     }).compile();
 
     userService = module.get<UserService>(UserService);
     clearingService = module.get<UserClearingService>(UserClearingService)
     companyService = module.get<CompanyService>(CompanyService)
+    candidateService = module.get<CandidateService>(CandidateService)
     hashProvider = module.get<HashProvider>(HashProvider)
   });
 
@@ -187,5 +189,38 @@ describe('UserService', () => {
     const hashedPassword = await hashProvider.hash(user.password)
 
     expect(await hashProvider.compare(user.password, hashedPassword)).toBe(true)
+  })
+
+  it('should login an user given the valid credentials', async () => {
+    const candidate = {
+      name: "Zezinho da Silva",
+      birth_date: "1999-12-12",
+      gender: 'male',
+      credentials: {
+        email: "zezinhodasilva@gmail.com",
+        password: "@Algumacoisa123456789101_",
+      },
+      address: {
+        cep: "12345678",
+        city: "São Paulo",
+        number: "123",
+        uf: 1,
+        street: "Rua dos Bobos"
+      }
+    }
+
+    const request = await userService.login({
+      email: candidate.credentials.email,
+      inserted_password: candidate.credentials.password
+    })
+
+    expect(request).toMatchObject({
+      token: expect.any(String),
+      user: {
+        id: expect.any(Number),
+        email: candidate.credentials.email,
+        role: 'candidate'
+      }
+    })
   })
 })
