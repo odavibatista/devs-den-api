@@ -9,7 +9,7 @@ import { Company } from '../../../modules/company/entity/company.entity';
 import { CompanyNotFoundException } from '../../../modules/company/domain/errors/CompanyNotFound.exception';
 import { InvalidModalityException } from '../domain/errors/InvalidModality.exception';
 import { CreateJobBodyDTO, CreateJobResponseDTO } from '../domain/requests/CreateJob.request.dto';
-import { FindJobResponseDTO } from '../domain/requests/FindJobs.request.dto';
+import { FindJobResponseDTO, SimpleFindJobResponseDTO } from '../domain/requests/FindJobs.request.dto';
 import { JobApplicationService } from 'src/modules/job-applications/service/job-application.service';
 import { GetJobStatusResponseDTO } from '../domain/requests/GetJobStatus.request.dto';
 
@@ -25,12 +25,25 @@ export class JobService {
     private jobApplicationService: JobApplicationService
   ) {}
 
-  async findAll(): Promise<Job[]> {
+  async findAll(): Promise<SimpleFindJobResponseDTO[]> {
     const jobs = await this.jobRepository.find();
 
-    jobs.filter((job) => job.deleted_at == null)
+    const filteredJobs = jobs.filter((job) => job.deleted_at === null).map((job) => {
+      return {
+        id_job: job.id_job,
+        title: job.title,
+        description: job.description,
+        wage: job.wage,
+        modality: job.modality,
+        contract: job.contract,
+        job_category: job.job_category_id,
+        company_id: job.company_id,
+        created_at: job.created_at,
+        updated_at: job.updated_at,
+    }}
+  )
 
-    return jobs
+    return filteredJobs
   }
 
   async findOne(id: number): Promise<FindJobResponseDTO | JobNotFoundException> {
@@ -182,5 +195,19 @@ export class JobService {
       }
     }
 
+  }
+  
+  async deleteJob (jobId: number, companyId: number): Promise<void | JobNotFoundException> {
+    const job = await this.jobRepository.findOne({
+      where: { id_job: jobId }
+    })
+
+    if (!job) throw new JobNotFoundException()
+
+    if (job.company_id !== companyId) throw new UnauthorizedException()
+
+    job.deleted_at = String(new Date())
+    
+    await this.jobRepository.update(jobId, job)
   }
 }

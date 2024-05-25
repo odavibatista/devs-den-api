@@ -29,6 +29,31 @@ export const FindJobResponseSchema = z.object({
     })
 });
 
+export const SimpleFindJobResponseSchema = z.object({
+    id_job: z.number().int().positive().describe('ID da vaga'),
+    title: z.string().min(5).max(100).describe('Título da vaga'),
+    desription: z.string().min(20).max(500).describe('Descrição da vaga'),
+    company_id: z.number().int().positive().describe('ID da empresa'),
+    job_category: z.number().int().positive().describe('ID da categoria da vaga'),
+    wage: z.number().int().positive().describe('Salário da vaga'),
+    modality: z
+    .string()
+    .min(9)
+    .max(9)
+    .describe('Modalidade da vaga'),
+    contract: z
+    .string()
+    .min(2)
+    .max(6)
+    .describe('Tipo de contrato'),
+    created_at: z.date().describe('Data de criação da vaga'),
+    updated_at: z.date().describe('Data de atualização da vaga'),
+})
+
+export class SimpleFindJobResponseDTO extends createZodDto(
+    SimpleFindJobResponseSchema,
+) {}
+
 export class FindJobResponseDTO extends createZodDto(
     FindJobResponseSchema,
 ) {}
