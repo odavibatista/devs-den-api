@@ -14,13 +14,18 @@ import { UnformattedEmailException } from '../domain/errors/UnformattedEmail.exc
 import { UnformattedPasswordException } from '../domain/errors/UnformattedPassword.exception';
 import { CreateUserResponseDTO, CreateUserResponseSchema } from '../domain/requests/CreateUser.request.dto';
 import { EmailAlreadyRegisteredException } from '../domain/errors/EmailAlreadyRegistered.exception';
+import { CompanyService } from '../../../modules/company/service/company.service';
+import { Uf } from '../../../modules/uf/entity/uf.entity';
 
 describe('UserService', () => {
   let userService: UserService;
   let clearingService: UserClearingService
+  let companyService: CompanyService
   let userRepository: Repository<User>
   let candidateRepository: Repository<Candidate>
   let companyRepository: Repository<Candidate>
+  let addressRepository: Repository<Address>
+  let ufRepository: Repository<Uf>
   let jwtProvider: JWTProvider
   let hashProvider: HashProvider
 
@@ -28,15 +33,17 @@ describe('UserService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         DatabaseModule,
-        TypeOrmModule.forFeature([User, Address, Candidate, Company]),
+        TypeOrmModule.forFeature([User, Address, Candidate, Company, Uf]),
         
       ],
-      providers: [UserService, JWTProvider, HashProvider, UserClearingService],
-      exports: [JWTProvider, HashProvider, UserService, UserClearingService],
+      providers: [UserService, JWTProvider, HashProvider, UserClearingService, CompanyService],
+      exports: [JWTProvider, HashProvider, UserService, UserClearingService, CompanyService],
     }).compile();
 
     userService = module.get<UserService>(UserService);
     clearingService = module.get<UserClearingService>(UserClearingService)
+    companyService = module.get<CompanyService>(CompanyService)
+    hashProvider = module.get<HashProvider>(HashProvider)
   });
 
   afterEach(async () => {
@@ -169,4 +176,16 @@ describe('UserService', () => {
       await userService.create(user)
     }).rejects.toThrow(EmailAlreadyRegisteredException);
   });
+
+  it('should return true comparing the password with the hash provider', async () => {
+    const user: CreateUserDTO = {
+      email: "zezinhodasilva@gmail.com",
+      password: "@Algumacoisa123456789101_",
+      role: 'candidate'
+    }
+
+    const hashedPassword = await hashProvider.hash(user.password)
+
+    expect(await hashProvider.compare(user.password, hashedPassword)).toBe(true)
+  })
 })
