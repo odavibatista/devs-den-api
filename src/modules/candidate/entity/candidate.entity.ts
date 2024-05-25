@@ -46,11 +46,6 @@ class Candidates {
   })
   birth_date: Date;
 
-  @OneToOne(() => Address, (address) => address.id_address, {
-    nullable: false,
-  })
-  address_id: number;
-
   @Column({
     nullable: true,
   })
