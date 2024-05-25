@@ -10,14 +10,14 @@ import {
 import { SkillService } from '../service/skill.service';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SkillNotFoundException } from '../domain/errors/SkillNotFound.exception';
-import { AllExceptionsFilterDTO } from 'src/shared/domain/dtos/errors/AllException.filter.dto';
+import { AllExceptionsFilterDTO } from '../../../shared/domain/dtos/errors/AllException.filter.dto';
 import {
   FindSkillResponseDTO,
   FindSkillsResponseDTO,
 } from '../domain/requests/FindSkills.request.dto';
-import { BadTokenException } from 'src/modules/user/domain/errors/BadToken.exception';
+import { BadTokenException } from '../../../modules/user/domain/errors/BadToken.exception';
 import { Request, Response } from 'express';
-import { CommonException } from 'src/shared/domain/errors/Common.exception';
+import { CommonException } from '../../../shared/domain/errors/Common.exception';
 
 @Controller('skills')
 @ApiTags('Skills')

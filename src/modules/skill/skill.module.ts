@@ -4,7 +4,7 @@ import {
   ConjunctSkillController,
   IndividualSkillController,
 } from './controller/skill.controller';
-import { DatabaseModule } from 'src/database/database.module';
+import { DatabaseModule } from '../../database/database.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Skill } from './entity/skill.entity';
 import { Candidate } from '../candidate/entity/candidate.entity';

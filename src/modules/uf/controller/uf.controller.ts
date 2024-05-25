@@ -2,7 +2,7 @@ import { Controller, Get, HttpException, Res } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UfService } from '../service/uf.service';
 import { UFNotFoundException } from '../domain/errors/UfNotFound.exception';
-import { AllExceptionsFilterDTO } from 'src/shared/domain/dtos/errors/AllException.filter.dto';
+import { AllExceptionsFilterDTO } from '../../../shared/domain/dtos/errors/AllException.filter.dto';
 import { FindUFsResponseDTO } from '../domain/requests/FindUfs.request.dto';
 import { Response } from 'express';
 

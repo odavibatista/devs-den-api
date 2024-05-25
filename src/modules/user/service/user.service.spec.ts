@@ -11,6 +11,8 @@ import { Address } from '../../../modules/address/entity/address.entity';
 import { Company } from '../../../modules/company/entity/company.entity';
 import { JWTProvider } from '../providers/JWT.provider';
 import { HashProvider } from '../providers/hash.provider';
+import { UnformattedEmailException } from '../domain/errors/UnformattedEmail.exception';
+import { UnformattedPasswordException } from '../domain/errors/UnformattedPassword.exception';
 
 describe('UserService', () => {
   let userService: UserService;
@@ -34,20 +36,23 @@ describe('UserService', () => {
     userService = module.get<UserService>(UserService);
   });
 
-  it('should be defined', () => {
-    expect(userService).toBeDefined();
-  });
+  /*
+  afterEach(async () => {
+    await userRepository.clear()
+  })
+  */
 
   it('should not create an user with an e-mail with more than 50 characters', async () => {
+
     const user: CreateUserDTO = {
       email: "fulaninhodasilvamuitobacanaestoupreenchendocaracteresatoa@gmaaaaaaaaail.com",
       password: "@TestandoAlguma_Coisa_123456",
       role: 'candidate'
     }
 
-    const createdUser = await userService.create(user)
-
-    expect(createdUser).toThrow(HttpException)
+    expect(async () => {
+      await userService.create(user)
+    }).rejects.toThrow(UnformattedEmailException);
   });
 
   it('should not create an user with an e-mail with less than 10 characters', async () => {
@@ -57,9 +62,9 @@ describe('UserService', () => {
       role: 'candidate'
     }
 
-    const createdUser = await userService.create(user)
-
-    expect(createdUser).toThrow(HttpException)
+    expect(async () => {
+      await userService.create(user)
+    }).rejects.toThrow(UnformattedEmailException);
   });
 
   it('should not create an user with an unformatted password', async () =>  {
@@ -69,8 +74,8 @@ describe('UserService', () => {
       role: 'candidate'
     }
 
-    const createdUser = await userService.create(user)
-
-    expect(createdUser).toThrow(HttpException)
-  })
+    expect(async () => {
+      await userService.create(user)
+    }).rejects.toThrow(UnformattedPasswordException);
+  });
 });

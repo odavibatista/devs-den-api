@@ -103,8 +103,13 @@ export class UserService {
     | EmailAlreadyRegisteredException
     | UnformattedEmailException
     | UnformattedPasswordException
+    // Fix this type later adding one for the right return
     | any
   > {
+    if (params.email.length < 10 || params.email.length > 50) {
+      throw new UnformattedEmailException();
+    }
+
     const hashedPassword = await this.hashProvider.hash(params.password);
 
     try {

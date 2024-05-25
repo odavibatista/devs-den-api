@@ -7,7 +7,7 @@ import { UserController } from './user.controller';
 import { UserService } from '../service/user.service';
 import { JWTProvider } from '../providers/JWT.provider';
 import { HashProvider } from '../providers/hash.provider';
-import { DatabaseModule } from 'src/database/database.module';
+import { DatabaseModule } from '../../../database/database.module';
 import { forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../entity/user.entity';

@@ -1,4 +1,4 @@
-import { EnvironmentException } from 'src/shared/domain/errors/Environment.exception';
+import { EnvironmentException } from '../../../shared/domain/errors/Environment.exception';
 import { ZodError, z } from 'zod';
 
 const JWTConfigSchema = z.object({

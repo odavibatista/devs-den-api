@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { JobApplicationService } from './service/job-application.service';
-import { DatabaseModule } from 'src/database/database.module';
+import { DatabaseModule } from '../../database/database.module';
 import { JobModule } from '../job/job.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Job } from '../job/entity/job.entity';
