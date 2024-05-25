@@ -22,6 +22,7 @@ import {
 import { HashProvider } from '../providers/hash.provider';
 import { passwordValidate } from '../../../shared/utils/passwordValidate';
 import { emailValidate } from '../../../shared/utils/emailValidate';
+import { CreateUserResponseDTO } from '../domain/requests/CreateUser.request.dto';
 
 @Injectable()
 export class UserService {
@@ -101,12 +102,10 @@ export class UserService {
   async create(
     params: CreateUserDTO,
   ): Promise<
-    | User
+    CreateUserResponseDTO
     | EmailAlreadyRegisteredException
     | UnformattedEmailException
     | UnformattedPasswordException
-    // Fix this type later adding one for the right return
-    | any
   > {
     if (!emailValidate(params.email) || params.email.length > 50 || params.email.length < 10) 
       throw new UnformattedEmailException();
@@ -125,7 +124,10 @@ export class UserService {
       });
 
       return {
-        user: user,
+        user: {
+          email: user.email,
+          role: user.role,
+        },
         id: user.id_user,
       };
     } catch (error) {

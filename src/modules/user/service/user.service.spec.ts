@@ -6,13 +6,13 @@ import { Candidate } from '../../../modules/candidate/entity/candidate.entity';
 import { Repository } from 'typeorm';
 import { DatabaseModule } from '../../../database/database.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { HttpException, forwardRef } from '@nestjs/common';
 import { Address } from '../../../modules/address/entity/address.entity';
 import { Company } from '../../../modules/company/entity/company.entity';
 import { JWTProvider } from '../providers/JWT.provider';
 import { HashProvider } from '../providers/hash.provider';
 import { UnformattedEmailException } from '../domain/errors/UnformattedEmail.exception';
 import { UnformattedPasswordException } from '../domain/errors/UnformattedPassword.exception';
+import { CreateUserResponseDTO, CreateUserResponseSchema } from '../domain/requests/CreateUser.request.dto';
 
 describe('UserService', () => {
   let userService: UserService;
@@ -125,5 +125,34 @@ describe('UserService', () => {
     expect(async () => {
       await userService.create(user)
     }).rejects.toThrow(UnformattedPasswordException);
+  });
+
+  it('should not create an user with a password without at least one minor letter', async () =>  {
+    const user: CreateUserDTO = {
+      email: "fulaninhodasilva@gmail.com",
+      password: "1131313@@@TESTEEEE",
+      role: 'candidate'
+    }
+
+    expect(async () => {
+      await userService.create(user)
+    }).rejects.toThrow(UnformattedPasswordException);
+  });
+
+  it('should create an user with a valid e-mail and password', async () => {
+    const user: CreateUserDTO = {
+      email: "fulaninhosilva@gmail.com",
+      password: "@Algumacoisa123456789101_",
+      role: 'candidate'
+    }
+    const request = await userService.create(user)
+
+    expect(request).toMatchObject({
+      user: {
+        email: user.email,
+        role: user.role,
+      },
+      id: expect.any(Number)
+    })
   });
 });
