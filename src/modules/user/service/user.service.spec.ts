@@ -6,18 +6,14 @@ import { Candidate } from '../../../modules/candidate/entity/candidate.entity';
 import { Repository } from 'typeorm';
 import { DatabaseModule } from '../../../database/database.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { forwardRef } from '@nestjs/common';
-import { CandidateModule } from '../../../modules/candidate/candidate.module';
+import { HttpException, forwardRef } from '@nestjs/common';
 import { Address } from '../../../modules/address/entity/address.entity';
 import { Company } from '../../../modules/company/entity/company.entity';
-import { CompanyModule } from '../../../modules/company/company.module';
-import { JobModule } from '../../../modules/job/job.module';
-import { JobCategoryModule } from '../../../modules/job-category/job-category.module';
 import { JWTProvider } from '../providers/JWT.provider';
 import { HashProvider } from '../providers/hash.provider';
 
 describe('UserService', () => {
-  let service: UserService;
+  let userService: UserService;
   let userRepository: Repository<User>
   let candidateRepository: Repository<Candidate>
   let companyRepository: Repository<Candidate>
@@ -29,21 +25,17 @@ describe('UserService', () => {
       imports: [
         DatabaseModule,
         TypeOrmModule.forFeature([User, Address, Candidate, Company]),
-        forwardRef(() => CandidateModule),
-        forwardRef(() => CompanyModule),
-        forwardRef(() => JobCategoryModule),
-        forwardRef(() => JobModule),
         
       ],
       providers: [UserService, JWTProvider, HashProvider],
       exports: [JWTProvider, HashProvider, UserService],
     }).compile();
 
-    service = module.get<UserService>(UserService);
+    userService = module.get<UserService>(UserService);
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(userService).toBeDefined();
   });
 
   it('should not create an user with an e-mail with more than 50 characters', async () => {
@@ -53,9 +45,9 @@ describe('UserService', () => {
       role: 'candidate'
     }
 
-    const createdUser = await service.create(user)
+    const createdUser = await userService.create(user)
 
-    expect(createdUser).toContain('status')
+    expect(createdUser).toThrow(HttpException)
   });
 
   it('should not create an user with an e-mail with less than 10 characters', async () => {
@@ -65,9 +57,9 @@ describe('UserService', () => {
       role: 'candidate'
     }
 
-    const createdUser = await service.create(user)
+    const createdUser = await userService.create(user)
 
-    expect(createdUser).toContain('status')
+    expect(createdUser).toThrow(HttpException)
   });
 
   it('should not create an user with an unformatted password', async () =>  {
@@ -77,8 +69,8 @@ describe('UserService', () => {
       role: 'candidate'
     }
 
-    const createdUser = await service.create(user)
+    const createdUser = await userService.create(user)
 
-    expect(createdUser).toContain('status')
+    expect(createdUser).toThrow(HttpException)
   })
 });
