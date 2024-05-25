@@ -1,5 +1,5 @@
-import { Address } from 'src/modules/address/entity/address.entity';
-import { Skill } from 'src/modules/skill/entity/skill.entity';
+import { Address } from '../../../modules/address/entity/address.entity';
+import { Skill } from '../../../modules/skill/entity/skill.entity';
 import {
   Column,
   CreateDateColumn,
@@ -10,7 +10,8 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from 'src/modules/user/entity/user.entity';
+import { User } from '../../../modules/user/entity/user.entity';
+import { Job } from '../../../modules/job/entity/job.entity';
 
 enum Gender {
   MALE = 'male',
@@ -45,17 +46,11 @@ class Candidates {
   })
   birth_date: Date;
 
-  @OneToOne(() => Address, (address) => address.id_address, {
-    nullable: false,
-  })
-  address_id: number;
-
   @Column({
     nullable: true,
   })
   deleted_at: string;
 
-  @ManyToMany(() => Skill, (skill) => skill.id_skill)
   @CreateDateColumn({
     nullable: false,
   })
@@ -73,6 +68,22 @@ class Candidates {
       referencedColumnName: 'id_skill',
     },
   })
+  skills: Skill[]
+
+  @ManyToMany(() => Job, (job) => job.id_job, { cascade: true })
+  @JoinTable({
+    name: 'job_applications',
+    joinColumn: {
+      name: 'candidate_id',
+      referencedColumnName: 'id_user',
+    },
+    inverseJoinColumn: {
+      name: 'job_id',
+      referencedColumnName: 'id_job',
+    },
+  })
+  applications: Job[]
+
   @UpdateDateColumn({
     nullable: false,
   })

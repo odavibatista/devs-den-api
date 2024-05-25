@@ -6,10 +6,10 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DatabaseModule } from 'src/database/database.module';
+import { DatabaseModule } from '../../database/database.module';
 import { User } from './entity/user.entity';
 import { Address } from '../address/entity/address.entity';
-import { UserService } from './service/user.service';
+import { UserClearingService, UserService } from './service/user.service';
 import { UserController } from './controller/user.controller';
 import { JWTProvider } from './providers/JWT.provider';
 import { Candidate } from '../candidate/entity/candidate.entity';
@@ -19,6 +19,7 @@ import { CompanyModule } from '../company/company.module';
 import { CandidateModule } from '../candidate/candidate.module';
 import { AuthenticationMiddleware } from './middlewares/Auth.middleware';
 import { JobCategoryModule } from '../job-category/job-category.module';
+import { JobModule } from '../job/job.module';
 
 @Module({
   imports: [
@@ -27,10 +28,12 @@ import { JobCategoryModule } from '../job-category/job-category.module';
     forwardRef(() => CandidateModule),
     forwardRef(() => CompanyModule),
     forwardRef(() => JobCategoryModule),
+    forwardRef(() => JobModule),
+    
   ],
   controllers: [UserController],
-  providers: [UserService, JWTProvider, HashProvider],
-  exports: [JWTProvider, HashProvider, UserService],
+  providers: [UserService, UserClearingService, JWTProvider, HashProvider],
+  exports: [JWTProvider, HashProvider, UserService, UserClearingService],
 })
 export class UserModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

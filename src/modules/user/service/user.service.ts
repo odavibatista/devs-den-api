@@ -13,13 +13,16 @@ import {
   LoginUserBodyDTO,
   LoginUserResponseDTO,
 } from '../domain/requests/LoginUser.request.dto';
-import { Candidate } from 'src/modules/candidate/entity/candidate.entity';
-import { Company } from 'src/modules/company/entity/company.entity';
+import { Candidate } from '../../../modules/candidate/entity/candidate.entity';
+import { Company } from '../../../modules/company/entity/company.entity';
 import {
   FindCandidateUserResponseDTO,
   FindCompanyUserResponseDTO,
 } from '../domain/requests/FindUser.request.dto';
 import { HashProvider } from '../providers/hash.provider';
+import { passwordValidate } from '../../../shared/utils/passwordValidate';
+import { emailValidate } from '../../../shared/utils/emailValidate';
+import { CreateUserResponseDTO } from '../domain/requests/CreateUser.request.dto';
 
 @Injectable()
 export class UserService {
@@ -35,7 +38,9 @@ export class UserService {
   ) {}
 
   async findAll(): Promise<User[] | UserNotFoundException> {
-    const users = await this.userRepository.find();
+    const users = await this.userRepository.find({
+      where: { deleted_at: null || undefined}
+    });
 
     if (users.length === 0) throw new UserNotFoundException();
     else return users;
@@ -97,12 +102,17 @@ export class UserService {
   async create(
     params: CreateUserDTO,
   ): Promise<
-    | User
+    CreateUserResponseDTO
     | EmailAlreadyRegisteredException
     | UnformattedEmailException
     | UnformattedPasswordException
-    | any
   > {
+    if (!emailValidate(params.email) || params.email.length > 50 || params.email.length < 10) 
+      throw new UnformattedEmailException();
+
+    if (!passwordValidate(params.password) || params.password.length < 15)
+      throw new UnformattedPasswordException();
+
     const hashedPassword = await this.hashProvider.hash(params.password);
 
     try {
@@ -110,10 +120,14 @@ export class UserService {
         email: params.email,
         password: hashedPassword,
         role: params.role,
+        deleted_at: null
       });
 
       return {
-        user: user,
+        user: {
+          email: user.email,
+          role: user.role,
+        },
         id: user.id_user,
       };
     } catch (error) {
@@ -205,6 +219,21 @@ export class UserService {
       await this.userRepository.save(user);
 
       return user.id_user;
+    } catch (error) {
+      throw new HttpException(error, error.status);
+    }
+  }
+}
+
+export class UserClearingService  {
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>
+  ) {}
+
+  public async wipe(): Promise<void>  {
+    try {
+      await this.userRepository.clear();
     } catch (error) {
       throw new HttpException(error, error.status);
     }

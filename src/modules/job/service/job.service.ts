@@ -1,15 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Job } from '../entity/job.entity';
 import { Repository } from 'typeorm';
 import { JobNotFoundException } from '../domain/errors/JobNotFound.exception';
-import { CategoryNotFoundException } from 'src/modules/job-category/domain/errors/CategoryNotFound.exception';
-import { JobCategory } from 'src/modules/job-category/entity/job-category.entity';
-import { Company } from 'src/modules/company/entity/company.entity';
-import { CompanyNotFoundException } from 'src/modules/company/domain/errors/CompanyNotFound.exception';
+import { CategoryNotFoundException } from '../../../modules/job-category/domain/errors/CategoryNotFound.exception';
+import { JobCategory } from '../../../modules/job-category/entity/job-category.entity';
+import { Company } from '../../../modules/company/entity/company.entity';
+import { CompanyNotFoundException } from '../../../modules/company/domain/errors/CompanyNotFound.exception';
 import { InvalidModalityException } from '../domain/errors/InvalidModality.exception';
 import { CreateJobBodyDTO, CreateJobResponseDTO } from '../domain/requests/CreateJob.request.dto';
 import { FindJobResponseDTO } from '../domain/requests/FindJobs.request.dto';
+import { JobApplicationService } from 'src/modules/job-applications/service/job-application.service';
+import { GetJobStatusResponseDTO } from '../domain/requests/GetJobStatus.request.dto';
 
 @Injectable()
 export class JobService {
@@ -20,10 +22,13 @@ export class JobService {
     private jobCategoryRepository: Repository<JobCategory>,
     @InjectRepository(Company)
     private companyRepository: Repository<Company>,
+    private jobApplicationService: JobApplicationService
   ) {}
 
   async findAll(): Promise<Job[]> {
     const jobs = await this.jobRepository.find();
+
+    jobs.filter((job) => job.deleted_at == null)
 
     return jobs
   }
@@ -133,5 +138,49 @@ export class JobService {
     }
 
     return response
+  }
+
+  async getJobStatus (jobId: number, companyId: number): Promise<GetJobStatusResponseDTO | JobNotFoundException> {
+    const job = await this.jobRepository.findOne({
+      where: { id_job: jobId }
+    })
+
+    if (job.company_id !== companyId) throw new UnauthorizedException()
+
+    if (!job) throw new JobNotFoundException()
+
+    const jobCategory = await this.jobCategoryRepository.findOne({
+      where: { id_category: job.job_category_id }
+    })
+
+    if (!jobCategory) throw new CategoryNotFoundException()
+
+    const applications = await this.jobApplicationService.getJobApplications(jobId)
+
+    if (applications instanceof Array) {
+      applications.map((application) => {
+        return {
+          id_user: application.candidate_id,
+          job_id: application.job_id,
+          active: application.active
+        }
+      })
+
+      return {
+        id_job: job.id_job,
+        title: job.title,
+        description: job.description,
+        wage: job.wage,
+        modality: job.modality,
+        contract: job.contract,
+        job_category: {
+          id_category: jobCategory.id_category,
+          name: jobCategory.name,
+          image_url: jobCategory.image_url
+        },
+        applications: applications
+      }
+    }
+
   }
 }

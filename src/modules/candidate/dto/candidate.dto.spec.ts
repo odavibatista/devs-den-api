@@ -1,7 +1,7 @@
-import { CandidateDto } from './candidate.dto';
+import { CreateCandidateDTO } from './candidate.dto';
 
 describe('CandidateDto', () => {
   it('should be defined', () => {
-    expect(new CandidateDto()).toBeDefined();
+    expect(new CreateCandidateDTO()).toBeDefined();
   });
 });

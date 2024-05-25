@@ -1,5 +1,5 @@
-import { Company } from 'src/modules/company/entity/company.entity';
-import { Candidate } from 'src/modules/candidate/entity/candidate.entity';
+import { Company } from '../../../modules/company/entity/company.entity';
+import { Candidate } from '../../../modules/candidate/entity/candidate.entity';
 import {
   Column,
   CreateDateColumn,
@@ -8,12 +8,11 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { JobCategory } from 'src/modules/job-category/entity/job-category.entity';
-import { Skill } from 'src/modules/skill/entity/skill.entity';
+import { JobCategory } from '../../../modules/job-category/entity/job-category.entity';
+import { Skill } from '../../../modules/skill/entity/skill.entity';
 
 enum Modality {
   PRESENTIAL = 'presential',
@@ -83,7 +82,7 @@ class Jobs {
   })
   contract: string;
 
-  @ManyToMany(() => Skill, (skill) => skill.id_skill)
+  @ManyToMany(() => Skill, (skill) => skill.id_skill, { cascade: true })
   @JoinTable({
     name: 'job_skills',
     joinColumn: {
@@ -95,6 +94,27 @@ class Jobs {
       referencedColumnName: 'id_skill',
     },
   })
+  skills: Skill[]
+
+  @ManyToMany(() => Candidate, (candidate) => candidate.id_user, { cascade: true })
+  @JoinTable({
+    name: 'job_applications',
+    joinColumn: {
+      name: 'job_id',
+      referencedColumnName: 'id_job',
+    },
+    inverseJoinColumn: {
+      name: 'candidate_id',
+      referencedColumnName: 'id_user',
+    },
+  })
+  applications: Candidate[]
+
+  @Column({
+    nullable: true,
+  })
+  deleted_at: string;
+
   @CreateDateColumn({
     nullable: false,
   })

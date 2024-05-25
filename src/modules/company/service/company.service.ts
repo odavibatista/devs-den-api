@@ -5,23 +5,23 @@ import { Repository } from 'typeorm';
 import { CompanyNotFoundException } from '../domain/errors/CompanyNotFound.exception';
 import { CompanyNameAlreadyRegisteredException } from '../domain/errors/CompanyNameAlreadyRegistered.exception';
 import { CNPJAlreadyRegisteredException } from '../domain/errors/CNPJAlreadyRegistered.exception';
-import { pjValidate } from 'src/shared/utils/pjValidate';
-import { EmailAlreadyRegisteredException } from 'src/modules/user/domain/errors/EmailAlreadyRegistered.exception';
-import { User } from 'src/modules/user/entity/user.entity';
-import { passwordValidate } from 'src/shared/utils/passwordValidate';
-import { emailValidate } from 'src/shared/utils/emailValidate';
-import { UnformattedPasswordException } from 'src/modules/user/domain/errors/UnformattedPassword.exception';
-import { UnformattedEmailException } from 'src/modules/user/domain/errors/UnformattedEmail.exception';
+import { pjValidate } from '../../../shared/utils/pjValidate';
+import { EmailAlreadyRegisteredException } from '../../../modules/user/domain/errors/EmailAlreadyRegistered.exception';
+import { User } from '../../../modules/user/entity/user.entity';
+import { passwordValidate } from '../../../shared/utils/passwordValidate';
+import { emailValidate } from '../../../shared/utils/emailValidate';
+import { UnformattedPasswordException } from '../../../modules/user/domain/errors/UnformattedPassword.exception';
+import { UnformattedEmailException } from '../../../modules/user/domain/errors/UnformattedEmail.exception';
 import { InvalidCNPJException } from '../domain/errors/InvalidCNPJ.exception';
 import {
   RegisterCompanyBodyDTO,
   RegisterCompanyResponseDTO,
 } from '../domain/requests/RegisterCompany.request.dto';
-import { Address } from 'src/modules/address/entity/address.entity';
-import { Uf } from 'src/modules/uf/entity/uf.entity';
-import { UFNotFoundException } from 'src/modules/uf/domain/errors/UfNotFound.exception';
-import { JWTProvider } from 'src/modules/user/providers/JWT.provider';
-import { UserService } from 'src/modules/user/service/user.service';
+import { Address } from '../../../modules/address/entity/address.entity';
+import { Uf } from '../../../modules/uf/entity/uf.entity';
+import { UFNotFoundException } from '../../../modules/uf/domain/errors/UfNotFound.exception';
+import { JWTProvider } from '../../../modules/user/providers/JWT.provider';
+import { UserService } from '../../../modules/user/service/user.service';
 import { FindCompanyResponseDTO } from '../domain/requests/FindCompanies.request.dto';
 
 @Injectable()

@@ -6,15 +6,13 @@ import {
   HttpException,
   Param,
   Post,
-  Put,
   Req,
   Res,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { UserService } from '../service/user.service';
 import { UserNotFoundException } from '../domain/errors/UserNotFound.exception';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { AllExceptionsFilterDTO } from 'src/shared/domain/dtos/errors/AllException.filter.dto';
+import { AllExceptionsFilterDTO } from '../../../shared/domain/dtos/errors/AllException.filter.dto';
 import { UnformattedEmailException } from '../domain/errors/UnformattedEmail.exception';
 import { WrongPasswordException } from '../domain/errors/WrongPassword.exception';
 import {
@@ -26,12 +24,12 @@ import {
   FindCandidateUserResponseDTO,
   FindCompanyUserResponseDTO,
 } from '../domain/requests/FindUser.request.dto';
-import { CompanyNotFoundException } from 'src/modules/company/domain/errors/CompanyNotFound.exception';
+import { CompanyNotFoundException } from '../../../modules/company/domain/errors/CompanyNotFound.exception';
 import { NotAuthenticatedException } from '../domain/errors/NotAuthenticated.exception';
 import { BadTokenException } from '../domain/errors/BadToken.exception';
-import { CompanyService } from 'src/modules/company/service/company.service';
-import { CandidateService } from 'src/modules/candidate/service/candidate.service';
-import { CommonException } from 'src/shared/domain/errors/Common.exception';
+import { CompanyService } from '../../../modules/company/service/company.service';
+import { CandidateService } from '../../../modules/candidate/service/candidate.service';
+import { CommonException } from '../../../shared/domain/errors/Common.exception';
 import { HomeDataResponseDTO } from '../domain/requests/HomeData.request.dto';
 
 @Controller('user')

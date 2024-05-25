@@ -1,7 +1,7 @@
-import { AddressEntity } from './address.entity';
+import { Address } from './address.entity';
 
 describe('AddressEntity', () => {
   it('should be defined', () => {
-    expect(new AddressEntity()).toBeDefined();
+    expect(new Address()).toBeDefined();
   });
 });
