@@ -1,5 +1,5 @@
-import { Company } from 'src/modules/company/entity/company.entity';
-import { Candidate } from 'src/modules/candidate/entity/candidate.entity';
+import { Company } from '../../../modules/company/entity/company.entity';
+import { Candidate } from '../../../modules/candidate/entity/candidate.entity';
 import {
   Column,
   CreateDateColumn,
@@ -11,8 +11,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { JobCategory } from 'src/modules/job-category/entity/job-category.entity';
-import { Skill } from 'src/modules/skill/entity/skill.entity';
+import { JobCategory } from '../../../modules/job-category/entity/job-category.entity';
+import { Skill } from '../../../modules/skill/entity/skill.entity';
 
 enum Modality {
   PRESENTIAL = 'presential',

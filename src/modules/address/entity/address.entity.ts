@@ -1,4 +1,4 @@
-import { Uf } from 'src/modules/uf/entity/uf.entity';
+import { Uf } from '../../../modules/uf/entity/uf.entity';
 import {
   Column,
   CreateDateColumn,

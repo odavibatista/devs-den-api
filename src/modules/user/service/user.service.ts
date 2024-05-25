@@ -13,8 +13,8 @@ import {
   LoginUserBodyDTO,
   LoginUserResponseDTO,
 } from '../domain/requests/LoginUser.request.dto';
-import { Candidate } from 'src/modules/candidate/entity/candidate.entity';
-import { Company } from 'src/modules/company/entity/company.entity';
+import { Candidate } from '../../../modules/candidate/entity/candidate.entity';
+import { Company } from '../../../modules/company/entity/company.entity';
 import {
   FindCandidateUserResponseDTO,
   FindCompanyUserResponseDTO,

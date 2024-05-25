@@ -1,5 +1,5 @@
-import { Address } from 'src/modules/address/entity/address.entity';
-import { Skill } from 'src/modules/skill/entity/skill.entity';
+import { Address } from '../../../modules/address/entity/address.entity';
+import { Skill } from '../../../modules/skill/entity/skill.entity';
 import {
   Column,
   CreateDateColumn,
@@ -10,8 +10,8 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from 'src/modules/user/entity/user.entity';
-import { Job } from 'src/modules/job/entity/job.entity';
+import { User } from '../../../modules/user/entity/user.entity';
+import { Job } from '../../../modules/job/entity/job.entity';
 
 enum Gender {
   MALE = 'male',
