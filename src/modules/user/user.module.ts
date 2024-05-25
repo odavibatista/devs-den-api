@@ -6,7 +6,7 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DatabaseModule } from 'src/database/database.module';
+import { DatabaseModule } from '../../database/database.module';
 import { User } from './entity/user.entity';
 import { Address } from '../address/entity/address.entity';
 import { UserService } from './service/user.service';

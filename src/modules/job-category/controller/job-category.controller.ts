@@ -7,7 +7,7 @@ import {
 import { JobCategoryService } from '../service/job-category.service';
 import { CategoryNotFoundException } from '../domain/errors/CategoryNotFound.exception';
 import { Request, Response } from 'express';
-import { AllExceptionsFilterDTO } from 'src/shared/domain/dtos/errors/AllException.filter.dto';
+import { AllExceptionsFilterDTO } from '../../../shared/domain/dtos/errors/AllException.filter.dto';
 
 @Controller('job-category')
 @ApiTags('Categorias de Emprego')

@@ -6,14 +6,14 @@ import { Request, Response } from 'express';
 import { FindJobResponseDTO, FindJobsResponseDTO } from '../domain/requests/FindJobs.request.dto';
 import { UserIsNotCompanyException } from '../domain/errors/UserIsNotCompany.exception';
 import { InvalidModalityException } from '../domain/errors/InvalidModality.exception';
-import { AllExceptionsFilterDTO } from 'src/shared/domain/dtos/errors/AllException.filter.dto';
+import { AllExceptionsFilterDTO } from '../../../shared/domain/dtos/errors/AllException.filter.dto';
 import { CreateJobBodyDTO } from '../domain/requests/CreateJob.request.dto';
-import { NotAuthenticatedException } from 'src/modules/user/domain/errors/NotAuthenticated.exception';
+import { NotAuthenticatedException } from '../../../modules/user/domain/errors/NotAuthenticated.exception';
 import { UserIsNotCandidateException } from '../domain/errors/UserIsNotCandidate.exception';
 import { AlreadyAppliedToJobException } from '../domain/errors/AlreadyAppliedToJob.exception';
 import { JobHasBeenExpiredException } from '../domain/errors/JobHasBeenExpired.exception';
-import { CommonException } from 'src/shared/domain/errors/Common.exception';
-import { JobApplicationService } from 'src/modules/job-applications/service/job-application.service';
+import { CommonException } from '../../../shared/domain/errors/Common.exception';
+import { JobApplicationService } from '../../../modules/job-applications/service/job-application.service';
 
 @Controller('jobs')
 @ApiTags('Vagas')

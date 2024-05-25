@@ -10,7 +10,7 @@ import {
   ConjunctCompanyController,
   IndividualCompanyController,
 } from './controller/company.controller';
-import { DatabaseModule } from 'src/database/database.module';
+import { DatabaseModule } from '../../database/database.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Company } from './entity/company.entity';
 import { User } from '../user/entity/user.entity';

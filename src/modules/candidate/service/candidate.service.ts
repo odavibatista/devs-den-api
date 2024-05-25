@@ -2,21 +2,21 @@ import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Candidate } from '../entity/candidate.entity';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/modules/user/entity/user.entity';
-import { Address } from 'src/modules/address/entity/address.entity';
+import { User } from '../../../modules/user/entity/user.entity';
+import { Address } from '../../../modules/address/entity/address.entity';
 import {
   RegisterCandidateBodyDTO,
   RegisterCandidateResponseDTO,
 } from '../domain/requests/RegisterCandidate.request.dto';
-import { UnformattedEmailException } from 'src/modules/user/domain/errors/UnformattedEmail.exception';
-import { UnformattedPasswordException } from 'src/modules/user/domain/errors/UnformattedPassword.exception';
-import { EmailAlreadyRegisteredException } from 'src/modules/user/domain/errors/EmailAlreadyRegistered.exception';
-import { Uf } from 'src/modules/uf/entity/uf.entity';
-import { UFNotFoundException } from 'src/modules/uf/domain/errors/UfNotFound.exception';
-import { JWTProvider } from 'src/modules/user/providers/JWT.provider';
-import { passwordValidate } from 'src/shared/utils/passwordValidate';
-import { emailValidate } from 'src/shared/utils/emailValidate';
-import { UserService } from 'src/modules/user/service/user.service';
+import { UnformattedEmailException } from '../../../modules/user/domain/errors/UnformattedEmail.exception';
+import { UnformattedPasswordException } from '../../../modules/user/domain/errors/UnformattedPassword.exception';
+import { EmailAlreadyRegisteredException } from '../../../modules/user/domain/errors/EmailAlreadyRegistered.exception';
+import { Uf } from '../../../modules/uf/entity/uf.entity';
+import { UFNotFoundException } from '../../../modules/uf/domain/errors/UfNotFound.exception';
+import { JWTProvider } from '../../../modules/user/providers/JWT.provider';
+import { passwordValidate } from '../../../shared/utils/passwordValidate';
+import { emailValidate } from '../../../shared/utils/emailValidate';
+import { UserService } from '../../../modules/user/service/user.service';
 import { CandidateNotFoundException } from '../domain/errors/CandidateNotFound.exception';
 
 @Injectable()

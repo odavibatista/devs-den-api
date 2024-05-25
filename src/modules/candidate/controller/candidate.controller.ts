@@ -12,10 +12,10 @@ import {
   RegisterCandidateBodyDTO,
   RegisterCandidateResponseDTO,
 } from '../domain/requests/RegisterCandidate.request.dto';
-import { UnformattedEmailException } from 'src/modules/user/domain/errors/UnformattedEmail.exception';
-import { AllExceptionsFilterDTO } from 'src/shared/domain/dtos/errors/AllException.filter.dto';
-import { UnformattedPasswordException } from 'src/modules/user/domain/errors/UnformattedPassword.exception';
-import { EmailAlreadyRegisteredException } from 'src/modules/user/domain/errors/EmailAlreadyRegistered.exception';
+import { UnformattedEmailException } from '../../../modules/user/domain/errors/UnformattedEmail.exception';
+import { AllExceptionsFilterDTO } from '../../../shared/domain/dtos/errors/AllException.filter.dto';
+import { UnformattedPasswordException } from '../../../modules/user/domain/errors/UnformattedPassword.exception';
+import { EmailAlreadyRegisteredException } from '../../../modules/user/domain/errors/EmailAlreadyRegistered.exception';
 import { Response } from 'express';
 
 @Controller('candidate')
