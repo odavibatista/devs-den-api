@@ -10,9 +10,7 @@ class JobApplications {
     @PrimaryColumn({ name: 'candidate_id' })
     candidate_id: number
 
-    @Column({
-      default: true
-    })
+    @Column()
     active: boolean
 
     @ManyToOne(
