@@ -1,18 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SkillController } from './skill.controller';
+import { IndividualSkillController, ConjunctSkillController } from './skill.controller';
 
 describe('SkillController', () => {
-  let controller: SkillController;
+  let iController: IndividualSkillController;
+  let cController: ConjunctSkillController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [SkillController],
+      controllers: [IndividualSkillController, ConjunctSkillController],
     }).compile();
 
-    controller = module.get<SkillController>(SkillController);
+    iController = module.get<IndividualSkillController>(IndividualSkillController);
+    cController = module.get<ConjunctSkillController>(ConjunctSkillController);
   });
 
   it('should be defined', () => {
-    expect(controller).toBeDefined();
+    expect(iController).toBeDefined();
+    expect(cController).toBeDefined();
   });
 });
