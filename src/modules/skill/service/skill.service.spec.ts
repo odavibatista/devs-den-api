@@ -7,6 +7,7 @@ import { Skill } from '../entity/skill.entity';
 import { Candidate } from '../../../modules/candidate/entity/candidate.entity';
 import { Job } from '../../../modules/job/entity/job.entity';
 import { SkillNotFoundException } from '../domain/errors/SkillNotFound.exception';
+import { TOTAL_OF_SKILLS } from '../seeders/skill.sample';
 
 describe('SkillService', () => {
   let skillService: SkillService;
@@ -35,10 +36,10 @@ describe('SkillService', () => {
     expect(typeof request[0].name).toEqual("string")
   });
 
-  it('should contain 44 skills in total if the database has been previously seeded', async () =>  {
+  it(`should contain ${TOTAL_OF_SKILLS} skills in total if the database has been previously seeded`, async () =>  {
     const request = await skillService.findAll()
 
-    expect(request).toHaveLength(44)
+    expect(request).toHaveLength(TOTAL_OF_SKILLS)
   })
 
   it('should bring a single skill from the database', async ()  =>  {
