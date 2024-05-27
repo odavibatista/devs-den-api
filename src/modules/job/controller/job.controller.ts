@@ -15,8 +15,8 @@ import { JobHasBeenExpiredException } from '../domain/errors/JobHasBeenExpired.e
 import { CommonException } from '../../../shared/domain/errors/Common.exception';
 import { JobApplicationService } from '../../../modules/job-applications/service/job-application.service';
 import { GetJobStatusResponseDTO } from '../domain/requests/GetJobStatus.request.dto';
-import { ApplicationDoesNotExist } from 'src/modules/job-applications/domain/errors/ApplicationDoesNotExist.exception';
-import { UserNotFoundException } from 'src/modules/user/domain/errors/UserNotFound.exception';
+import { ApplicationDoesNotExist } from '../../../modules/job-applications/domain/errors/ApplicationDoesNotExist.exception';
+import { UserNotFoundException } from '../../../modules/user/domain/errors/UserNotFound.exception';
 
 @Controller('jobs')
 @ApiTags('Vagas')

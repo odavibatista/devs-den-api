@@ -28,12 +28,14 @@ describe('SkillService', () => {
     const request = await skillService.findAll()
 
     expect(request).toBeInstanceOf(Array)
-    
+  
+    expect(request[0]).toHaveProperty("id_skill")  
     expect(typeof request[0].id_skill).toEqual("number")
+    expect(request[0]).toHaveProperty("name")  
     expect(typeof request[0].name).toEqual("string")
   });
 
-  it('should contain 44 ufs in total if the database has been previously seeded', async () =>  {
+  it('should contain 44 skills in total if the database has been previously seeded', async () =>  {
     const request = await skillService.findAll()
 
     expect(request).toHaveLength(44)
