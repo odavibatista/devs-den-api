@@ -8,7 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UfController } from '../controller/uf.controller';
 
 describe('UfService', () => {
-  let service: UfService;
+  let ufService: UfService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,11 +23,11 @@ describe('UfService', () => {
       controllers: [UfController],
     }).compile();
 
-    service = module.get<UfService>(UfService);
+    ufService = module.get<UfService>(UfService);
   });
 
   it('should bring all the UFs from the database', async () => {
-    const request = await service.findAll()
+    const request = await ufService.findAll()
 
     expect(request).toBeInstanceOf(Array)
     
@@ -37,7 +37,7 @@ describe('UfService', () => {
   });
 
   it('should contain 27 ufs in total if the database has been previously seeded', async () =>  {
-    const request = await service.findAll()
+    const request = await ufService.findAll()
 
     expect(request).toHaveLength(27)
   })
