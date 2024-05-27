@@ -6,6 +6,7 @@ import { UfModule } from '../uf.module';
 import UfSeeder from '../seeders/uf.seeder';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UfController } from '../controller/uf.controller';
+import { TOTAL_OF_UFS } from '../seeders/uf.sample';
 
 describe('UfService', () => {
   let ufService: UfService;
@@ -39,9 +40,9 @@ describe('UfService', () => {
     expect(typeof request[0].acronym).toEqual("string")
   });
 
-  it('should contain 27 ufs in total if the database has been previously seeded', async () =>  {
+  it(`should contain ${TOTAL_OF_UFS} ufs in total if the database has been previously seeded`, async () =>  {
     const request = await ufService.findAll()
 
-    expect(request).toHaveLength(27)
+    expect(request).toHaveLength(TOTAL_OF_UFS)
   })
 });
