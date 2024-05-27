@@ -10,7 +10,7 @@ import { CompanyNotFoundException } from '../../../modules/company/domain/errors
 import { InvalidModalityException } from '../domain/errors/InvalidModality.exception';
 import { CreateJobBodyDTO, CreateJobResponseDTO } from '../domain/requests/CreateJob.request.dto';
 import { FindJobResponseDTO, SimpleFindJobResponseDTO } from '../domain/requests/FindJobs.request.dto';
-import { JobApplicationService } from 'src/modules/job-applications/service/job-application.service';
+import { JobApplicationService } from '../../../modules/job-applications/service/job-application.service';
 import { GetJobStatusResponseDTO } from '../domain/requests/GetJobStatus.request.dto';
 
 @Injectable()

@@ -10,8 +10,7 @@ import { JobHasBeenExpiredException } from '../../job/domain/errors/JobHasBeenEx
 import { JobNotFoundException } from '../../job/domain/errors/JobNotFound.exception';
 import { UserNotFoundException } from '../../user/domain/errors/UserNotFound.exception';
 import { JobApplication } from '../entity/job-application.entity';
-import { UserIsNotCompanyException } from 'src/modules/job/domain/errors/UserIsNotCompany.exception';
-import { BadTokenException } from 'src/modules/user/domain/errors/BadToken.exception';
+import { BadTokenException } from '../../../modules/user/domain/errors/BadToken.exception';
 import { ApplicationDoesNotExist } from '../domain/errors/ApplicationDoesNotExist.exception';
 
 @Injectable()
