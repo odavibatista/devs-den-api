@@ -7,6 +7,7 @@ import { JobCategory } from '../entity/job-category.entity';
 import { Job } from '../../../modules/job/entity/job.entity';
 import { Skill } from '../../../modules/skill/entity/skill.entity';
 import { FindJobCategoryResponseDTO } from '../domain/requests/FindJobCategories.request.dto';
+import { TOTAL_OF_JOB_CATEGORIES } from '../seeders/job-category.sample';
 
 describe('JobCategoryService', () => {
   let jobCategoryService: JobCategoryService;
@@ -37,10 +38,10 @@ describe('JobCategoryService', () => {
     expect(typeof request[0].image_url).toEqual("string")
   });
 
-  it('should contain 8 job categories in total if the database has been previously seeded', async () =>  {
+  it(`should contain ${TOTAL_OF_JOB_CATEGORIES} job categories in total if the database has been previously seeded`, async () =>  {
     const request = await jobCategoryService.findAll()
 
-    expect(request).toHaveLength(8)
+    expect(request).toHaveLength(TOTAL_OF_JOB_CATEGORIES)
   })
 
   it('should bring a single job category from the database', async ()  =>  {
