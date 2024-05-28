@@ -99,7 +99,7 @@ export class CandidateService {
       const token = this.JwtProvider.generate({
         payload: {
           id: userToBeFound.id_user,
-          role: params.credentials.role,
+          role: "candidate",
         },
       });
 
