@@ -76,6 +76,41 @@ describe('UserService', () => {
     }).rejects.toThrow(UnformattedEmailException);
   });
 
+  it('should not create an user with an email without a domain', async () => {
+    const user: CreateUserDTO = {
+      email: "fulaninhodasilva",
+      password: "@TestandoAlguma_Coisa_123456",
+      role: 'candidate'
+    }
+
+    expect(async () => {
+      await userService.create(user)
+    }).rejects.toThrow(UnformattedEmailException);
+  })
+
+  it('should not create a candidate with an e-mail without a username', async () => {
+    const user: CreateUserDTO = {
+      email: "@gmail.com",
+      password: "@TestandoAlguma_Coisa_123456",
+      role: 'candidate'
+    }
+
+    expect(async () => {
+      await userService.create(user)
+    }).rejects.toThrow(UnformattedEmailException);
+  })
+
+  it('should not create a candidate with an uncompleted domain', async () =>  {
+    const user: CreateUserDTO = {
+      email: "fulano@com",
+      password: "@TestandoAlguma_Coisa_123456",
+      role: 'candidate'
+    }
+    expect(async () => {
+      await userService.create(user)
+    }).rejects.toThrow(UnformattedEmailException);
+  })
+
   it('should not create an user with a password with less then 15 characters', async () =>  {
     const user: CreateUserDTO = {
       email: "fulaninhodasilva@gmail.com",

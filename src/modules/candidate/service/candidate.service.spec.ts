@@ -9,6 +9,9 @@ import { Uf } from '../../../modules/uf/entity/uf.entity';
 import { forwardRef } from '@nestjs/common';
 import { UserModule } from '../../../modules/user/user.module';
 import { UserService } from '../../../modules/user/service/user.service';
+import { RegisterCandidateBodyDTO } from '../domain/requests/RegisterCandidate.request.dto';
+import { UnformattedEmailException } from '../../../modules/user/domain/errors/UnformattedEmail.exception';
+import { Company } from '../../../modules/company/entity/company.entity';
 
 describe('ServiceService', () => {
   let candidateService: CandidateService;
@@ -18,7 +21,7 @@ describe('ServiceService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         DatabaseModule,
-        TypeOrmModule.forFeature([Candidate, Address, User, Uf]),
+        TypeOrmModule.forFeature([Candidate, Address, User, Uf, Company]),
         forwardRef(() => UserModule),
       ],
       providers: [CandidateService, UserService],
@@ -29,7 +32,67 @@ describe('ServiceService', () => {
     userService = module.get<UserService>(UserService)
   });
 
-  it('should not create ', () => {
-    expect(candidateService).toBeDefined();
-  });
+  const candidate: RegisterCandidateBodyDTO = {
+    name: 'Fulano da Silva',
+    gender: 'male',
+    birth_date: "1990-01-01",
+    address:  {
+      uf: 1,
+      cep: '12345678',
+      street: 'Rua do Fulano',
+      number: '123',
+      complement: 'Casa',
+    },
+    credentials: {
+      email: 'fulanodasilva@gmail.com',
+      password: 'TestandoAlguma_Coisa_123456',
+    }
+  }
+
+  it('should not create a candidate with an e-mail with more than 50 characters', async () => {
+    candidate.credentials.email = "fuuuuuuuuuuuuuulaaaaaaaaaaaaaaaaaaaaaanooooooooooooooooooooooo@gmail.com"
+
+    expect(async () => {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UnformattedEmailException);
+  })
+
+  it('should not create a candidate with an e-mail with less than 8 characters', async () => {
+    candidate.credentials.email = "f@g.com"
+
+    expect(async () => {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UnformattedEmailException);
+  })
+
+  it('should not create a candidate with an e-mail without a domain', async () => {
+    candidate.credentials.email = "fulano"
+
+    expect(async () => {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UnformattedEmailException);
+  })
+
+  it('should not create a candidate with an e-mail without a username', async () => {
+    candidate.credentials.email = "@gmail.com"
+
+    expect(async () => {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UnformattedEmailException);
+  })
+
+  it('should not create a candidate with an uncompleted domain', async () =>  {
+    candidate.credentials.email = "fulano@.com"
+
+    expect(async () => {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UnformattedEmailException);
+
+    candidate.credentials.email = "fulano@gmail"
+
+    expect(async () => {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UnformattedEmailException);
+  })
+
 });
