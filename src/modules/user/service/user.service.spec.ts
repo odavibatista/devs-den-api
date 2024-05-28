@@ -16,12 +16,14 @@ import { EmailAlreadyRegisteredException } from '../domain/errors/EmailAlreadyRe
 import { CompanyService } from '../../../modules/company/service/company.service';
 import { Uf } from '../../../modules/uf/entity/uf.entity';
 import { CandidateService } from '../../../modules/candidate/service/candidate.service';
+import { UfService } from '../../../modules/uf/service/uf.service';
 
 describe('UserService', () => {
   let userService: UserService;
   let clearingService: UserClearingService
   let companyService: CompanyService
   let candidateService: CandidateService
+  let ufService: UfService
   let userRepository: Repository<User>
   let candidateRepository: Repository<Candidate>
   let companyRepository: Repository<Candidate>
@@ -37,7 +39,7 @@ describe('UserService', () => {
         TypeOrmModule.forFeature([User, Address, Candidate, Company, Uf]),
         
       ],
-      providers: [UserService, JWTProvider, HashProvider, UserClearingService, CompanyService, CandidateService],
+      providers: [UserService, JWTProvider, HashProvider, UserClearingService, CompanyService, CandidateService, UfService],
       exports: [JWTProvider, HashProvider, UserService, UserClearingService, CompanyService, CandidateService],
     }).compile();
 
@@ -45,6 +47,7 @@ describe('UserService', () => {
     clearingService = module.get<UserClearingService>(UserClearingService)
     companyService = module.get<CompanyService>(CompanyService)
     candidateService = module.get<CandidateService>(CandidateService)
+    ufService = module.get<UfService>(UfService)
     hashProvider = module.get<HashProvider>(HashProvider)
   });
 
@@ -192,6 +195,8 @@ describe('UserService', () => {
   })
 
   it('should login an user given the valid credentials', async () => {
+    const basalRequest = await ufService.findAll()
+
     const candidate = {
       name: "Zezinho da Silva",
       birth_date: "1999-12-12",
@@ -204,10 +209,12 @@ describe('UserService', () => {
         cep: "12345678",
         city: "São Paulo",
         number: "123",
-        uf: 1,
+        uf: basalRequest.length,
         street: "Rua dos Bobos"
       }
     }
+
+    await candidateService.create(candidate)
 
     const request = await userService.login({
       email: candidate.credentials.email,
@@ -218,7 +225,7 @@ describe('UserService', () => {
       token: expect.any(String),
       user: {
         id: expect.any(Number),
-        email: candidate.credentials.email,
+        name: candidate.name,
         role: 'candidate'
       }
     })
