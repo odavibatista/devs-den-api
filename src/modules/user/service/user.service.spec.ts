@@ -3,7 +3,6 @@ import { UserClearingService, UserService } from './user.service';
 import { CreateUserDTO } from '../dto/user.dto';
 import { User } from '../entity/user.entity';
 import { Candidate } from '../../../modules/candidate/entity/candidate.entity';
-import { Repository } from 'typeorm';
 import { DatabaseModule } from '../../../database/database.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Address } from '../../../modules/address/entity/address.entity';
@@ -24,11 +23,6 @@ describe('UserService', () => {
   let companyService: CompanyService
   let candidateService: CandidateService
   let ufService: UfService
-  let userRepository: Repository<User>
-  let candidateRepository: Repository<Candidate>
-  let companyRepository: Repository<Candidate>
-  let addressRepository: Repository<Address>
-  let ufRepository: Repository<Uf>
   let jwtProvider: JWTProvider
   let hashProvider: HashProvider
 
@@ -192,42 +186,41 @@ describe('UserService', () => {
     const hashedPassword = await hashProvider.hash(user.password)
 
     expect(await hashProvider.compare(user.password, hashedPassword)).toBe(true)
-  })
+  }, 7 * 1000)
 
   it('should login an user given the valid credentials', async () => {
-    const basalRequest = await ufService.findAll()
+    const basalRequest = (await ufService.findAll()).length
 
-    const candidate = {
-      name: "Zezinho da Silva",
-      birth_date: "1999-12-12",
+    await candidateService.create({
+      name: "Fulaninho da Silva",
+      birth_date: "2024-05-02 21:43:22.648426",
       gender: 'male',
       credentials: {
-        email: "zezinhodasilva@gmail.com",
-        password: "@Algumacoisa123456789101_",
+        email: "davideosmar13@gmail.com",
+        password: "@Algumacoisa123456789101_"
       },
       address: {
         cep: "12345678",
         city: "São Paulo",
         number: "123",
-        uf: basalRequest.length,
-        street: "Rua dos Bobos"
+        uf: 22,
+        street: "Rua dos Bobos",
+        complement: "Apartamento 22"
       }
-    }
-
-    await candidateService.create(candidate)
-
-    const request = await userService.login({
-      email: candidate.credentials.email,
-      inserted_password: candidate.credentials.password
-    })
-
-    expect(request).toMatchObject({
-      token: expect.any(String),
-      user: {
-        id: expect.any(Number),
-        name: candidate.name,
-        role: 'candidate'
-      }
+    }).finally(async () =>  {
+      const request = await userService.login({
+        email: "davideosmar13@gmail.com",
+        inserted_password: "@Algumacoisa123456789101_"
+      })
+      
+      expect(request).toMatchObject({
+        token: expect.any(String),
+        user: {
+          id: expect.any(Number),
+          name: expect.any(String),
+          role: 'candidate'
+        }
+      })
     })
   })
 })

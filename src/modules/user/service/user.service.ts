@@ -107,6 +107,14 @@ export class UserService {
     | UnformattedEmailException
     | UnformattedPasswordException
   > {
+    const userWithSameEmail = await this.userRepository.findOne({
+      where: {
+        email: params.email
+      }
+    })
+
+    if(userWithSameEmail) throw new EmailAlreadyRegisteredException()
+
     if (!emailValidate(params.email) || params.email.length > 50 || params.email.length < 10) 
       throw new UnformattedEmailException();
 
@@ -115,7 +123,6 @@ export class UserService {
 
     const hashedPassword = await this.hashProvider.hash(params.password);
 
-    try {
       const user = await this.userRepository.save({
         email: params.email,
         password: hashedPassword,
@@ -130,9 +137,6 @@ export class UserService {
         },
         id: user.id_user,
       };
-    } catch (error) {
-      throw new HttpException(error, error.status);
-    }
   }
 
   async login(
@@ -143,7 +147,6 @@ export class UserService {
     | WrongPasswordException
     | UnformattedEmailException
   > {
-    try {
       const user: User = await this.userRepository.findOne({
         where: { email: loginDto.email },
       });
@@ -196,9 +199,6 @@ export class UserService {
         };
         return response;
       }
-    } catch (error) {
-      throw new HttpException(error, error.status);
-    }
   }
 
   public async delete(

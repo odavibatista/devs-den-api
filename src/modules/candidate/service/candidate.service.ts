@@ -42,7 +42,6 @@ export class CandidateService {
     | UnformattedPasswordException
     | EmailAlreadyRegisteredException
   > {
-    try {
       if (
         params.credentials.email.length < 8 ||
         params.credentials.email.length > 50
@@ -112,9 +111,6 @@ export class CandidateService {
       };
 
       return response;
-    } catch (error) {
-      throw new HttpException(error, error.status);
-    }
   }
 
   async delete(id: number): Promise<string | CandidateNotFoundException> {
