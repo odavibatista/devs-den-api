@@ -23,6 +23,7 @@ import { HashProvider } from '../providers/hash.provider';
 import { passwordValidate } from '../../../shared/utils/passwordValidate';
 import { emailValidate } from '../../../shared/utils/emailValidate';
 import { CreateUserResponseDTO } from '../domain/requests/CreateUser.request.dto';
+import { PasswordTooLongException } from '../domain/errors/PasswordTooLong.exception';
 
 @Injectable()
 export class UserService {
@@ -120,6 +121,9 @@ export class UserService {
 
     if (!passwordValidate(params.password) || params.password.length < 15)
       throw new UnformattedPasswordException();
+
+    if (params.password.length > 50)
+      throw new PasswordTooLongException();
 
     const hashedPassword = await this.hashProvider.hash(params.password);
 

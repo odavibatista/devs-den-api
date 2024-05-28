@@ -12,6 +12,8 @@ import { UserService } from '../../../modules/user/service/user.service';
 import { RegisterCandidateBodyDTO } from '../domain/requests/RegisterCandidate.request.dto';
 import { UnformattedEmailException } from '../../../modules/user/domain/errors/UnformattedEmail.exception';
 import { Company } from '../../../modules/company/entity/company.entity';
+import { UnformattedPasswordException } from '../../../modules/user/domain/errors/UnformattedPassword.exception';
+import { PasswordTooLongException } from '../../../modules/user/domain/errors/PasswordTooLong.exception';
 
 describe('ServiceService', () => {
   let candidateService: CandidateService;
@@ -95,4 +97,29 @@ describe('ServiceService', () => {
     }).rejects.toThrow(UnformattedEmailException);
   })
 
+  it('should not create a candidate with a password with less than 15 characters', async () => {
+    candidate.credentials.email = "fulanodasilva@gmail.com"
+    candidate.credentials.password = "@Ab1"
+
+    expect(async () => {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UnformattedPasswordException);
+  })
+
+  it('should not create a candidate with a password with more than 50 characters', async () => {
+    candidate.credentials.email = "fulanodasilva@gmail.com"
+    candidate.credentials.password = "@Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1"
+
+    expect(async () => {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(PasswordTooLongException);
+  })
+
+  it('should not create a candidate with a password without letters', async () =>  {
+    candidate.credentials.password = "1234567890@"
+
+    expect(async () => {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UnformattedPasswordException);
+  });
 });

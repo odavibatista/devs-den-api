@@ -18,6 +18,7 @@ import { CandidateService } from '../../../modules/candidate/service/candidate.s
 import { UfService } from '../../../modules/uf/service/uf.service';
 import { UserNotFoundException } from '../domain/errors/UserNotFound.exception';
 import { RegisterCandidateResponseDTO } from '../../../modules/candidate/domain/requests/RegisterCandidate.request.dto';
+import { PasswordTooLongException } from '../domain/errors/PasswordTooLong.exception';
 
 describe('UserService', () => {
   let userService: UserService;
@@ -122,6 +123,18 @@ describe('UserService', () => {
       await userService.create(user)
     }).rejects.toThrow(UnformattedPasswordException);
   });
+
+  it('should not create an user with a password with more than 50 characters', async () => {
+    const user: CreateUserDTO = {
+      email: "fulaninhodasilva@gmail.com",
+      password: "Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1",
+      role: 'candidate'
+    }
+
+    expect(async () => {
+      await userService.create(user)
+    }).rejects.toThrow(PasswordTooLongException);
+  })
 
   it('should not create an user with a password without letters', async () =>  {
     const user: CreateUserDTO = {

@@ -18,6 +18,7 @@ import { passwordValidate } from '../../../shared/utils/passwordValidate';
 import { emailValidate } from '../../../shared/utils/emailValidate';
 import { UserService } from '../../../modules/user/service/user.service';
 import { CandidateNotFoundException } from '../domain/errors/CandidateNotFound.exception';
+import { PasswordTooLongException } from '../../../modules/user/domain/errors/PasswordTooLong.exception';
 
 @Injectable()
 export class CandidateService {
@@ -40,6 +41,7 @@ export class CandidateService {
     | RegisterCandidateResponseDTO
     | UnformattedEmailException
     | UnformattedPasswordException
+    | PasswordTooLongException
     | EmailAlreadyRegisteredException
   > {
       if (
