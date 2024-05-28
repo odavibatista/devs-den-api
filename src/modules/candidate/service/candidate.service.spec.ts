@@ -8,7 +8,7 @@ import { User } from '../../../modules/user/entity/user.entity';
 import { Uf } from '../../../modules/uf/entity/uf.entity';
 import { forwardRef } from '@nestjs/common';
 import { UserModule } from '../../../modules/user/user.module';
-import { UserService } from '../../../modules/user/service/user.service';
+import { UserClearingService, UserService } from '../../../modules/user/service/user.service';
 import { RegisterCandidateBodyDTO } from '../domain/requests/RegisterCandidate.request.dto';
 import { UnformattedEmailException } from '../../../modules/user/domain/errors/UnformattedEmail.exception';
 import { Company } from '../../../modules/company/entity/company.entity';
@@ -18,6 +18,7 @@ import { PasswordTooLongException } from '../../../modules/user/domain/errors/Pa
 describe('ServiceService', () => {
   let candidateService: CandidateService;
   let userService: UserService;
+  let clearingService: UserClearingService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -26,13 +27,18 @@ describe('ServiceService', () => {
         TypeOrmModule.forFeature([Candidate, Address, User, Uf, Company]),
         forwardRef(() => UserModule),
       ],
-      providers: [CandidateService, UserService],
+      providers: [CandidateService, UserService, UserClearingService],
       exports: [CandidateService],
     }).compile();
 
     candidateService = module.get<CandidateService>(CandidateService);
     userService = module.get<UserService>(UserService)
+    clearingService = module.get<UserClearingService>(UserClearingService)
   });
+
+  afterEach(async () => {
+    await clearingService.wipe()
+  })
 
   const candidate: RegisterCandidateBodyDTO = {
     name: 'Fulano da Silva',
@@ -115,11 +121,43 @@ describe('ServiceService', () => {
     }).rejects.toThrow(PasswordTooLongException);
   })
 
-  it('should not create a candidate with a password without letters', async () =>  {
+  it('should not create a candidate with a password without without at least one letter', async () =>  {
     candidate.credentials.password = "1234567890@"
 
     expect(async () => {
       await candidateService.create(candidate)
     }).rejects.toThrow(UnformattedPasswordException);
   });
+
+  it('should not create a candidate with a password without at least one number', async () =>  {
+    candidate.credentials.password = "Asadasdasd@"
+
+    expect(async () => {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UnformattedPasswordException);
+  });
+
+  it('should not create an user with a password without at least one capital letter', async () =>  {
+    candidate.credentials.password = "abcdfg@@)$(@412412)$"
+
+    expect(async () => {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UnformattedPasswordException);
+  });
+
+  it('should not create an user with a password without at least one special character', async () =>  {
+    candidate.credentials.password = "Abcdefg123"
+
+    expect(async () => {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UnformattedPasswordException);
+  });
+
+  it('should not create an user with a password without at least one minor letter', async () =>  {
+    candidate.credentials.password = "AAAAAAAAAAAAAAAAAA@"
+
+    expect(async () => {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UnformattedPasswordException);    
+  })
 });
