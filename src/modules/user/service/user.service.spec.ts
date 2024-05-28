@@ -16,6 +16,8 @@ import { CompanyService } from '../../../modules/company/service/company.service
 import { Uf } from '../../../modules/uf/entity/uf.entity';
 import { CandidateService } from '../../../modules/candidate/service/candidate.service';
 import { UfService } from '../../../modules/uf/service/uf.service';
+import { UserNotFoundException } from '../domain/errors/UserNotFound.exception';
+import { RegisterCandidateResponseDTO } from '../../../modules/candidate/domain/requests/RegisterCandidate.request.dto';
 
 describe('UserService', () => {
   let userService: UserService;
@@ -222,5 +224,42 @@ describe('UserService', () => {
         }
       })
     })
+  })
+
+  it('should not delete an user that does not exist', async () => {
+    expect(async () => {
+      await userService.delete(0)
+    }).rejects.toThrow(new UserNotFoundException().message)
+  })
+
+  it('should delete an user given the valid id', async () => {
+    const basalRequest = (await ufService.findAll()).length
+
+    const user = await candidateService.create({
+      name: "Fulaninho da Silva",
+      birth_date: "2024-05-02 21:43:22.648426",
+      gender: 'male',
+      credentials: {
+        email: "davideosmar13@gmail.com",
+        password: "@Algumacoisa123456789101_"
+      },
+      address: {
+        cep: "12345678",
+        city: "São Paulo",
+        number: "123",
+        uf: basalRequest,
+        street: "Rua dos Bobos",
+        complement: "Apartamento 22"
+      }
+    })
+
+    if (user instanceof RegisterCandidateResponseDTO) {
+      const request = await userService.delete(user.user.id).then(async ()  =>  {
+        await new Promise(process.nextTick);
+
+      })
+
+      expect(request).toBeTruthy()
+    }
   })
 })
