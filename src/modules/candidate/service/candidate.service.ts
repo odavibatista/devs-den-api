@@ -136,3 +136,18 @@ export class CandidateService {
     }
   }
 }
+
+export class CandidateClearingService  {
+  constructor(
+    @InjectRepository(Candidate)
+    private candidateRepository: Repository<Candidate>
+  ) {}
+
+  public async wipe(): Promise<void>  {
+    try {
+      await this.candidateRepository.clear();
+    } catch (error) {
+      throw new HttpException(error, error.status);
+    }
+  }
+}

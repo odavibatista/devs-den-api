@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CandidateService } from './candidate.service';
+import { CandidateClearingService, CandidateService } from './candidate.service';
 import { DatabaseModule } from '../../../database/database.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Candidate } from '../entity/candidate.entity';
@@ -18,7 +18,8 @@ import { PasswordTooLongException } from '../../../modules/user/domain/errors/Pa
 describe('ServiceService', () => {
   let candidateService: CandidateService;
   let userService: UserService;
-  let clearingService: UserClearingService;
+  let userClearingService: UserClearingService;
+  let candidateClearingService: CandidateClearingService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -27,17 +28,19 @@ describe('ServiceService', () => {
         TypeOrmModule.forFeature([Candidate, Address, User, Uf, Company]),
         forwardRef(() => UserModule),
       ],
-      providers: [CandidateService, UserService, UserClearingService],
+      providers: [CandidateService, UserService, UserClearingService, CandidateClearingService],
       exports: [CandidateService],
     }).compile();
 
     candidateService = module.get<CandidateService>(CandidateService);
     userService = module.get<UserService>(UserService)
-    clearingService = module.get<UserClearingService>(UserClearingService)
+    userClearingService = module.get<UserClearingService>(UserClearingService)
+    candidateClearingService = module.get<CandidateClearingService>(CandidateClearingService)
   });
 
   afterEach(async () => {
-    await clearingService.wipe()
+    await userClearingService.wipe()
+    await candidateClearingService.wipe()
   })
 
   const candidate: RegisterCandidateBodyDTO = {
