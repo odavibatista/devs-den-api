@@ -1,4 +1,4 @@
-import { HttpException, Inject, Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Candidate } from '../entity/candidate.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -23,6 +23,8 @@ import { PasswordTooLongException } from '../../../modules/user/domain/errors/Pa
 import { NameTooShortException } from '../../../modules/user/domain/errors/NameTooShort.exception';
 import { NameTooLongException } from '../../../modules/user/domain/errors/NameTooLong.exception';
 import { UnformattedNameException } from '../../../modules/user/domain/errors/UnformattedName.exception';
+import { CityTooShortException } from '../../../modules/address/domain/errors/CityTooShort.exception';
+import { CityTooLongException } from '../../../modules/address/domain/errors/CityTooLong.exception';
 
 @Injectable()
 export class CandidateService {
@@ -63,6 +65,11 @@ export class CandidateService {
         params.credentials.email.length > 50
       )
         throw new UnformattedEmailException();
+
+      if (params.address.city.length < 3) throw new CityTooShortException()
+
+      if (params.address.city.length > 50) throw new CityTooLongException()
+
 
       const userWithSameEmail = await this.userRepository.findOne({
         where: { email: params.credentials.email },

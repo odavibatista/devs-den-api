@@ -17,6 +17,9 @@ import { PasswordTooLongException } from '../../../modules/user/domain/errors/Pa
 import { NameTooShortException } from '../../../modules/user/domain/errors/NameTooShort.exception';
 import { NameTooLongException } from '../../../modules/user/domain/errors/NameTooLong.exception';
 import { UnformattedNameException } from '../../../modules/user/domain/errors/UnformattedName.exception';
+import { UFNotFoundException } from '../../../modules/uf/domain/errors/UfNotFound.exception';
+import { CityTooShortException } from '../../../modules/address/domain/errors/CityTooShort.exception';
+import { CityTooLongException } from '../../../modules/address/domain/errors/CityTooLong.exception';
 
 describe('ServiceService', () => {
   let candidateService: CandidateService;
@@ -199,5 +202,32 @@ describe('ServiceService', () => {
     expect(async  ()  =>  {
       await candidateService.create(candidate)
     }).rejects.toThrow(UnformattedNameException)
+  })
+
+  it('should not create a candidate passing an unvalid UF id', async  ()  =>  {
+    candidate.name = "Fulano da Silva"
+    candidate.address.uf = 0
+
+    expect(async  ()  =>  {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UFNotFoundException)
+  })
+
+  it('should not create a candidate passing a city which length is less than 3 characters', async ()  =>  {
+    candidate.address.uf = 1
+    candidate.address.city = "Ab"
+
+    expect(async  ()  =>  {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(CityTooShortException)
+  })
+
+  it('should not create a candidate passing a city which names has more than 50 characters', async ()  =>  {
+    candidate.address.uf = 1
+    candidate.address.city = "AbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAb"
+
+    expect(async  ()  =>  {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(CityTooLongException)
   })
 });

@@ -15,7 +15,7 @@ export const RegisterCandidateBodySchema = z.object({
       .min(8)
       .max(50)
       .describe('E-mail do usuário candidato'),
-    password: z.string().min(8).max(250).describe('Senha do usuário candidato')
+    password: z.string().min(8).max(50).describe('Senha do usuário candidato')
   }),
 
   /* Endereço  */
