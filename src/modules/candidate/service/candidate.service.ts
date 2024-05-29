@@ -50,11 +50,13 @@ export class CandidateService {
     | PasswordTooLongException
     | EmailAlreadyRegisteredException
   > {
+      const name = params.name
+      if (!nameValidate(name)) throw new UnformattedNameException()
+
       if (params.name.length < 5) throw new NameTooShortException()
 
       if (params.name.length > 50) throw new NameTooLongException()
 
-      if (!nameValidate(params.name)) throw new UnformattedNameException()
       
       if (
         params.credentials.email.length < 8 ||

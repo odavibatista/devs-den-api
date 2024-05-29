@@ -16,6 +16,7 @@ import { UnformattedPasswordException } from '../../../modules/user/domain/error
 import { PasswordTooLongException } from '../../../modules/user/domain/errors/PasswordTooLong.exception';
 import { NameTooShortException } from '../../../modules/user/domain/errors/NameTooShort.exception';
 import { NameTooLongException } from '../../../modules/user/domain/errors/NameTooLong.exception';
+import { UnformattedNameException } from '../../../modules/user/domain/errors/UnformattedName.exception';
 
 describe('ServiceService', () => {
   let candidateService: CandidateService;
@@ -189,6 +190,14 @@ describe('ServiceService', () => {
 
     expect(async  ()  =>  {
       await candidateService.create(candidate)
-    }).rejects.toThrow(NameTooLongException)
+    }).rejects.toThrow(UnformattedNameException)
+  })
+  
+  it('should not create a candidate which name has special characters', async ()  =>  {
+    candidate.name = "Fulano!"
+
+    expect(async  ()  =>  {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UnformattedNameException)
   })
 });

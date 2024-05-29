@@ -1,5 +1,5 @@
-export const nameValidate = async (name: string): Promise<boolean> => {
-    return /^[a-zA-Z]$/.test(
+export const nameValidate = (name: string): boolean => {
+    return  /^[a-zA-Z_.-\s]+$/.test(
       name,
     );
   };
