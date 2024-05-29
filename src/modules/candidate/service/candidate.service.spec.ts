@@ -20,6 +20,7 @@ import { UnformattedNameException } from '../../../modules/user/domain/errors/Un
 import { UFNotFoundException } from '../../../modules/uf/domain/errors/UfNotFound.exception';
 import { CityTooShortException } from '../../../modules/address/domain/errors/CityTooShort.exception';
 import { CityTooLongException } from '../../../modules/address/domain/errors/CityTooLong.exception';
+import { UnprocessableDataException } from '../../../shared/domain/errors/UnprocessableData.exception';
 
 describe('ServiceService', () => {
   let candidateService: CandidateService;
@@ -229,5 +230,21 @@ describe('ServiceService', () => {
     expect(async  ()  =>  {
       await candidateService.create(candidate)
     }).rejects.toThrow(CityTooLongException)
+  })
+
+  it('should not create a candidate passing a city that contains numbers', async  ()  =>  {
+    candidate.address.city = "Cidade 1"
+
+    expect(async  ()  =>  {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UnprocessableDataException)
+  })
+
+  it('should not create a candidate passing a city that contains special characters', async  ()  =>  {
+    candidate.address.city = "Cidade []"
+
+    expect(async  ()  =>  {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UnprocessableDataException)
   })
 });

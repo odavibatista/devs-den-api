@@ -25,6 +25,7 @@ import { NameTooLongException } from '../../../modules/user/domain/errors/NameTo
 import { UnformattedNameException } from '../../../modules/user/domain/errors/UnformattedName.exception';
 import { CityTooShortException } from '../../../modules/address/domain/errors/CityTooShort.exception';
 import { CityTooLongException } from '../../../modules/address/domain/errors/CityTooLong.exception';
+import { UnprocessableDataException } from '../../../shared/domain/errors/UnprocessableData.exception';
 
 @Injectable()
 export class CandidateService {
@@ -52,8 +53,7 @@ export class CandidateService {
     | PasswordTooLongException
     | EmailAlreadyRegisteredException
   > {
-      const name = params.name
-      if (!nameValidate(name)) throw new UnformattedNameException()
+      if (!nameValidate(params.name)) throw new UnformattedNameException()
 
       if (params.name.length < 5) throw new NameTooShortException()
 
@@ -70,6 +70,7 @@ export class CandidateService {
 
       if (params.address.city.length > 50) throw new CityTooLongException()
 
+      if (!nameValidate(params.address.city)) throw new UnprocessableDataException("Cidades não podem conter números e caracteres especiais.")
 
       const userWithSameEmail = await this.userRepository.findOne({
         where: { email: params.credentials.email },

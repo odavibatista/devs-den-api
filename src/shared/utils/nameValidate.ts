@@ -1,5 +1,5 @@
 export const nameValidate = (name: string): boolean => {
-    return  /^[a-zA-Z_.-\s]+$/.test(
+    return  /^[a-zA-ZÀ-ú_.-\s]+$/.test(
       name,
     );
   };
