@@ -54,29 +54,38 @@ export class CandidateService {
     | PasswordTooLongException
     | EmailAlreadyRegisteredException
   > {
-      if (!nameValidate(params.name)) throw new UnformattedNameException()
+      if (!nameValidate(params.name)) 
+      throw new UnformattedNameException()
 
-      if (params.name.length < 5) throw new NameTooShortException()
+      if (params.name.length < 5) 
+      throw new NameTooShortException()
 
-      if (params.name.length > 50) throw new NameTooLongException()
+      if (params.name.length > 50) 
+      throw new NameTooLongException()
 
-      
+      if (!emailValidate(params.credentials.email))
+        throw new UnformattedEmailException();
+
       if (
         params.credentials.email.length < 8 ||
         params.credentials.email.length > 50
       )
         throw new UnformattedEmailException();
 
-      if (!nameValidate(params.address.city)) throw new UnprocessableDataException("Cidades não podem conter números e caracteres especiais.")
+      if (!nameValidate(params.address.city)) 
+      throw new UnprocessableDataException("Cidades não podem conter números e caracteres especiais.")
 
       if (!passwordValidate(params.credentials.password))
       throw new UnformattedPasswordException();
-    
-      if (params.address.city.length < 3) throw new CityTooShortException()
 
-      if (params.address.city.length > 50) throw new CityTooLongException()
+      if (!cepValidate(params.address.cep)) 
+      throw new UnprocessableDataException("CEP inválido.")
 
-      if (!cepValidate(params.address.cep)) throw new UnprocessableDataException("CEP inválido.")
+      if (params.address.city.length < 3) 
+      throw new CityTooShortException()
+
+      if (params.address.city.length > 50) 
+      throw new CityTooLongException()
 
       const userWithSameEmail = await this.userRepository.findOne({
         where: { email: params.credentials.email },
@@ -84,16 +93,11 @@ export class CandidateService {
 
       if (userWithSameEmail) throw new EmailAlreadyRegisteredException();
 
-      if (!emailValidate(params.credentials.email))
-        throw new UnformattedEmailException();
-
       const uf = await this.ufRepository.findOne({
         where: { id_uf: params.address.uf },
       });
 
-      if (!uf) {
-        throw new UFNotFoundException();
-      }
+      if (!uf)  throw new UFNotFoundException();
 
       await this.userService.create({
         email: params.credentials.email,
