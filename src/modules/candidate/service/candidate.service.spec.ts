@@ -249,8 +249,31 @@ describe('ServiceService', () => {
   })
 
   it('should not create a candidate passing a cep that contains letters', async  ()  =>  {
-    candidate.address.city = "São Paulo"
     candidate.address.cep = "31245ABC"
+
+    expect(async  ()  =>  {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UnprocessableDataException)
+  })
+
+  it('should not create a candidate passing a cep that contains special characters', async  ()  =>  {
+    candidate.address.cep = "31245((("
+
+    expect(async  ()  =>  {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UnprocessableDataException)
+  })
+
+  it('should not create a candidate passing a cep that contains less than 8 characters', async  ()  =>  {
+    candidate.address.cep = "31245"
+
+    expect(async  ()  =>  {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UnprocessableDataException)
+  })
+
+  it('should not create a candidate passing a cep that contains more than 8 characters', async  ()  =>  {
+    candidate.address.cep = "3124531245"
 
     expect(async  ()  =>  {
       await candidateService.create(candidate)
