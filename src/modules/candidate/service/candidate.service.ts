@@ -26,6 +26,7 @@ import { UnformattedNameException } from '../../../modules/user/domain/errors/Un
 import { CityTooShortException } from '../../../modules/address/domain/errors/CityTooShort.exception';
 import { CityTooLongException } from '../../../modules/address/domain/errors/CityTooLong.exception';
 import { UnprocessableDataException } from '../../../shared/domain/errors/UnprocessableData.exception';
+import { cepValidate } from '../../../shared/utils/cepValidate';
 
 @Injectable()
 export class CandidateService {
@@ -66,11 +67,16 @@ export class CandidateService {
       )
         throw new UnformattedEmailException();
 
+      if (!nameValidate(params.address.city)) throw new UnprocessableDataException("Cidades não podem conter números e caracteres especiais.")
+
+      if (!passwordValidate(params.credentials.password))
+      throw new UnformattedPasswordException();
+    
       if (params.address.city.length < 3) throw new CityTooShortException()
 
       if (params.address.city.length > 50) throw new CityTooLongException()
 
-      if (!nameValidate(params.address.city)) throw new UnprocessableDataException("Cidades não podem conter números e caracteres especiais.")
+      if (!cepValidate(params.address.cep)) throw new UnprocessableDataException("CEP inválido.")
 
       const userWithSameEmail = await this.userRepository.findOne({
         where: { email: params.credentials.email },
@@ -80,9 +86,6 @@ export class CandidateService {
 
       if (!emailValidate(params.credentials.email))
         throw new UnformattedEmailException();
-
-      if (!passwordValidate(params.credentials.password))
-        throw new UnformattedPasswordException();
 
       const uf = await this.ufRepository.findOne({
         where: { id_uf: params.address.uf },
