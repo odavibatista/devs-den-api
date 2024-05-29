@@ -1,7 +1,7 @@
 import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Candidate } from '../entity/candidate.entity';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../../modules/user/entity/user.entity';
 import { Address } from '../../../modules/address/entity/address.entity';
 import {
@@ -16,9 +16,13 @@ import { UFNotFoundException } from '../../../modules/uf/domain/errors/UfNotFoun
 import { JWTProvider } from '../../../modules/user/providers/JWT.provider';
 import { passwordValidate } from '../../../shared/utils/passwordValidate';
 import { emailValidate } from '../../../shared/utils/emailValidate';
+import { nameValidate } from '../../../shared/utils/nameValidate';
 import { UserService } from '../../../modules/user/service/user.service';
 import { CandidateNotFoundException } from '../domain/errors/CandidateNotFound.exception';
 import { PasswordTooLongException } from '../../../modules/user/domain/errors/PasswordTooLong.exception';
+import { NameTooShortException } from '../../../modules/user/domain/errors/NameTooShort.exception';
+import { NameTooLongException } from '../../../modules/user/domain/errors/NameTooLong.exception';
+import { UnformattedNameException } from '../../../modules/user/domain/errors/UnformattedName.exception';
 
 @Injectable()
 export class CandidateService {
@@ -39,11 +43,19 @@ export class CandidateService {
     params: RegisterCandidateBodyDTO,
   ): Promise<
     | RegisterCandidateResponseDTO
+    | NameTooShortException
+    | NameTooLongException
     | UnformattedEmailException
     | UnformattedPasswordException
     | PasswordTooLongException
     | EmailAlreadyRegisteredException
   > {
+      if (params.name.length < 5) throw new NameTooShortException()
+
+      if (params.name.length > 50) throw new NameTooLongException()
+
+      if (!nameValidate(params.name)) throw new UnformattedNameException()
+      
       if (
         params.credentials.email.length < 8 ||
         params.credentials.email.length > 50

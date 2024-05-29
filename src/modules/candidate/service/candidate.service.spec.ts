@@ -14,6 +14,8 @@ import { UnformattedEmailException } from '../../../modules/user/domain/errors/U
 import { Company } from '../../../modules/company/entity/company.entity';
 import { UnformattedPasswordException } from '../../../modules/user/domain/errors/UnformattedPassword.exception';
 import { PasswordTooLongException } from '../../../modules/user/domain/errors/PasswordTooLong.exception';
+import { NameTooShortException } from '../../../modules/user/domain/errors/NameTooShort.exception';
+import { NameTooLongException } from '../../../modules/user/domain/errors/NameTooLong.exception';
 
 describe('ServiceService', () => {
   let candidateService: CandidateService;
@@ -39,8 +41,8 @@ describe('ServiceService', () => {
   });
 
   afterEach(async () => {
+    // await candidateClearingService.wipe()
     await userClearingService.wipe()
-    await candidateClearingService.wipe()
   })
 
   const candidate: RegisterCandidateBodyDTO = {
@@ -52,6 +54,7 @@ describe('ServiceService', () => {
       cep: '12345678',
       street: 'Rua do Fulano',
       number: '123',
+      city: 'São Paulo',
       complement: 'Casa',
     },
     credentials: {
@@ -140,7 +143,7 @@ describe('ServiceService', () => {
     }).rejects.toThrow(UnformattedPasswordException);
   });
 
-  it('should not create an user with a password without at least one capital letter', async () =>  {
+  it('should not create a candidate with a password without at least one capital letter', async () =>  {
     candidate.credentials.password = "abcdfg@@)$(@412412)$"
 
     expect(async () => {
@@ -148,7 +151,7 @@ describe('ServiceService', () => {
     }).rejects.toThrow(UnformattedPasswordException);
   });
 
-  it('should not create an user with a password without at least one special character', async () =>  {
+  it('should not create a candidate with a password without at least one special character', async () =>  {
     candidate.credentials.password = "Abcdefg123"
 
     expect(async () => {
@@ -156,11 +159,36 @@ describe('ServiceService', () => {
     }).rejects.toThrow(UnformattedPasswordException);
   });
 
-  it('should not create an user with a password without at least one minor letter', async () =>  {
+  it('should not create a candidate with a password without at least one minor letter', async () =>  {
     candidate.credentials.password = "AAAAAAAAAAAAAAAAAA@"
 
     expect(async () => {
       await candidateService.create(candidate)
     }).rejects.toThrow(UnformattedPasswordException);    
+  })
+
+  it('should not create a candidate which name has less than 5 characters', async ()  =>  {
+    candidate.credentials.password="@FulaninhoDaSilva12345678910@"
+    candidate.name = "Abcd"
+
+    expect(async  ()  =>  {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(NameTooShortException)
+  })
+
+  it('should not create a candidate which name has more than 50 characters', async ()  =>  {
+    candidate.name = "AbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcd"
+
+    expect(async  ()  =>  {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(NameTooLongException)
+  })
+
+  it('should not create a candidate which name has numbers', async ()  =>  {
+    candidate.name = "Fulano 123"
+
+    expect(async  ()  =>  {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(NameTooLongException)
   })
 });
