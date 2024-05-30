@@ -93,6 +93,12 @@ export class CandidateService {
       if (params.address.city.length > 100)
       throw new UnprocessableDataException("Rua não pode ter mais de 100 caracteres.")
 
+      if (params.address.number.length < 1)
+      throw new UnprocessableDataException("Número de endereço deve possuir pelo menos um caractere.")
+
+      if (params.address.number.length > 10)
+      throw new UnprocessableDataException("Número de endereço deve possuir pelo menos dez caracteres.")
+
       const userWithSameEmail = await this.userRepository.findOne({
         where: { email: params.credentials.email },
       });

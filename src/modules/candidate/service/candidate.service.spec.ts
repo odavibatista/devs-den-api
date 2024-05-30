@@ -297,4 +297,21 @@ describe('Candidate Service', () => {
       await candidateService.create(candidate)
     }).rejects.toThrow(UnprocessableDataException)
   })
+
+  it('should not create a candidate passing an address number that contains less than 1 character', async ()  =>  {
+    candidate.address.street = "Rua dos Bobos"
+    candidate.address.number = ""
+
+    expect(async  ()  =>  {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UnprocessableDataException)
+  })
+
+  it('should not create a candidate passing an address number that contains more than than 10 character', async ()  =>  {
+    candidate.address.number = "12412941249124"
+
+    expect(async  ()  =>  {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UnprocessableDataException)
+  })
 });
