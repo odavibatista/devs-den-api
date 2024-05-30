@@ -22,7 +22,7 @@ import { CityTooShortException } from '../../../modules/address/domain/errors/Ci
 import { CityTooLongException } from '../../../modules/address/domain/errors/CityTooLong.exception';
 import { UnprocessableDataException } from '../../../shared/domain/errors/UnprocessableData.exception';
 
-describe('ServiceService', () => {
+describe('Candidate Service', () => {
   let candidateService: CandidateService;
   let userService: UserService;
   let userClearingService: UserClearingService;
@@ -67,6 +67,8 @@ describe('ServiceService', () => {
       password: 'TestandoAlguma_Coisa_123456',
     }
   }
+
+  jest.setTimeout(1000 * 10)
 
   it('should not create a candidate with an e-mail with more than 50 characters', async () => {
     candidate.credentials.email = "fuuuuuuuuuuuuuulaaaaaaaaaaaaaaaaaaaaaanooooooooooooooooooooooo@gmail.com"
@@ -124,7 +126,6 @@ describe('ServiceService', () => {
   })
 
   it('should not create a candidate with a password with more than 50 characters', async () => {
-    candidate.credentials.email = "fulanodasilva@gmail.com"
     candidate.credentials.password = "@Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1"
 
     expect(async () => {

@@ -11,7 +11,7 @@ export default class SkillSeeder implements Seeder {
     const repository = dataSource.getRepository(Skill);
     // ---------------------------------------------------
 
-    const newSkill = await repository.create(skills);
+    const newSkill = repository.create(skills);
     await repository.save(newSkill);
   }
 }
