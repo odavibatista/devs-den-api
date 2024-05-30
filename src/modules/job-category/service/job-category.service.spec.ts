@@ -59,7 +59,7 @@ describe('JobCategoryService', () => {
 
   it('should throw an error if an unvalid number is passed on the individual job category finder', async ()  =>  {
     expect(async () => {
-      await jobCategoryService.findOne(11111111111111111111111111999999999999)
+      await jobCategoryService.findOne(0)
     }).rejects.toThrow(CategoryNotFoundException);
   })
 });

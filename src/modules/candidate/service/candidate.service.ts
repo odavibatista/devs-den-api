@@ -87,6 +87,12 @@ export class CandidateService {
       if (params.address.city.length > 50) 
       throw new CityTooLongException()
 
+      if (params.address.city.length < 1)
+      throw new UnprocessableDataException("Rua deve possuir pelo menos um caractere.")
+
+      if (params.address.city.length > 100)
+      throw new UnprocessableDataException("Rua não pode ter mais de 100 caracteres.")
+
       const userWithSameEmail = await this.userRepository.findOne({
         where: { email: params.credentials.email },
       });
@@ -97,7 +103,7 @@ export class CandidateService {
         where: { id_uf: params.address.uf },
       });
 
-      if (!uf)  throw new UFNotFoundException();
+      if (!uf) throw new UFNotFoundException();
 
       await this.userService.create({
         email: params.credentials.email,

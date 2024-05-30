@@ -23,7 +23,7 @@ export const RegisterCandidateBodySchema = z.object({
     uf: z.number().describe('ID da UF do endereço do usuário.'),
     city: z.string().min(3).max(50).describe('Cidade do endereço do usuário.'),
     cep: z.string().min(8).max(8).describe('CEP do endereço do usuário.'),
-    street: z.string().min(3).max(100).describe('Rua do endereço do usuário.'),
+    street: z.string().min(1).max(100).describe('Rua do endereço do usuário.'),
     number: z
       .string()
       .min(1)

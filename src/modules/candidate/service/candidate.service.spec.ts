@@ -40,9 +40,9 @@ describe('ServiceService', () => {
     }).compile();
 
     candidateService = module.get<CandidateService>(CandidateService);
-    userService = module.get<UserService>(UserService)
+    // userService = module.get<UserService>(UserService)
     userClearingService = module.get<UserClearingService>(UserClearingService)
-    candidateClearingService = module.get<CandidateClearingService>(CandidateClearingService)
+    // candidateClearingService = module.get<CandidateClearingService>(CandidateClearingService)
   });
 
   afterEach(async () => {
@@ -274,6 +274,23 @@ describe('ServiceService', () => {
 
   it('should not create a candidate passing a cep that contains more than 8 characters', async  ()  =>  {
     candidate.address.cep = "3124531245"
+
+    expect(async  ()  =>  {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UnprocessableDataException)
+  })
+
+  it('should not create a candidate passing a street that contains less than 1 character',  async ()  =>  {
+    candidate.address.cep = "12345678"
+    candidate.address.street = ""
+
+    expect(async  ()  =>  {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UnprocessableDataException)
+  })
+
+  it('should not create a candidate passing a street that contains more than 100 characters',  async ()  =>  {
+    candidate.address.street = "abcdfghijklmnoabcdfghijklmnoabcdfghijklmnoabcdfghijklmnoabcdfghijklmnoabcdfghijklmnoabcdfghijklmnoabcdfghijklmnoabcdfghijklmnoabcdfghijklmnoabcdfghijklmno"
 
     expect(async  ()  =>  {
       await candidateService.create(candidate)
