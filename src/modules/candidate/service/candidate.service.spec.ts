@@ -314,4 +314,13 @@ describe('Candidate Service', () => {
       await candidateService.create(candidate)
     }).rejects.toThrow(UnprocessableDataException)
   })
+
+  it('should not create a candidate passing an address complement that contains less than 1 characters', async  ()  =>  {
+    candidate.address.number = "1"
+    candidate.address.complement = ""
+
+    expect(async  ()  =>  {
+      await candidateService.create(candidate)
+    }).rejects.toThrow(UnprocessableDataException)
+  })
 });

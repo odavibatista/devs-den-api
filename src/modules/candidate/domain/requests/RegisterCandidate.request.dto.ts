@@ -31,8 +31,9 @@ export const RegisterCandidateBodySchema = z.object({
       .describe('Número do endereço do usuário.'),
     complement: z
       .string()
-      .min(3)
+      .min(1)
       .max(30)
+      .optional()
       .describe('Complemento do endereço do usuário.'),
   }),
 });
