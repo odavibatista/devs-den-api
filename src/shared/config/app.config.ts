@@ -43,7 +43,7 @@ try {
     DB_PASSWORD: process.env.DB_PASSWORD,
     DB_DATABASE: process.env.DB_DATABASE.concat('_' + process.env.NODE_ENV),
     DB_ENTITIES: process.env.NODE_ENV === 'test' ? join(__dirname, '../../**/*.entity.ts') : process.env.DB_ENTITIES,
-    DB_SYNCHRONIZE: process.env.NODE_ENV === 'test' ? false : true,
+    DB_SYNCHRONIZE: process.env.NODE_ENV === 'development' ? true : false,
     DB_LOGGING: process.env.NODE_ENV === 'test' ? false : true,
 
     API_URL: process.env.API_URL,
