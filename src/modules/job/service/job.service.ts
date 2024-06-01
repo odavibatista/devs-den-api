@@ -12,6 +12,7 @@ import { CreateJobBodyDTO, CreateJobResponseDTO } from '../domain/requests/Creat
 import { FindJobResponseDTO, SimpleFindJobResponseDTO } from '../domain/requests/FindJobs.request.dto';
 import { JobApplicationService } from '../../../modules/job-applications/service/job-application.service';
 import { GetJobStatusResponseDTO } from '../domain/requests/GetJobStatus.request.dto';
+import { JobAlreadyDeletedException } from '../domain/errors/JobAlreadyDeleted.exception';
 
 @Injectable()
 export class JobService {
@@ -51,7 +52,7 @@ export class JobService {
       where: { id_job: id },
     });
 
-    if (!job) throw new JobNotFoundException()
+    if (!job || job.deleted_at !== null) throw new JobNotFoundException()
 
     const jobCompany = await this.companyRepository.findOne({
       where: { id_user: job.company_id }
@@ -160,7 +161,7 @@ export class JobService {
 
     if (job.company_id !== companyId) throw new UnauthorizedException()
 
-    if (!job) throw new JobNotFoundException()
+    if (!job || job.deleted_at !== null) throw new JobNotFoundException()
 
     const jobCategory = await this.jobCategoryRepository.findOne({
       where: { id_category: job.job_category_id }
@@ -203,6 +204,8 @@ export class JobService {
     })
 
     if (!job) throw new JobNotFoundException()
+
+    if (job.deleted_at !== null) throw new JobAlreadyDeletedException()
 
     if (job.company_id !== companyId) throw new UnauthorizedException()
 
