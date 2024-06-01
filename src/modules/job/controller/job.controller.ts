@@ -254,7 +254,9 @@ export class IndividualJobController {
 
         if (user.role === 'candidate') {
             const result = await this.jobApplicationService.hasApplied(jobId, user.id)
-            return res.status(200).json(result)
+            return res.status(200).json({
+                has_applied: result
+            })
         }
 
         const result = await this.jobService.getJobStatus(jobId, user.id)
