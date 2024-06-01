@@ -8,6 +8,7 @@ import {
   Post,
   Req,
   Res,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UserService } from '../service/user.service';
 import { UserNotFoundException } from '../domain/errors/UserNotFound.exception';
@@ -102,14 +103,22 @@ export class UserController {
     type: AllExceptionsFilterDTO
   })
   @ApiResponse({
+    status: new UnauthorizedException().getStatus(),
+    description: new UnauthorizedException().message,
+    type: AllExceptionsFilterDTO
+  })
+  @ApiResponse({
     status: 200,
     description: 'Usuário logado com sucesso',
     type: LoginUserResponseDTO,
   })
   async login(
+    @Req() req: Request,
     @Res() res: Response,
     @Body() body: LoginUserBodyDTO,
   ): Promise<LoginUserResponseDTO | AllExceptionsFilterDTO> {
+    if (req.user) throw new UnauthorizedException()
+
     const result = await this.userService.login(body);
 
     if (result instanceof HttpException) {

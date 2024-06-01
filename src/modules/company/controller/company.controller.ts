@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import {
   Body,
   Controller,
@@ -9,6 +9,7 @@ import {
   Post,
   Req,
   Res,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CompanyService } from '../service/company.service';
 import { Company } from '../entity/company.entity';
@@ -62,7 +63,7 @@ export class ConjunctCompanyController {
 @Controller('company')
 @ApiTags('Empresas')
 export class IndividualCompanyController {
-  constructor(private readonly companyService: CompanyService) {}
+  constructor(private readonly companyService: CompanyService) {} 
   @Post('/register')
   @ApiResponse({
     status: new CNPJAlreadyRegisteredException().getStatus(),
@@ -100,9 +101,12 @@ export class IndividualCompanyController {
     type: RegisterCompanyResponseDTO,
   })
   async create(
+    @Req() req: Request,
     @Res() res: Response,
     @Body() body: RegisterCompanyBodyDTO,
   ): Promise<RegisterCompanyResponseDTO | AllExceptionsFilterDTO> {
+    if (req.user) throw new UnauthorizedException()
+
     const result = await this.companyService.create(body);
 
     if (result instanceof HttpException) {
