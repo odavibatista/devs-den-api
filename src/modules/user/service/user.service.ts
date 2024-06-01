@@ -23,6 +23,7 @@ import { HashProvider } from '../providers/hash.provider';
 import { passwordValidate } from '../../../shared/utils/passwordValidate';
 import { emailValidate } from '../../../shared/utils/emailValidate';
 import { CreateUserResponseDTO } from '../domain/requests/CreateUser.request.dto';
+import { PasswordTooLongException } from '../domain/errors/PasswordTooLong.exception';
 
 @Injectable()
 export class UserService {
@@ -107,15 +108,25 @@ export class UserService {
     | UnformattedEmailException
     | UnformattedPasswordException
   > {
+    const userWithSameEmail = await this.userRepository.findOne({
+      where: {
+        email: params.email
+      }
+    })
+
+    if(userWithSameEmail) throw new EmailAlreadyRegisteredException()
+
     if (!emailValidate(params.email) || params.email.length > 50 || params.email.length < 10) 
       throw new UnformattedEmailException();
 
     if (!passwordValidate(params.password) || params.password.length < 15)
       throw new UnformattedPasswordException();
 
+    if (params.password.length > 50)
+      throw new PasswordTooLongException();
+
     const hashedPassword = await this.hashProvider.hash(params.password);
 
-    try {
       const user = await this.userRepository.save({
         email: params.email,
         password: hashedPassword,
@@ -130,9 +141,6 @@ export class UserService {
         },
         id: user.id_user,
       };
-    } catch (error) {
-      throw new HttpException(error, error.status);
-    }
   }
 
   async login(
@@ -143,7 +151,6 @@ export class UserService {
     | WrongPasswordException
     | UnformattedEmailException
   > {
-    try {
       const user: User = await this.userRepository.findOne({
         where: { email: loginDto.email },
       });
@@ -196,9 +203,6 @@ export class UserService {
         };
         return response;
       }
-    } catch (error) {
-      throw new HttpException(error, error.status);
-    }
   }
 
   public async delete(

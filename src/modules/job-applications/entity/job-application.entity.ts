@@ -4,10 +4,10 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 
 @Entity()
 class JobApplications {
-    @PrimaryColumn({ name: 'job_id' })
+    @PrimaryColumn()
     job_id: number
 
-    @PrimaryColumn({ name: 'candidate_id' })
+    @PrimaryColumn()
     candidate_id: number
 
     @Column()
@@ -18,14 +18,14 @@ class JobApplications {
         job => job.id_job
       )
       @JoinColumn([{ name: 'job_id', referencedColumnName: 'id_job' }])
-      jobs: Job[];
+      job: Job;
     
       @ManyToOne(
         () => Candidate,
-        candidate => candidate.id_user
+        candidate => candidate.id_user 
       )
       @JoinColumn([{ name: 'candidate_id', referencedColumnName: 'id_user' }])
-      courses: Candidate[];
+      candidate: Candidate;
 }
 
 export { JobApplications as JobApplication }

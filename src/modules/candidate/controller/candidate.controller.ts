@@ -5,6 +5,7 @@ import {
   Post,
   Req,
   Res,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CandidateService } from '../service/candidate.service';
@@ -16,7 +17,7 @@ import { UnformattedEmailException } from '../../../modules/user/domain/errors/U
 import { AllExceptionsFilterDTO } from '../../../shared/domain/dtos/errors/AllException.filter.dto';
 import { UnformattedPasswordException } from '../../../modules/user/domain/errors/UnformattedPassword.exception';
 import { EmailAlreadyRegisteredException } from '../../../modules/user/domain/errors/EmailAlreadyRegistered.exception';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 
 @Controller('candidate')
 @ApiTags('Candidatos')
@@ -45,9 +46,12 @@ export class CandidateController {
     type: RegisterCandidateResponseDTO,
   })
   async register(
+    @Req() req: Request,
     @Body() body: RegisterCandidateBodyDTO,
     @Res() res: Response,
   ): Promise<RegisterCandidateResponseDTO | AllExceptionsFilterDTO> {
+    if (req.user) throw new UnauthorizedException()
+
     const result = await this.candidateService.create(body);
 
     if (result instanceof HttpException) {

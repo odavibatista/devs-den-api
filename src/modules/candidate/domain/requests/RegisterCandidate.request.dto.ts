@@ -15,13 +15,7 @@ export const RegisterCandidateBodySchema = z.object({
       .min(8)
       .max(50)
       .describe('E-mail do usuário candidato'),
-    password: z.string().min(8).max(250).describe('Senha do usuário candidato'),
-    role: z
-      .string()
-      .min(9)
-      .max(9)
-      .describe('Tipo de usuário')
-      .default('candidate'),
+    password: z.string().min(8).max(50).describe('Senha do usuário candidato')
   }),
 
   /* Endereço  */
@@ -29,7 +23,7 @@ export const RegisterCandidateBodySchema = z.object({
     uf: z.number().describe('ID da UF do endereço do usuário.'),
     city: z.string().min(3).max(50).describe('Cidade do endereço do usuário.'),
     cep: z.string().min(8).max(8).describe('CEP do endereço do usuário.'),
-    street: z.string().min(3).max(100).describe('Rua do endereço do usuário.'),
+    street: z.string().min(1).max(100).describe('Rua do endereço do usuário.'),
     number: z
       .string()
       .min(1)
@@ -37,8 +31,9 @@ export const RegisterCandidateBodySchema = z.object({
       .describe('Número do endereço do usuário.'),
     complement: z
       .string()
-      .min(3)
+      .min(1)
       .max(30)
+      .optional()
       .describe('Complemento do endereço do usuário.'),
   }),
 });

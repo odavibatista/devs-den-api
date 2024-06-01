@@ -11,7 +11,7 @@ export default class UfSeeder implements Seeder {
     const repository = dataSource.getRepository(Uf);
     // ---------------------------------------------------
 
-    const newUfs = await repository.create(ufs);
+    const newUfs = repository.create(ufs);
     await repository.save(newUfs);
   }
 }

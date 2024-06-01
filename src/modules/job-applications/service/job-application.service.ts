@@ -82,6 +82,16 @@ export class JobApplicationService {
         return applications
       }
 
+      async hasApplied(jobId: number, candidateId: number): Promise<boolean> {
+        const application = await this.jobApplicationReopository.findOne({
+          where: { job_id: jobId, candidate_id: candidateId}
+        })
+
+        if (!application || application.active === false) return false
+
+        return true
+      }
+
       async removeApplication (job_id: number, candidate_id: number): Promise<void | UnauthorizedException | BadTokenException> {
         const candidate = await this.userRepository.findOne({
           where: { id_user: candidate_id }
@@ -96,10 +106,10 @@ export class JobApplicationService {
         if (!job) throw new JobNotFoundException()
 
         const application = await this.jobApplicationReopository.findOne({
-          where: { job_id: job_id, candidate_id: candidate_id, active: true }
+          where: { job_id: job_id, candidate_id: candidate_id }
         })
 
-        if (!application) throw new ApplicationDoesNotExist()
+        if (!application || application.active === false) throw new ApplicationDoesNotExist()
 
         if (application.candidate_id !== candidate_id) throw new UnauthorizedException()
 

@@ -242,7 +242,7 @@ export class IndividualJobController {
         @Param('job_id') jobId: number,
         @Req() req: Request,
         @Res() res: Response,
-    ): Promise<GetJobStatusResponseDTO | AllExceptionsFilterDTO> {
+    ): Promise<GetJobStatusResponseDTO | boolean | AllExceptionsFilterDTO> {
         const user = req.user
 
         if (!user) {
@@ -252,11 +252,9 @@ export class IndividualJobController {
             });
         }
 
-        if (user.role !== 'company') {
-            return res.status(new UserIsNotCompanyException().getStatus()).json({
-                message: new UserIsNotCompanyException().message,
-                status: new UserIsNotCompanyException().getStatus()
-            });
+        if (user.role === 'candidate') {
+            const result = await this.jobApplicationService.hasApplied(jobId, user.id)
+            return res.status(200).json(result)
         }
 
         const result = await this.jobService.getJobStatus(jobId, user.id)

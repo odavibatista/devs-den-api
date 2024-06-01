@@ -1,7 +1,7 @@
-import { HttpException, Inject, Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Candidate } from '../entity/candidate.entity';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../../modules/user/entity/user.entity';
 import { Address } from '../../../modules/address/entity/address.entity';
 import {
@@ -16,8 +16,17 @@ import { UFNotFoundException } from '../../../modules/uf/domain/errors/UfNotFoun
 import { JWTProvider } from '../../../modules/user/providers/JWT.provider';
 import { passwordValidate } from '../../../shared/utils/passwordValidate';
 import { emailValidate } from '../../../shared/utils/emailValidate';
+import { nameValidate } from '../../../shared/utils/nameValidate';
 import { UserService } from '../../../modules/user/service/user.service';
 import { CandidateNotFoundException } from '../domain/errors/CandidateNotFound.exception';
+import { PasswordTooLongException } from '../../../modules/user/domain/errors/PasswordTooLong.exception';
+import { NameTooShortException } from '../../../modules/user/domain/errors/NameTooShort.exception';
+import { NameTooLongException } from '../../../modules/user/domain/errors/NameTooLong.exception';
+import { UnformattedNameException } from '../../../modules/user/domain/errors/UnformattedName.exception';
+import { CityTooShortException } from '../../../modules/address/domain/errors/CityTooShort.exception';
+import { CityTooLongException } from '../../../modules/address/domain/errors/CityTooLong.exception';
+import { UnprocessableDataException } from '../../../shared/domain/errors/UnprocessableData.exception';
+import { cepValidate } from '../../../shared/utils/cepValidate';
 
 @Injectable()
 export class CandidateService {
@@ -38,16 +47,57 @@ export class CandidateService {
     params: RegisterCandidateBodyDTO,
   ): Promise<
     | RegisterCandidateResponseDTO
+    | NameTooShortException
+    | NameTooLongException
     | UnformattedEmailException
     | UnformattedPasswordException
+    | PasswordTooLongException
     | EmailAlreadyRegisteredException
   > {
-    try {
+      if (!nameValidate(params.name)) 
+      throw new UnformattedNameException()
+
+      if (params.name.length < 5) 
+      throw new NameTooShortException()
+
+      if (params.name.length > 50) 
+      throw new NameTooLongException()
+
+      if (!emailValidate(params.credentials.email))
+        throw new UnformattedEmailException();
+
       if (
         params.credentials.email.length < 8 ||
         params.credentials.email.length > 50
       )
         throw new UnformattedEmailException();
+
+      if (!nameValidate(params.address.city)) 
+      throw new UnprocessableDataException("Cidades não podem conter números e caracteres especiais.")
+
+      if (!passwordValidate(params.credentials.password))
+      throw new UnformattedPasswordException();
+
+      if (!cepValidate(params.address.cep)) 
+      throw new UnprocessableDataException("CEP inválido.")
+
+      if (params.address.city.length < 3) 
+      throw new CityTooShortException()
+
+      if (params.address.city.length > 50) 
+      throw new CityTooLongException()
+
+      if (params.address.city.length < 1)
+      throw new UnprocessableDataException("Rua deve possuir pelo menos um caractere.")
+
+      if (params.address.city.length > 100)
+      throw new UnprocessableDataException("Rua não pode ter mais de 100 caracteres.")
+
+      if (params.address.number.length < 1)
+      throw new UnprocessableDataException("Número de endereço deve possuir pelo menos um caractere.")
+
+      if (params.address.number.length > 10)
+      throw new UnprocessableDataException("Número de endereço deve possuir pelo menos dez caracteres.")
 
       const userWithSameEmail = await this.userRepository.findOne({
         where: { email: params.credentials.email },
@@ -55,19 +105,11 @@ export class CandidateService {
 
       if (userWithSameEmail) throw new EmailAlreadyRegisteredException();
 
-      if (!emailValidate(params.credentials.email))
-        throw new UnformattedEmailException();
-
-      if (!passwordValidate(params.credentials.password))
-        throw new UnformattedPasswordException();
-
       const uf = await this.ufRepository.findOne({
         where: { id_uf: params.address.uf },
       });
 
-      if (!uf) {
-        throw new UFNotFoundException();
-      }
+      if (!uf) throw new UFNotFoundException();
 
       await this.userService.create({
         email: params.credentials.email,
@@ -98,7 +140,7 @@ export class CandidateService {
       const token = this.JwtProvider.generate({
         payload: {
           id: userToBeFound.id_user,
-          role: params.credentials.role,
+          role: "candidate",
         },
       });
 
@@ -112,9 +154,6 @@ export class CandidateService {
       };
 
       return response;
-    } catch (error) {
-      throw new HttpException(error, error.status);
-    }
   }
 
   async delete(id: number): Promise<string | CandidateNotFoundException> {
@@ -133,6 +172,21 @@ export class CandidateService {
       );
 
       return candidate.name;
+    } catch (error) {
+      throw new HttpException(error, error.status);
+    }
+  }
+}
+
+export class CandidateClearingService  {
+  constructor(
+    @InjectRepository(Candidate)
+    private candidateRepository: Repository<Candidate>
+  ) {}
+
+  public async wipe(): Promise<void>  {
+    try {
+      await this.candidateRepository.clear();
     } catch (error) {
       throw new HttpException(error, error.status);
     }
