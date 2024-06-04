@@ -27,6 +27,7 @@ import { CityTooShortException } from '../../../modules/address/domain/errors/Ci
 import { CityTooLongException } from '../../../modules/address/domain/errors/CityTooLong.exception';
 import { UnprocessableDataException } from '../../../shared/domain/errors/UnprocessableData.exception';
 import { cepValidate } from '../../../shared/utils/cepValidate';
+import { streetValidate } from '../../../shared/utils/streetValidate';
 
 @Injectable()
 export class CandidateService {
@@ -66,17 +67,14 @@ export class CandidateService {
       if (!emailValidate(params.credentials.email))
         throw new UnformattedEmailException();
 
-      if (
-        params.credentials.email.length < 8 ||
-        params.credentials.email.length > 50
-      )
-        throw new UnformattedEmailException();
-
       if (!nameValidate(params.address.city)) 
       throw new UnprocessableDataException("Cidades não podem conter números e caracteres especiais.")
 
       if (!passwordValidate(params.credentials.password))
       throw new UnformattedPasswordException();
+
+      if (!streetValidate(params.address.street))
+      throw new UnprocessableDataException("Ruas devem possuir entre 1 e 100 caracteres.")
 
       if (!cepValidate(params.address.cep)) 
       throw new UnprocessableDataException("CEP inválido.")

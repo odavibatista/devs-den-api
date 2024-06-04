@@ -239,8 +239,6 @@ describe('UserService', () => {
   }, 7 * 1000)
 
   it('should login an user given the valid credentials', async () => {
-    const basalRequest = (await ufService.findAll()).length
-
     await candidateService.create({
       name: "Fulaninho da Silva",
       birth_date: "2024-05-02 21:43:22.648426",

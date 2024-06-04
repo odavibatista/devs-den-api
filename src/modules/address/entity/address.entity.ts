@@ -44,7 +44,7 @@ class Addresses {
 
   @Column({
     length: 30,
-    nullable: false,
+    nullable: true,
   })
   complement: string;
 

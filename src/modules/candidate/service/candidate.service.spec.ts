@@ -250,6 +250,7 @@ describe('Candidate Service', () => {
   })
 
   it('should not create a candidate passing a cep that contains letters', async  ()  =>  {
+    candidate.address.city = "São Paulo"
     candidate.address.cep = "31245ABC"
 
     expect(async  ()  =>  {
