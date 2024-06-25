@@ -355,4 +355,12 @@ describe('Candidate Service', () => {
       await candidateService.create(candidate);
     }).rejects.toThrow(UnprocessableDataException);
   })
+
+  it('should create a candidate given the valid credentials', async () => {
+    candidate.address.complement = 'Casa';
+
+    const response = await candidateService.create(candidate);
+
+    expect(response).toBeTruthy();
+  })
 });

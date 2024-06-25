@@ -42,6 +42,7 @@ describe('CompanyService', () => {
 
     companyService = module.get<CompanyService>(CompanyService);
     userService = module.get<UserService>(UserService);
+    userClearingService = module.get<UserClearingService>(UserClearingService);
   });
 
   afterEach(async () => {
@@ -344,7 +345,7 @@ describe('CompanyService', () => {
   })
 
   it('should not create a company passing a cnpj that contains letters', async () => {
-    company.address.complement = 'Casa';
+    company.address.complement = 'Prédio';
     company.cnpj = '1234567890ABC';
 
     expect(async () => {
@@ -390,5 +391,13 @@ describe('CompanyService', () => {
     expect(async () => {
       await companyService.create(company);
     }).rejects.toThrow(InvalidCNPJException);
+  })
+
+  it('should create a company given the valid credentials', async () => {
+    company.cnpj = '61887271000103';
+
+    const response = await companyService.create(company);
+
+    expect(response).toHaveProperty('user');
   })
 });
