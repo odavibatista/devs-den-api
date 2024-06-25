@@ -12,6 +12,7 @@ import { Uf } from '../../../modules/uf/entity/uf.entity';
 import { JWTProvider } from '../../../modules/user/providers/JWT.provider';
 import { UserClearingService, UserService } from '../../../modules/user/service/user.service';
 import { RegisterCompanyBodyDTO } from '../domain/requests/RegisterCompany.request.dto';
+import { UnformattedEmailException } from '../../../modules/user/domain/errors/UnformattedEmail.exception';
 
 describe('CompanyService', () => {
   let companyService: CompanyService;
@@ -63,4 +64,57 @@ describe('CompanyService', () => {
 
   jest.setTimeout(1000 * 10)
 
+  it('should not create a company with an e-mail with more than 50 characters', async () => {
+    company.credentials.email = "coooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooompany@gmail.com"
+
+    expect(async () => {
+      await companyService.create(company)
+    }).rejects.toThrow(UnformattedEmailException);
+  })
+
+  it('should not create a company with an e-mail with less than 8 characters', async () => {
+    company.credentials.email = "a@a.c"
+
+    expect(async () => {
+      await companyService.create(company)
+    }).rejects.toThrow(UnformattedEmailException);
+  })
+
+  it('should not create a company with an invalid e-mail', async () => {
+    company.credentials.email = "company.com"
+
+    expect(async () => {
+      await companyService.create(company)
+    }).rejects.toThrow(UnformattedEmailException);
+  })
+
+  it('should not create a company with an e-mail without a domain', async () => {
+    company.credentials.email = "fulano"
+
+    expect(async () => {
+      await companyService.create(company)
+    }).rejects.toThrow(UnformattedEmailException);
+  })
+
+  it('should not create a company with an e-mail without a username', async () => {
+    company.credentials.email = "@gmail.com"
+
+    expect(async () => {
+      await companyService.create(company)
+    }).rejects.toThrow(UnformattedEmailException);
+  })
+
+  it('should not create a company with an email with an uncompleted domain', async () =>  {
+    company.credentials.email = "fulano@.com"
+
+    expect(async () => {
+      await companyService.create(company)
+    }).rejects.toThrow(UnformattedEmailException);
+
+    company.credentials.email = "fulano@gmail"
+
+    expect(async () => {
+      await companyService.create(company)
+    }).rejects.toThrow(UnformattedEmailException);
+  })
 });

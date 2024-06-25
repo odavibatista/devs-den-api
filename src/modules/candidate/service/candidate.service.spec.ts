@@ -102,7 +102,7 @@ describe('Candidate Service', () => {
     }).rejects.toThrow(UnformattedEmailException);
   })
 
-  it('should not create a candidate with an uncompleted domain', async () =>  {
+  it('should not create a candidate with an email with an uncompleted domain', async () =>  {
     candidate.credentials.email = "fulano@.com"
 
     expect(async () => {
