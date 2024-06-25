@@ -4,7 +4,7 @@ import { CompanyService } from '../../company/service/company.service';
 import { DatabaseModule } from '../../../database/database.module';
 import { CompanyModule } from '../../company/company.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { forwardRef } from '@nestjs/common';
+import { UnauthorizedException, forwardRef } from '@nestjs/common';
 import { Company } from '../../company/entity/company.entity';
 import { User } from '../../user/entity/user.entity';
 import { UserModule } from '../../user/user.module';
@@ -84,5 +84,29 @@ describe('ServiceService', () => {
 
     expect(job).toHaveProperty('job');
     expect(job).toHaveProperty('company');
+  })
+  
+  it('should not find jobs given an invalid category', async () => {
+    expect(async () => {
+      await jobService.findJobsByJobCategory(0);
+    }).rejects.toThrow(JobNotFoundException);
+  })
+
+  it('should find jobs given a category', async () => {
+    const jobs = await jobService.findJobsByJobCategory(1);
+
+    expect(jobs).toBeInstanceOf(Array);
+  })
+
+  it('should not delete a job given an invalid id', async () => {
+    expect(async () => {
+      await jobService.deleteJob(0, 1);
+    }).rejects.toThrow(JobNotFoundException);
+  })
+
+  it('should not delete a job given an invalid company id', async () => {
+    expect(async () => {
+      await jobService.deleteJob(1, 0);
+    }).rejects.toThrow(UnauthorizedException);
   })
 });
