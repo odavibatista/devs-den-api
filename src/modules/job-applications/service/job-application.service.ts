@@ -15,111 +15,128 @@ import { ApplicationDoesNotExist } from '../domain/errors/ApplicationDoesNotExis
 
 @Injectable()
 export class JobApplicationService {
-    constructor(
-        @InjectRepository(JobApplication)
-        private jobApplicationReopository: Repository<JobApplication>,
-        @InjectRepository(Job)
-        private jobRepository: Repository<Job>,
-        @InjectRepository(User)
-        private userRepository: Repository<User>,
-      ) {}
+  constructor(
+    @InjectRepository(JobApplication)
+    private jobApplicationReopository: Repository<JobApplication>,
+    @InjectRepository(Job)
+    private jobRepository: Repository<Job>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+  ) {}
 
-      async applyToJob (params: ApplyToJobDTO): Promise<void | AlreadyAppliedToJobException | UserIsNotCandidateException | JobHasBeenExpiredException | JobNotFoundException | UserNotFoundException> {
-    
-        const user = await this.userRepository.findOne({
-          where: { id_user: params.candidate_id }
-        })
-    
-        if (user.deleted_at !== null) throw new UserNotFoundException()
-    
-        if (user.role !== 'candidate') throw new UserIsNotCandidateException()
-    
-    
-        const job = await this.jobRepository.findOne({
-          where: { id_job: params.job_id },
-        });
+  async applyToJob(
+    params: ApplyToJobDTO,
+  ): Promise<
+    | void
+    | AlreadyAppliedToJobException
+    | UserIsNotCandidateException
+    | JobHasBeenExpiredException
+    | JobNotFoundException
+    | UserNotFoundException
+  > {
+    const user = await this.userRepository.findOne({
+      where: { id_user: params.candidate_id },
+    });
 
-        if (!job || job.deleted_at !== null) throw new JobNotFoundException()
+    if (user.deleted_at !== null) throw new UserNotFoundException();
 
-        const alreadyAppliedToJob = await this.jobApplicationReopository.findOne({
-            where: { candidate_id: params.candidate_id, job_id: params.job_id }
-        })
+    if (user.role !== 'candidate') throw new UserIsNotCandidateException();
 
-        if (!alreadyAppliedToJob) {
-          await this.jobApplicationReopository.save({
-            candidate_id: params.candidate_id,
-            job_id: params.job_id,
-            active: true
-          })
-        } 
-        
-        else if (alreadyAppliedToJob.active === true) throw new AlreadyAppliedToJobException() 
-        
-        else if (alreadyAppliedToJob.active === false) {
-            await this.jobApplicationReopository.update({
-                candidate_id: params.candidate_id,
-                job_id: params.job_id
-            },
-            {
-                active: true
-            })
-        } 
+    const job = await this.jobRepository.findOne({
+      where: { id_job: params.job_id },
+    });
 
-        return
-      }
+    if (!job || job.deleted_at !== null) throw new JobNotFoundException();
 
-      async getJobApplications (job_id: number): Promise<JobApplication[] | UnauthorizedException | BadTokenException> {
-        const job = await this.jobRepository.findOne({
-          where: { id_job: job_id }
-        })
+    const alreadyAppliedToJob = await this.jobApplicationReopository.findOne({
+      where: { candidate_id: params.candidate_id, job_id: params.job_id },
+    });
 
-        if (!job) throw new JobNotFoundException()
+    if (!alreadyAppliedToJob) {
+      await this.jobApplicationReopository.save({
+        candidate_id: params.candidate_id,
+        job_id: params.job_id,
+        active: true,
+      });
+    } else if (alreadyAppliedToJob.active === true)
+      throw new AlreadyAppliedToJobException();
+    else if (alreadyAppliedToJob.active === false) {
+      await this.jobApplicationReopository.update(
+        {
+          candidate_id: params.candidate_id,
+          job_id: params.job_id,
+        },
+        {
+          active: true,
+        },
+      );
+    }
 
-        const applications = await this.jobApplicationReopository.find({
-          where: { job_id: job_id }
-        })
+    return;
+  }
 
-        return applications
-      }
+  async getJobApplications(
+    job_id: number,
+  ): Promise<JobApplication[] | UnauthorizedException | BadTokenException> {
+    const job = await this.jobRepository.findOne({
+      where: { id_job: job_id },
+    });
 
-      async hasApplied(jobId: number, candidateId: number): Promise<boolean> {
-        const application = await this.jobApplicationReopository.findOne({
-          where: { job_id: jobId, candidate_id: candidateId}
-        })
+    if (!job) throw new JobNotFoundException();
 
-        if (!application || application.active === false) return false
+    const applications = await this.jobApplicationReopository.find({
+      where: { job_id: job_id },
+    });
 
-        return true
-      }
+    return applications;
+  }
 
-      async removeApplication (job_id: number, candidate_id: number): Promise<void | UnauthorizedException | BadTokenException> {
-        const candidate = await this.userRepository.findOne({
-          where: { id_user: candidate_id }
-        })
+  async hasApplied(jobId: number, candidateId: number): Promise<boolean> {
+    const application = await this.jobApplicationReopository.findOne({
+      where: { job_id: jobId, candidate_id: candidateId },
+    });
 
-        if (!candidate) throw new UserNotFoundException()
+    if (!application || application.active === false) return false;
 
-        const job = await this.jobRepository.findOne({
-          where: { id_job: job_id }
-        })
+    return true;
+  }
 
-        if (!job) throw new JobNotFoundException()
+  async removeApplication(
+    job_id: number,
+    candidate_id: number,
+  ): Promise<void | UnauthorizedException | BadTokenException> {
+    const candidate = await this.userRepository.findOne({
+      where: { id_user: candidate_id },
+    });
 
-        const application = await this.jobApplicationReopository.findOne({
-          where: { job_id: job_id, candidate_id: candidate_id }
-        })
+    if (!candidate) throw new UserNotFoundException();
 
-        if (!application || application.active === false) throw new ApplicationDoesNotExist()
+    const job = await this.jobRepository.findOne({
+      where: { id_job: job_id },
+    });
 
-        if (application.candidate_id !== candidate_id) throw new UnauthorizedException()
+    if (!job) throw new JobNotFoundException();
 
-        await this.jobApplicationReopository.update({
-          job_id: job_id,
-          candidate_id: candidate_id
-        }, {
-          active: false
-        })
+    const application = await this.jobApplicationReopository.findOne({
+      where: { job_id: job_id, candidate_id: candidate_id },
+    });
 
-        return
-      }
+    if (!application || application.active === false)
+      throw new ApplicationDoesNotExist();
+
+    if (application.candidate_id !== candidate_id)
+      throw new UnauthorizedException();
+
+    await this.jobApplicationReopository.update(
+      {
+        job_id: job_id,
+        candidate_id: candidate_id,
+      },
+      {
+        active: false,
+      },
+    );
+
+    return;
+  }
 }

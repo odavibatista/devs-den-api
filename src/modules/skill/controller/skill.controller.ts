@@ -28,7 +28,7 @@ export class ConjunctSkillController {
   @ApiResponse({
     status: new CommonException().getStatus(),
     description: new CommonException().message,
-    type: AllExceptionsFilterDTO
+    type: AllExceptionsFilterDTO,
   })
   @ApiResponse({
     status: 200,
@@ -76,7 +76,7 @@ export class IndividualSkillController {
   @ApiResponse({
     status: new CommonException().getStatus(),
     description: new CommonException().message,
-    type: AllExceptionsFilterDTO
+    type: AllExceptionsFilterDTO,
   })
   @ApiResponse({
     status: 200,

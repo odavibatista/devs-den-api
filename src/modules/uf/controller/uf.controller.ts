@@ -26,7 +26,7 @@ export class UfController {
     @Res() res: Response,
   ): Promise<FindUFsResponseDTO | AllExceptionsFilterDTO> {
     const result = await this.ufService.findAll();
-    
+
     if (result instanceof HttpException) {
       return res.status(result.getStatus()).json({
         message: result.message,

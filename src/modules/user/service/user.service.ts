@@ -40,7 +40,7 @@ export class UserService {
 
   async findAll(): Promise<User[] | UserNotFoundException> {
     const users = await this.userRepository.find({
-      where: { deleted_at: null || undefined}
+      where: { deleted_at: null || undefined },
     });
 
     if (users.length === 0) throw new UserNotFoundException();
@@ -103,44 +103,47 @@ export class UserService {
   async create(
     params: CreateUserDTO,
   ): Promise<
-    CreateUserResponseDTO
+    | CreateUserResponseDTO
     | EmailAlreadyRegisteredException
     | UnformattedEmailException
     | UnformattedPasswordException
   > {
     const userWithSameEmail = await this.userRepository.findOne({
       where: {
-        email: params.email
-      }
-    })
+        email: params.email,
+      },
+    });
 
-    if(userWithSameEmail) throw new EmailAlreadyRegisteredException()
+    if (userWithSameEmail) throw new EmailAlreadyRegisteredException();
 
-    if (!emailValidate(params.email) || params.email.length > 50 || params.email.length < 10) 
+    if (
+      !emailValidate(params.email) ||
+      params.email.length > 50 ||
+      params.email.length < 10
+    )
       throw new UnformattedEmailException();
 
     if (!passwordValidate(params.password) || params.password.length < 15)
       throw new UnformattedPasswordException();
 
-    if (params.password.length > 50)
-      throw new PasswordTooLongException();
+    if (params.password.length > 50) throw new PasswordTooLongException();
 
     const hashedPassword = await this.hashProvider.hash(params.password);
 
-      const user = await this.userRepository.save({
-        email: params.email,
-        password: hashedPassword,
-        role: params.role,
-        deleted_at: null
-      });
+    const user = await this.userRepository.save({
+      email: params.email,
+      password: hashedPassword,
+      role: params.role,
+      deleted_at: null,
+    });
 
-      return {
-        user: {
-          email: user.email,
-          role: user.role,
-        },
-        id: user.id_user,
-      };
+    return {
+      user: {
+        email: user.email,
+        role: user.role,
+      },
+      id: user.id_user,
+    };
   }
 
   async login(
@@ -151,66 +154,61 @@ export class UserService {
     | WrongPasswordException
     | UnformattedEmailException
   > {
-      const user: User = await this.userRepository.findOne({
-        where: { email: loginDto.email },
+    const user: User = await this.userRepository.findOne({
+      where: { email: loginDto.email },
+    });
+
+    if (!user) {
+      return new UserNotFoundException();
+    }
+
+    const isPasswordValid: boolean = await this.hashProvider.compare(
+      loginDto.inserted_password,
+      user.password,
+    );
+
+    if (!isPasswordValid) {
+      return new WrongPasswordException();
+    } else {
+      const token = this.jwtProvider.generate({
+        payload: {
+          id: user.id_user,
+          role: user.role,
+        },
+        expiresIn: '6h',
       });
 
-      if (!user) {
-        return new UserNotFoundException();
-      }
+      let name: string;
 
-      const isPasswordValid: boolean = await this.hashProvider.compare(
-        loginDto.inserted_password,
-        user.password,
-      );
-
-      if (!isPasswordValid) {
-        return new WrongPasswordException();
-      } else {
-        const token = this.jwtProvider.generate({
-          payload: {
-            id: user.id_user,
-            role: user.role,
-          },
-          expiresIn: '6h',
+      if (user.role === 'candidate') {
+        const candidateUser = await this.candidateRepository.findOne({
+          where: { id_user: user.id_user },
         });
 
-        let name: string;
-
-        if (user.role === 'candidate') {
-          const candidateUser = await this.candidateRepository.findOne({
-            where: { id_user: user.id_user },
-          });
-
-          name = candidateUser.name;
-        }
-
-        if (user.role === 'company') {
-          const companyUser = await this.companyRepository.findOne({
-            where: { id_user: user.id_user },
-          });
-
-          name = companyUser.name;
-        }
-
-        const response = {
-          user: {
-            id: user.id_user,
-            name: name,
-            role: user.role,
-          },
-          token: token,
-        };
-        return response;
+        name = candidateUser.name;
       }
+
+      if (user.role === 'company') {
+        const companyUser = await this.companyRepository.findOne({
+          where: { id_user: user.id_user },
+        });
+
+        name = companyUser.name;
+      }
+
+      const response = {
+        user: {
+          id: user.id_user,
+          name: name,
+          role: user.role,
+        },
+        token: token,
+      };
+      return response;
+    }
   }
 
-  public async delete(
-    id: number,
-  ): Promise<
-    | number
-    | UserNotFoundException
-  > {
+  public async delete(id: number): Promise<number | UserNotFoundException> {
     try {
       const user = await this.userRepository.findOne({
         where: { id_user: id, deleted_at: null },
@@ -229,13 +227,13 @@ export class UserService {
   }
 }
 
-export class UserClearingService  {
+export class UserClearingService {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>
+    private userRepository: Repository<User>,
   ) {}
 
-  public async wipe(): Promise<void>  {
+  public async wipe(): Promise<void> {
     try {
       await this.userRepository.clear();
     } catch (error) {

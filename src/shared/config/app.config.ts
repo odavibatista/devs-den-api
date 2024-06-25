@@ -18,7 +18,6 @@ const appConfigurationsSchema = z.object({
   DB_ENTITIES: z.string().min(1),
   DB_SYNCHRONIZE: z.boolean(),
   DB_LOGGING: z.boolean(),
-  SSL_CERT: z.string(),
 
   /* Application's configurations, whatsoever... */
   API_URL: z.string().min(1),
@@ -42,11 +41,16 @@ try {
     DB_PORT: parseInt(process.env.DB_PORT),
     DB_USER: process.env.DB_USER,
     DB_PASSWORD: process.env.DB_PASSWORD,
-    DB_DATABASE: process.env.NODE_ENV === 'production' ? process.env.DB_DATABASE : process.env.DB_DATABASE.concat('_' + process.env.NODE_ENV),
-    DB_ENTITIES: process.env.NODE_ENV === 'test' ? join(__dirname, '../../**/*.entity.ts') : process.env.DB_ENTITIES,
+    DB_DATABASE:
+      process.env.NODE_ENV === 'production'
+        ? process.env.DB_DATABASE
+        : process.env.DB_DATABASE.concat('_' + process.env.NODE_ENV),
+    DB_ENTITIES:
+      process.env.NODE_ENV === 'test'
+        ? join(__dirname, '../../**/*.entity.ts')
+        : process.env.DB_ENTITIES,
     DB_SYNCHRONIZE: process.env.NODE_ENV === 'development' ? true : false,
     DB_LOGGING: process.env.NODE_ENV === 'test' ? false : true,
-    SSL_CERT: process.env.SSL_CERT,
 
     API_URL: process.env.API_URL,
     JWT_KEY: process.env.JWT_KEY,

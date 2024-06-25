@@ -68,7 +68,7 @@ class Candidates {
       referencedColumnName: 'id_skill',
     },
   })
-  skills: Skill[]
+  skills: Skill[];
 
   @ManyToMany(() => Job, (job) => job.id_job, { cascade: true })
   @JoinTable({
@@ -82,7 +82,7 @@ class Candidates {
       referencedColumnName: 'id_job',
     },
   })
-  applications: Job[]
+  applications: Job[];
 
   @UpdateDateColumn({
     nullable: false,

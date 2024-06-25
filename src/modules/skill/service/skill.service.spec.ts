@@ -26,40 +26,40 @@ describe('SkillService', () => {
   });
 
   it('should bring all the skills from the database', async () => {
-    const request = await skillService.findAll()
+    const request = await skillService.findAll();
 
-    expect(request).toBeInstanceOf(Array)
-  
-    expect(request[0]).toHaveProperty("id_skill")  
-    expect(typeof request[0].id_skill).toEqual("number")
-    expect(request[0]).toHaveProperty("name")  
-    expect(typeof request[0].name).toEqual("string")
+    expect(request).toBeInstanceOf(Array);
+
+    expect(request[0]).toHaveProperty('id_skill');
+    expect(typeof request[0].id_skill).toEqual('number');
+    expect(request[0]).toHaveProperty('name');
+    expect(typeof request[0].name).toEqual('string');
   });
 
-  it(`should contain ${TOTAL_OF_SKILLS} skills in total if the database has been previously seeded`, async () =>  {
-    const request = await skillService.findAll()
+  it(`should contain ${TOTAL_OF_SKILLS} skills in total if the database has been previously seeded`, async () => {
+    const request = await skillService.findAll();
 
-    expect(request).toHaveLength(TOTAL_OF_SKILLS)
-  })
+    expect(request).toHaveLength(TOTAL_OF_SKILLS);
+  });
 
-  it('should bring a single skill from the database', async ()  =>  {
-    const basalRequest = await skillService.findAll()
+  it('should bring a single skill from the database', async () => {
+    const basalRequest = await skillService.findAll();
 
-    const request = await skillService.findOne(basalRequest[0].id_skill)
+    const request = await skillService.findOne(basalRequest[0].id_skill);
 
-    expect(request).toHaveProperty('id_skill')
-    expect(typeof request.id_skill).toEqual("number")
-    expect(request).toHaveProperty('name')
-    expect(typeof request.name).toEqual("string")
-    expect(request).toHaveProperty('created_at')
-    expect(typeof request.created_at).toEqual("object")
-    expect(request).toHaveProperty('updated_at')
-    expect(typeof request.updated_at).toEqual("object")
-  })
+    expect(request).toHaveProperty('id_skill');
+    expect(typeof request.id_skill).toEqual('number');
+    expect(request).toHaveProperty('name');
+    expect(typeof request.name).toEqual('string');
+    expect(request).toHaveProperty('created_at');
+    expect(typeof request.created_at).toEqual('object');
+    expect(request).toHaveProperty('updated_at');
+    expect(typeof request.updated_at).toEqual('object');
+  });
 
-  it('should throw an error if an unvalid number is passed on the individual skill finder', async ()  =>  {
+  it('should throw an error if an unvalid number is passed on the individual skill finder', async () => {
     expect(async () => {
-      await skillService.findOne(11111111111111111111111111999999999999)
+      await skillService.findOne(0);
     }).rejects.toThrow(SkillNotFoundException);
-  })
+  });
 });

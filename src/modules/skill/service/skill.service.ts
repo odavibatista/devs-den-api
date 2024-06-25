@@ -32,8 +32,7 @@ export class SkillService {
       where: { id_skill: id },
     });
 
-    if (!skill)
-      throw new SkillNotFoundException()
+    if (!skill) throw new SkillNotFoundException();
 
     return skill;
   }

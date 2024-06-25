@@ -1,9 +1,24 @@
-import { Body, Controller, Delete, Get, HttpException, Param, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  Param,
+  Post,
+  Req,
+  Res,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JobService } from '../service/job.service';
 import { JobNotFoundException } from '../domain/errors/JobNotFound.exception';
 import { Request, Response } from 'express';
-import { FindJobResponseDTO, FindJobsResponseDTO, SimpleFindJobResponseDTO } from '../domain/requests/FindJobs.request.dto';
+import {
+  FindJobResponseDTO,
+  FindJobsResponseDTO,
+  SimpleFindJobResponseDTO,
+} from '../domain/requests/FindJobs.request.dto';
 import { UserIsNotCompanyException } from '../domain/errors/UserIsNotCompany.exception';
 import { InvalidModalityException } from '../domain/errors/InvalidModality.exception';
 import { AllExceptionsFilterDTO } from '../../../shared/domain/dtos/errors/AllException.filter.dto';
@@ -21,384 +36,392 @@ import { UserNotFoundException } from '../../../modules/user/domain/errors/UserN
 @Controller('jobs')
 @ApiTags('Vagas')
 export class ConjunctJobsController {
-    constructor(private readonly jobService: JobService) {}
+  constructor(private readonly jobService: JobService) {}
 
-    @ApiResponse({
-        status: 200,
-        description: 'Vagas encontradas com sucesso',
-        type: FindJobsResponseDTO,
-    })
-    @Get('/browse')
-    async findAll(
-        @Req() req: Request,
-        @Res() res: Response,
-    ): Promise <SimpleFindJobResponseDTO[] | AllExceptionsFilterDTO> {
-        const result = await this.jobService.findAll();
+  @ApiResponse({
+    status: 200,
+    description: 'Vagas encontradas com sucesso',
+    type: FindJobsResponseDTO,
+  })
+  @Get('/browse')
+  async findAll(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<SimpleFindJobResponseDTO[] | AllExceptionsFilterDTO> {
+    const result = await this.jobService.findAll();
 
-        if (result instanceof HttpException) {
-            return res.status(result.getStatus()).json({
-              message: result.message,
-              status: result.getStatus(),
-            });
-          } else {
-            return res.status(res.statusCode).json(result);
-          }
+    if (result instanceof HttpException) {
+      return res.status(result.getStatus()).json({
+        message: result.message,
+        status: result.getStatus(),
+      });
+    } else {
+      return res.status(res.statusCode).json(result);
     }
+  }
 }
 @ApiTags('Vagas')
 @Controller('job')
 export class IndividualJobController {
-    constructor(
-        private readonly jobApplicationService: JobApplicationService,
-        private readonly jobService: JobService
-    ) {}
+  constructor(
+    private readonly jobApplicationService: JobApplicationService,
+    private readonly jobService: JobService,
+  ) {}
 
-    @ApiResponse({
-        status: new JobNotFoundException().getStatus(),
-        description: new JobNotFoundException().message,
-        type: AllExceptionsFilterDTO,
-    })
-    @ApiResponse({
-        status: 200,
-        description: 'Vaga encontrada com sucesso',
-        type: FindJobResponseDTO,
-    })
-    @Get('/:id/find')
-    async findOne(
-        @Param('id') id: number,
-        @Req() req: Request,
-        @Res() res: Response,
-    ): Promise<FindJobResponseDTO | JobNotFoundException | AllExceptionsFilterDTO>  {
-        const result = await this.jobService.findOne(id);
+  @ApiResponse({
+    status: new JobNotFoundException().getStatus(),
+    description: new JobNotFoundException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Vaga encontrada com sucesso',
+    type: FindJobResponseDTO,
+  })
+  @Get('/:id/find')
+  async findOne(
+    @Param('id') id: number,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<
+    FindJobResponseDTO | JobNotFoundException | AllExceptionsFilterDTO
+  > {
+    const result = await this.jobService.findOne(id);
 
-        if (result instanceof HttpException) {
-            return res.status(result.getStatus()).json({
-              message: result.message,
-              status: result.getStatus(),
-            });
-          } else {
-            return res.status(res.statusCode).json(result);
-          }
+    if (result instanceof HttpException) {
+      return res.status(result.getStatus()).json({
+        message: result.message,
+        status: result.getStatus(),
+      });
+    } else {
+      return res.status(res.statusCode).json(result);
     }
-    
-    @ApiBearerAuth('user-token')
-    @ApiResponse({
-        status: new InvalidModalityException().getStatus(),
-        description: new InvalidModalityException().message,
-        type: AllExceptionsFilterDTO,
-    })
-    @ApiResponse({
+  }
+
+  @ApiBearerAuth('user-token')
+  @ApiResponse({
+    status: new InvalidModalityException().getStatus(),
+    description: new InvalidModalityException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new UserIsNotCompanyException().getStatus(),
+    description: new UserIsNotCompanyException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Vaga criada com sucesso!',
+  })
+  @Post('/create')
+  async create(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() body: CreateJobBodyDTO,
+  ): Promise<
+    UserIsNotCompanyException | UnauthorizedException | AllExceptionsFilterDTO
+  > {
+    const user = req.user;
+
+    if (!user) {
+      return res.status(new NotAuthenticatedException().getStatus()).json({
+        message: new UnauthorizedException().message,
+        status: new UnauthorizedException().getStatus(),
+      });
+    }
+
+    if (user.role !== 'company') {
+      return res.status(new UserIsNotCompanyException().getStatus()).json({
+        message: new UserIsNotCompanyException().message,
         status: new UserIsNotCompanyException().getStatus(),
-        description: new UserIsNotCompanyException().message,
-        type: AllExceptionsFilterDTO,
-    })
-    @ApiResponse({
-        status: 200,
-        description: 'Vaga criada com sucesso!'
-    })
-    @Post('/create')
-    async create(
-        @Req() req: Request,
-        @Res() res: Response,
-        @Body() body: CreateJobBodyDTO,
-    ): Promise<UserIsNotCompanyException | UnauthorizedException | AllExceptionsFilterDTO> {
-        const user = req.user
-
-        if (!user) {
-            return res.status(new NotAuthenticatedException().getStatus()).json({
-                message: new UnauthorizedException().message,
-                status: new UnauthorizedException().getStatus()
-            });
-        }
-
-        if (user.role !== 'company') {
-            return res.status(new UserIsNotCompanyException().getStatus()).json({
-                message: new UserIsNotCompanyException().message,
-                status: new UserIsNotCompanyException().getStatus(),
-            });
-        }
-
-        const result = await this.jobService.createJob(body, user.id);
-
-        if (result instanceof HttpException) {
-            return res.status(result.getStatus()).json({
-              message: result.message,
-              status: result.getStatus(),
-            });
-          } else {
-            return res.status(res.statusCode).json(result);
-          }
+      });
     }
 
-    @Post(':job_id/apply')
-    @ApiBearerAuth('user-token')
-    @ApiResponse({
-        status: new CommonException().getStatus(),
-        description: new CommonException().message,
-        type: AllExceptionsFilterDTO
-    })
-    @ApiResponse({
-        status: new AlreadyAppliedToJobException().getStatus(),
-        description: new AlreadyAppliedToJobException().message,
-        type: AllExceptionsFilterDTO
-    })
-    @ApiResponse({
-        status: new JobHasBeenExpiredException().getStatus(),
-        description: new JobHasBeenExpiredException().message,
-        type: AllExceptionsFilterDTO
-    })
-    @ApiResponse({
-        status: new JobNotFoundException().getStatus(),
-        description: new JobNotFoundException().message,
-        type: AllExceptionsFilterDTO
-    })
-    @ApiResponse({
-        status: new NotAuthenticatedException().getStatus(),
-        description: new NotAuthenticatedException().message,
-        type: AllExceptionsFilterDTO
-    })
-    @ApiResponse({
-        status: new AlreadyAppliedToJobException().getStatus(),
-        description: new AlreadyAppliedToJobException().message,
-        type: AllExceptionsFilterDTO
-    })
-    @ApiResponse({
+    const result = await this.jobService.createJob(body, user.id);
+
+    if (result instanceof HttpException) {
+      return res.status(result.getStatus()).json({
+        message: result.message,
+        status: result.getStatus(),
+      });
+    } else {
+      return res.status(res.statusCode).json(result);
+    }
+  }
+
+  @Post(':job_id/apply')
+  @ApiBearerAuth('user-token')
+  @ApiResponse({
+    status: new CommonException().getStatus(),
+    description: new CommonException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new AlreadyAppliedToJobException().getStatus(),
+    description: new AlreadyAppliedToJobException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new JobHasBeenExpiredException().getStatus(),
+    description: new JobHasBeenExpiredException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new JobNotFoundException().getStatus(),
+    description: new JobNotFoundException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new NotAuthenticatedException().getStatus(),
+    description: new NotAuthenticatedException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new AlreadyAppliedToJobException().getStatus(),
+    description: new AlreadyAppliedToJobException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new UserIsNotCandidateException().getStatus(),
+    description: new UserIsNotCandidateException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Inscrição feita com sucesso.',
+  })
+  async applyToJob(
+    @Param('job_id') jobId: number,
+    @Req() req: Request,
+    @Res() res: Response,
+    // Add this type here later
+  ): Promise<any | AllExceptionsFilterDTO> {
+    const user = req.user;
+
+    if (!user) {
+      return res.status(new UnauthorizedException().getStatus()).json({
+        message: new UnauthorizedException().message,
+        status: new UnauthorizedException().getStatus(),
+      });
+    }
+
+    if (user.role !== 'candidate') {
+      return res.status(new UserIsNotCandidateException().getStatus()).json({
+        message: new UserIsNotCandidateException().message,
         status: new UserIsNotCandidateException().getStatus(),
-        description: new UserIsNotCandidateException().message,
-        type: AllExceptionsFilterDTO
-    })
-    @ApiResponse({
+      });
+    }
+
+    const result = await this.jobApplicationService.applyToJob({
+      candidate_id: user.id,
+      job_id: jobId,
+    });
+
+    if (result instanceof HttpException) {
+      return res.status(result.getStatus()).json({
+        message: result.message,
+        status: result.getStatus(),
+      });
+    } else {
+      return res.status(201).json({
+        message: 'Inscrição feita com sucesso.',
         status: 201,
-        description: "Inscrição feita com sucesso.",
-    })
-    async applyToJob(
-        @Param('job_id') jobId: number,
-        @Req() req: Request,
-        @Res() res: Response,
-        // Add this type here later
-    ): Promise <any | AllExceptionsFilterDTO>    {
-        const user = req.user
+      });
+    }
+  }
 
-        if (!user) {
-            return res.status(new UnauthorizedException().getStatus()).json({
-                message: new UnauthorizedException().message,
-                status: new UnauthorizedException().getStatus()
-            });
-        }
+  @Get('/:job_id/status')
+  @ApiBearerAuth('user-token')
+  @ApiResponse({
+    status: new JobNotFoundException().getStatus(),
+    description: new JobNotFoundException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new UserIsNotCompanyException().getStatus(),
+    description: new UserIsNotCompanyException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new UnauthorizedException().getStatus(),
+    description: new UnauthorizedException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new NotAuthenticatedException().getStatus(),
+    description: new NotAuthenticatedException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Dados da vaga encontrados com sucesso.',
+    type: GetJobStatusResponseDTO,
+  })
+  async getJobStatus(
+    @Param('job_id') jobId: number,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<GetJobStatusResponseDTO | boolean | AllExceptionsFilterDTO> {
+    const user = req.user;
 
-        if (user.role !== 'candidate') {
-            return res.status(new UserIsNotCandidateException().getStatus()).json({
-                message: new UserIsNotCandidateException().message,
-                status: new UserIsNotCandidateException().getStatus()
-            });
-        }
-
-        const result = await this.jobApplicationService.applyToJob({
-            candidate_id: user.id,
-            job_id: jobId
-        })
-
-        if (result instanceof HttpException) {
-            return res.status(result.getStatus()).json({
-                message: result.message,
-                status: result.getStatus()
-            })
-        }   else {
-            return res.status(201).json({
-                message: "Inscrição feita com sucesso.",
-                status: 201
-            })
-        }
+    if (!user) {
+      return res.status(new UnauthorizedException().getStatus()).json({
+        message: new UnauthorizedException().message,
+        status: new UnauthorizedException().getStatus(),
+      });
     }
 
-    @Get('/:job_id/status')
-    @ApiBearerAuth('user-token')
-    @ApiResponse({
-        status: new JobNotFoundException().getStatus(),
-        description: new JobNotFoundException().message,
-        type: AllExceptionsFilterDTO,
-    })
-    @ApiResponse({
-        status: new UserIsNotCompanyException().getStatus(),
-        description: new UserIsNotCompanyException().message,
-        type: AllExceptionsFilterDTO,
-    })
-    @ApiResponse({
-        status: new UnauthorizedException().getStatus(),
-        description: new UnauthorizedException().message,
-        type: AllExceptionsFilterDTO,
-    })
-    @ApiResponse({
-        status: new NotAuthenticatedException().getStatus(),
-        description: new NotAuthenticatedException().message,
-        type: AllExceptionsFilterDTO,
-    })
-    @ApiResponse({
-        status: 200,
-        description: 'Dados da vaga encontrados com sucesso.',
-        type: GetJobStatusResponseDTO,
-    })
-    async getJobStatus(
-        @Param('job_id') jobId: number,
-        @Req() req: Request,
-        @Res() res: Response,
-    ): Promise<GetJobStatusResponseDTO | boolean | AllExceptionsFilterDTO> {
-        const user = req.user
-
-        if (!user) {
-            return res.status(new UnauthorizedException().getStatus()).json({
-                message: new UnauthorizedException().message,
-                status: new UnauthorizedException().getStatus()
-            });
-        }
-
-        if (user.role === 'candidate') {
-            const result = await this.jobApplicationService.hasApplied(jobId, user.id)
-            return res.status(200).json({
-                has_applied: result
-            })
-        }
-
-        const result = await this.jobService.getJobStatus(jobId, user.id)
-
-        if (result instanceof HttpException) {
-            return res.status(result.getStatus()).json({
-                message: result.message,
-                status: result.getStatus()
-            })
-        }   else {
-            return res.status(res.statusCode).json(result)
-        }
+    if (user.role === 'candidate') {
+      const result = await this.jobApplicationService.hasApplied(
+        jobId,
+        user.id,
+      );
+      return res.status(200).json({
+        has_applied: result,
+      });
     }
 
-    @Delete('/:job_id/remove')
-    @ApiBearerAuth('user-token')
-    @ApiResponse({
-        status: new JobNotFoundException().getStatus(),
-        description: new JobNotFoundException().message,
-        type: AllExceptionsFilterDTO,
-    })
-    @ApiResponse({
-        status: new UserIsNotCompanyException().getStatus(),
-        description: new UserIsNotCompanyException().message,
-        type: AllExceptionsFilterDTO,
-    })
-    @ApiResponse({
+    const result = await this.jobService.getJobStatus(jobId, user.id);
+
+    if (result instanceof HttpException) {
+      return res.status(result.getStatus()).json({
+        message: result.message,
+        status: result.getStatus(),
+      });
+    } else {
+      return res.status(res.statusCode).json(result);
+    }
+  }
+
+  @Delete('/:job_id/remove')
+  @ApiBearerAuth('user-token')
+  @ApiResponse({
+    status: new JobNotFoundException().getStatus(),
+    description: new JobNotFoundException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new UserIsNotCompanyException().getStatus(),
+    description: new UserIsNotCompanyException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new UnauthorizedException().getStatus(),
+    description: new UnauthorizedException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new NotAuthenticatedException().getStatus(),
+    description: new NotAuthenticatedException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: 204,
+    description: 'Vaga removida com sucesso.',
+  })
+  async removeJob(
+    @Param('job_id') jobId: number,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<AllExceptionsFilterDTO> {
+    const user = req.user;
+
+    if (!user) {
+      return res.status(new UnauthorizedException().getStatus()).json({
+        message: new UnauthorizedException().message,
         status: new UnauthorizedException().getStatus(),
-        description: new UnauthorizedException().message,
-        type: AllExceptionsFilterDTO,
-    })
-    @ApiResponse({
-        status: new NotAuthenticatedException().getStatus(),
-        description: new NotAuthenticatedException().message,
-        type: AllExceptionsFilterDTO,
-    })
-    @ApiResponse({
+      });
+    }
+
+    if (user.role !== 'company') {
+      return res.status(new UserIsNotCompanyException().getStatus()).json({
+        message: new UserIsNotCompanyException().message,
+        status: new UserIsNotCompanyException().getStatus(),
+      });
+    }
+
+    const result = await this.jobService.deleteJob(jobId, user.id);
+
+    if (result instanceof HttpException) {
+      return res.status(result.getStatus()).json({
+        message: result.message,
+        status: result.getStatus(),
+      });
+    } else {
+      return res.status(204).json({
+        message: 'Vaga removida com sucesso.',
         status: 204,
-        description: 'Vaga removida com sucesso.',
-    })
-    async removeJob(
-        @Param('job_id') jobId: number,
-        @Req() req: Request,
-        @Res() res: Response,
-    ): Promise<AllExceptionsFilterDTO> {
-        const user = req.user
+      });
+    }
+  }
 
-        if (!user) {
-            return res.status(new UnauthorizedException().getStatus()).json({
-                message: new UnauthorizedException().message,
-                status: new UnauthorizedException().getStatus()
-            });
-        }
+  @Delete('/application/:job_id/remove')
+  @ApiBearerAuth('user-token')
+  @ApiResponse({
+    status: new JobNotFoundException().getStatus(),
+    description: new JobNotFoundException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new UserNotFoundException().getStatus(),
+    description: new UserNotFoundException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new UserIsNotCandidateException().getStatus(),
+    description: new UserIsNotCandidateException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new NotAuthenticatedException().getStatus(),
+    description: new NotAuthenticatedException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new ApplicationDoesNotExist().getStatus(),
+    description: new ApplicationDoesNotExist().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: 204,
+    description: 'Inscrição removida com sucesso.',
+  })
+  async removeApplication(
+    @Param('job_id') jobId: number,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<AllExceptionsFilterDTO> {
+    const user = req.user;
 
-        if (user.role !== 'company') {
-            return res.status(new UserIsNotCompanyException().getStatus()).json({
-                message: new UserIsNotCompanyException().message,
-                status: new UserIsNotCompanyException().getStatus()
-            });
-        }
-
-        const result = await this.jobService.deleteJob(jobId, user.id)
-
-        if (result instanceof HttpException) {
-            return res.status(result.getStatus()).json({
-                message: result.message,
-                status: result.getStatus()
-            })
-        }   else {
-            return res.status(204).json({
-                message: 'Vaga removida com sucesso.',
-                status: 204
-            })
-        }
+    if (!user) {
+      return res.status(new UnauthorizedException().getStatus()).json({
+        message: new UnauthorizedException().message,
+        status: new UnauthorizedException().getStatus(),
+      });
     }
 
-    @Delete('/application/:job_id/remove')
-    @ApiBearerAuth('user-token')
-    @ApiResponse({
-        status: new JobNotFoundException().getStatus(),
-        description: new JobNotFoundException().message,
-        type: AllExceptionsFilterDTO,
-    })
-    @ApiResponse({
-        status: new UserNotFoundException().getStatus(),
-        description: new UserNotFoundException().message,
-        type: AllExceptionsFilterDTO,
-    })
-    @ApiResponse({
+    if (user.role !== 'candidate') {
+      return res.status(new UserIsNotCandidateException().getStatus()).json({
+        message: new UserIsNotCandidateException().message,
         status: new UserIsNotCandidateException().getStatus(),
-        description: new UserIsNotCandidateException().message,
-        type: AllExceptionsFilterDTO,
-    })
-    @ApiResponse({
-        status: new NotAuthenticatedException().getStatus(),
-        description: new NotAuthenticatedException().message,
-        type: AllExceptionsFilterDTO,
-    })
-    @ApiResponse({
-        status: new ApplicationDoesNotExist().getStatus(),
-        description: new ApplicationDoesNotExist().message,
-        type: AllExceptionsFilterDTO,
-    })
-    @ApiResponse({
-        status: 204,
-        description: 'Inscrição removida com sucesso.',
-    })
-    async removeApplication(
-        @Param('job_id') jobId: number,
-        @Req() req: Request,
-        @Res() res: Response,
-    ): Promise<AllExceptionsFilterDTO> {
-        const user = req.user
-
-        if (!user) {
-            return res.status(new UnauthorizedException().getStatus()).json({
-                message: new UnauthorizedException().message,
-                status: new UnauthorizedException().getStatus()
-            });
-        }
-
-        if (user.role !== 'candidate') {
-            return res.status(new UserIsNotCandidateException().getStatus()).json({
-                message: new UserIsNotCandidateException().message,
-                status: new UserIsNotCandidateException().getStatus()
-            });
-        }
-
-        const result = await this.jobApplicationService.removeApplication(jobId, user.id)
-
-        if (result instanceof HttpException) {
-            return res.status(result.getStatus()).json({
-                message: result.message,
-                status: result.getStatus()
-            })
-        }   else {
-            return res.status(204).json({
-                message: 'Inscrição removida com sucesso.',
-                status: 204
-            })
-        }
+      });
     }
 
+    const result = await this.jobApplicationService.removeApplication(
+      jobId,
+      user.id,
+    );
 
+    if (result instanceof HttpException) {
+      return res.status(result.getStatus()).json({
+        message: result.message,
+        status: result.getStatus(),
+      });
+    } else {
+      return res.status(204).json({
+        message: 'Inscrição removida com sucesso.',
+        status: 204,
+      });
+    }
+  }
 }

@@ -6,6 +6,4 @@ export const ApplyToJobSchema = z.object({
   candidate_id: z.number().describe('ID do candidato aplicando à vaga.'),
 });
 
-export class ApplyToJobDTO extends createZodDto(
-    ApplyToJobSchema,
-) {}
+export class ApplyToJobDTO extends createZodDto(ApplyToJobSchema) {}
