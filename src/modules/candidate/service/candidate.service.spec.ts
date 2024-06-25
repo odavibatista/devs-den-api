@@ -338,4 +338,21 @@ describe('Candidate Service', () => {
       await candidateService.create(candidate);
     }).rejects.toThrow(UnprocessableDataException);
   });
+
+  it('should not create a candidate passing an address complement that contains more than 100 characters', async () => {
+    candidate.address.complement =
+      '124129412491241241294124912412412941249124124129412491241241294124912412412941249124124129412491241241294124912412412941249124124129412491241241294124912412412941249124'
+
+      expect(async () => {
+        await candidateService.create(candidate);
+      }).rejects.toThrow(UnprocessableDataException);
+  })
+
+  it('should not create a candidate passing an address complement that contains special characters', async () => {
+    candidate.address.complement = 'Casa @';
+
+    expect(async () => {
+      await candidateService.create(candidate);
+    }).rejects.toThrow(UnprocessableDataException);
+  })
 });

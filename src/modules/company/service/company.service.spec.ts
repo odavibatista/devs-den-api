@@ -324,4 +324,21 @@ describe('CompanyService', () => {
       await companyService.create(company);
     }).rejects.toThrow(UnprocessableDataException);
   });
+
+  it('should not create a company passing an address complement that contains more than 100 characters', async () => {
+    company.address.complement =
+      '124129412491241241294124912412412941249124124129412491241241294124912412412941249124124129412491241241294124912412412941249124124129412491241241294124912412412941249124'
+
+      expect(async () => {
+        await companyService.create(company);
+      }).rejects.toThrow(UnprocessableDataException);
+  })
+
+  it('should not create a company passing an address complement that contains special characters', async () => {
+    company.address.complement = 'Casa @';
+
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(UnprocessableDataException);
+  })
 });
