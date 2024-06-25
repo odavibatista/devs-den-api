@@ -13,6 +13,8 @@ import { JWTProvider } from '../../../modules/user/providers/JWT.provider';
 import { UserClearingService, UserService } from '../../../modules/user/service/user.service';
 import { RegisterCompanyBodyDTO } from '../domain/requests/RegisterCompany.request.dto';
 import { UnformattedEmailException } from '../../../modules/user/domain/errors/UnformattedEmail.exception';
+import { UnformattedPasswordException } from '../../../modules/user/domain/errors/UnformattedPassword.exception';
+import { PasswordTooLongException } from '../../user/domain/errors/PasswordTooLong.exception';
 
 describe('CompanyService', () => {
   let companyService: CompanyService;
@@ -39,12 +41,6 @@ describe('CompanyService', () => {
     await userClearingService.wipe()
   })
 
-  it('should bring all companies', async () => {
-    const companies = await companyService.findAll();
-
-    expect(companies).toBeDefined();
-  })
-
   const company: RegisterCompanyBodyDTO = {
     company_name: 'Company Test',
     cnpj: '15364400000153',
@@ -63,6 +59,15 @@ describe('CompanyService', () => {
   }
 
   jest.setTimeout(1000 * 10)
+
+  it('should bring all companies', async () => {
+    const companies = await companyService.findAll();
+
+    expect(companies).toBeDefined();
+
+    expect(companies).toBeInstanceOf(Array)
+
+  })
 
   it('should not create a company with an e-mail with more than 50 characters', async () => {
     company.credentials.email = "coooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooompany@gmail.com"
@@ -116,5 +121,63 @@ describe('CompanyService', () => {
     expect(async () => {
       await companyService.create(company)
     }).rejects.toThrow(UnformattedEmailException);
+  })
+
+  it('should not create a company with a password with less than 15 characters', async () => {
+    company.credentials.email = "fulanodasilva@gmail.com"
+    company.credentials.password = "@Ab1"
+
+    expect(async () => {
+      await companyService.create(company)
+    }).rejects.toThrow(UnformattedPasswordException);
+  })
+
+  it('should not create a company with a password with more than 50 characters', async () => {
+    company.credentials.password = "@Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1"
+
+    expect(async () => {
+      await companyService.create(company)
+    }).rejects.toThrow(PasswordTooLongException);
+  })
+
+  it('should not create a company with a password without without at least one letter', async () =>  {
+    company.credentials.password = "1234567890@"
+
+    expect(async () => {
+      await companyService.create(company)
+    }).rejects.toThrow(UnformattedPasswordException);
+  });
+
+  it('should not create a company with a password without at least one number', async () =>  {
+    company.credentials.password = "Asadasdasd@"
+
+    expect(async () => {
+      await companyService.create(company)
+    }).rejects.toThrow(UnformattedPasswordException);
+  });
+
+  it('should not create a company with a password without at least one capital letter', async () =>  {
+    company.credentials.password = "abcdfg@@)$(@412412)$"
+
+    expect(async () => {
+      await companyService.create(company)
+    }).rejects.toThrow(UnformattedPasswordException);
+  });
+
+  it('should not create a company with a password without at least one special character', async () =>  {
+    company.credentials.password = "Abcdefg123"
+
+    expect(async () => {
+      await companyService.create(company)
+    }).rejects.toThrow(UnformattedPasswordException);
+  });
+
+  it('should not create a company with a password without at least one minor letter', async () =>  {
+    company.credentials.password = "AAAAAAAAAAAAAAAAAA@"
+
+    expect(async () => {
+      await companyService
+      .create(company)
+    }).rejects.toThrow(UnformattedPasswordException);    
   })
 });
