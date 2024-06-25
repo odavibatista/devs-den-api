@@ -25,12 +25,7 @@ import { UserService } from '../../../modules/user/service/user.service';
 import { FindCompanyResponseDTO } from '../domain/requests/FindCompanies.request.dto';
 import { NameTooShortException } from '../../user/domain/errors/NameTooShort.exception';
 import { NameTooLongException } from '../../user/domain/errors/NameTooLong.exception';
-import { nameValidate } from '../../../shared/utils/nameValidate';
-import { UnprocessableDataException } from '../../../shared/domain/errors/UnprocessableData.exception';
-import { streetValidate } from '../../../shared/utils/streetValidate';
-import { cepValidate } from '../../../shared/utils/cepValidate';
-import { CityTooShortException } from '../../address/domain/errors/CityTooShort.exception';
-import { CityTooLongException } from '../../address/domain/errors/CityTooLong.exception';
+import { IAddressObject, addressValidate } from '../../../shared/utils/addressValidate';
 
 @Injectable()
 export class CompanyService {
@@ -78,62 +73,9 @@ export class CompanyService {
     | InvalidCNPJException
   > {
     try {
-      if (params.company_name.length < 5) throw new NameTooShortException();
-
-      if (params.company_name.length > 50) throw new NameTooLongException();
-
-      if (!emailValidate(params.credentials.email))
-        throw new UnformattedEmailException();
-
-      if (!passwordValidate(params.credentials.password))
-        throw new UnformattedPasswordException();
-
-      if (!nameValidate(params.address.city))
-        throw new UnprocessableDataException(
-          'Cidades não podem conter números e caracteres especiais.',
-        );
-
-      if (!streetValidate(params.address.street))
-        throw new UnprocessableDataException(
-          'Ruas devem possuir entre 1 e 100 caracteres.',
-        );
-
-      if (!cepValidate(params.address.cep))
-        throw new UnprocessableDataException('CEP inválido.');
-
-      if (params.address.city.length < 3) throw new CityTooShortException();
-
-      if (params.address.city.length > 50) throw new CityTooLongException();
-
-      if (params.address.city.length < 1)
-        throw new UnprocessableDataException(
-          'Rua deve possuir pelo menos um caractere.',
-        );
-
-      if (params.address.city.length > 100)
-        throw new UnprocessableDataException(
-          'Rua não pode ter mais de 100 caracteres.',
-        );
-
-      if (params.address.number.length < 1)
-        throw new UnprocessableDataException(
-          'Número de endereço deve possuir pelo menos um caractere.',
-        );
-
-      if (params.address.number.length > 10)
-        throw new UnprocessableDataException(
-          'Número de endereço deve possuir pelo menos dez caracteres.',
-        );
-
       const userWithSameEmail = await this.userRepository.findOne({
         where: { email: params.credentials.email },
       });
-
-      if (
-        params.credentials.email.length < 8 ||
-        params.credentials.email.length > 50
-      )
-        throw new UnformattedEmailException();
 
       if (userWithSameEmail) throw new EmailAlreadyRegisteredException();
 
@@ -150,58 +92,69 @@ export class CompanyService {
 
       if (companyWithSamePJ) throw new CNPJAlreadyRegisteredException();
 
-      const uf = await this.ufRepository.findOne({
-        where: { id_uf: params.address.uf },
-      });
+      if (params.company_name.length < 5) throw new NameTooShortException();
 
-      if (!uf) {
-        throw new UFNotFoundException();
+      if (params.company_name.length > 50) throw new NameTooLongException();
+
+      if (!emailValidate(params.credentials.email))
+        throw new UnformattedEmailException();
+
+      if (!passwordValidate(params.credentials.password))
+        throw new UnformattedPasswordException();
+
+      if (!pjValidate(params.cnpj)) throw new InvalidCNPJException();
+
+      if (addressValidate(params.address as IAddressObject) === true)  {
+        const uf = await this.ufRepository.findOne({
+          where: { id_uf: params.address.uf },
+        });
+  
+        if (!uf) {
+          throw new UFNotFoundException();
+        }
+    
+        await this.userService.create({
+          email: params.credentials.email,
+          password: params.credentials.password,
+          role: 'company',
+        });
+  
+        const userToBeFound: User = await this.userRepository.findOne({
+          where: { email: params.credentials.email },
+        });
+  
+        await this.addressRepository.save({
+          uf: uf,
+          cep: params.address.cep,
+          city: params.address.city,
+          street: params.address.street,
+          complement: params.address.complement,
+          number: params.address.number,
+        });
+  
+        await this.companyRepository.save({
+          id_user: userToBeFound.id_user,
+          name: params.company_name,
+          cnpj: params.cnpj,
+        });
+  
+        const token = this.JwtProvider.generate({
+          payload: {
+            id: userToBeFound.id_user,
+            role: params.credentials.role,
+          },
+        });
+  
+        return {
+          user: {
+            id: userToBeFound.id_user,
+            name: params.company_name,
+            role: 'company',
+          },
+          token: token,
+        };
       }
 
-      const isCNPJValid = pjValidate(params.cnpj);
-
-      if (!isCNPJValid) throw new InvalidCNPJException();
-
-      await this.userService.create({
-        email: params.credentials.email,
-        password: params.credentials.password,
-        role: 'company',
-      });
-
-      const userToBeFound: User = await this.userRepository.findOne({
-        where: { email: params.credentials.email },
-      });
-
-      await this.addressRepository.save({
-        uf: uf,
-        cep: params.address.cep,
-        city: params.address.city,
-        street: params.address.street,
-        complement: params.address.complement,
-        number: params.address.number,
-      });
-
-      await this.companyRepository.save({
-        id_user: userToBeFound.id_user,
-        name: params.company_name,
-        cnpj: params.cnpj,
-      });
-
-      const token = this.JwtProvider.generate({
-        payload: {
-          id: userToBeFound.id_user,
-          role: params.credentials.role,
-        },
-      });
-
-      return {
-        user: {
-          id: userToBeFound.id_user,
-          name: params.company_name,
-          role: 'company',
-        },
-        token: token,
-      };
     } catch (error) {
       throw new HttpException(error, error.status);
     }

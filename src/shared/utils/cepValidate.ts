@@ -1,3 +1,4 @@
 export const cepValidate = (cep: string): boolean => {
-  return /^[0-9{8,8}]+$/.test(cep);
+  // Create a regex that matches a string with 8 digits only and only with numbers
+  return /^[0-9]{8}$/.test(cep);
 };
