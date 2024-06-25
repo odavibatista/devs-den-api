@@ -59,7 +59,7 @@ describe('SkillService', () => {
 
   it('should throw an error if an unvalid number is passed on the individual skill finder', async () => {
     expect(async () => {
-      await skillService.findOne(11111111111111111111111111999999999999);
+      await skillService.findOne(0);
     }).rejects.toThrow(SkillNotFoundException);
   });
 });

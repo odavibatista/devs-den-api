@@ -11,6 +11,7 @@ import { UserModule } from '../../user/user.module';
 import { UserService } from '../../user/service/user.service';
 import { RegisterCompanyBodyDTO } from '../../company/domain/requests/RegisterCompany.request.dto';
 import { CreateJobBodyDTO } from '../domain/requests/CreateJob.request.dto';
+import { JobNotFoundException } from '../domain/errors/JobNotFound.exception';
 
 describe('ServiceService', () => {
   let jobService: JobService;
@@ -62,6 +63,7 @@ describe('ServiceService', () => {
   
   beforeAll(async () => {
     await companyService.create(company)
+    await jobService.createJob(job, 1)
   })
 
   it('should bring all jobs', async () => {
@@ -70,5 +72,17 @@ describe('ServiceService', () => {
     expect(jobs).toBeInstanceOf(Array);
   });
 
-  
+  it('should not find a job given an invalid id', async () => {
+    expect(async () => {
+      await jobService.findOne(0);
+    }).rejects.toThrow(JobNotFoundException);
+  })
+
+  it('should find a job given its id', async () => {
+    const jobs = await jobService.findAll();
+    const job = await jobService.findOne(jobs[0].id_job);
+
+    expect(job).toHaveProperty('job');
+    expect(job).toHaveProperty('company');
+  })
 });
