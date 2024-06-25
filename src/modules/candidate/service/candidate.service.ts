@@ -23,11 +23,7 @@ import { PasswordTooLongException } from '../../../modules/user/domain/errors/Pa
 import { NameTooShortException } from '../../../modules/user/domain/errors/NameTooShort.exception';
 import { NameTooLongException } from '../../../modules/user/domain/errors/NameTooLong.exception';
 import { UnformattedNameException } from '../../../modules/user/domain/errors/UnformattedName.exception';
-import { CityTooShortException } from '../../../modules/address/domain/errors/CityTooShort.exception';
-import { CityTooLongException } from '../../../modules/address/domain/errors/CityTooLong.exception';
 import { UnprocessableDataException } from '../../../shared/domain/errors/UnprocessableData.exception';
-import { cepValidate } from '../../../shared/utils/cepValidate';
-import { streetValidate } from '../../../shared/utils/streetValidate';
 import { IAddressObject, addressValidate } from '../../../shared/utils/addressValidate';
 
 @Injectable()
@@ -55,6 +51,7 @@ export class CandidateService {
     | UnformattedPasswordException
     | PasswordTooLongException
     | EmailAlreadyRegisteredException
+    | UnprocessableDataException
   > {
     const userWithSameEmail = await this.userRepository.findOne({
       where: { email: params.credentials.email },

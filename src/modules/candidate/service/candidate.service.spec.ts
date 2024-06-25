@@ -24,8 +24,6 @@ import { NameTooShortException } from '../../../modules/user/domain/errors/NameT
 import { NameTooLongException } from '../../../modules/user/domain/errors/NameTooLong.exception';
 import { UnformattedNameException } from '../../../modules/user/domain/errors/UnformattedName.exception';
 import { UFNotFoundException } from '../../../modules/uf/domain/errors/UfNotFound.exception';
-import { CityTooShortException } from '../../../modules/address/domain/errors/CityTooShort.exception';
-import { CityTooLongException } from '../../../modules/address/domain/errors/CityTooLong.exception';
 import { UnprocessableDataException } from '../../../shared/domain/errors/UnprocessableData.exception';
 
 describe('Candidate Service', () => {
@@ -235,7 +233,7 @@ describe('Candidate Service', () => {
 
     expect(async () => {
       await candidateService.create(candidate);
-    }).rejects.toThrow(CityTooShortException);
+    }).rejects.toThrow(UnprocessableDataException);
   });
 
   it('should not create a candidate passing a city which names has more than 50 characters', async () => {
@@ -245,7 +243,7 @@ describe('Candidate Service', () => {
 
     expect(async () => {
       await candidateService.create(candidate);
-    }).rejects.toThrow(CityTooLongException);
+    }).rejects.toThrow(UnprocessableDataException);
   });
 
   it('should not create a candidate passing a city that contains numbers', async () => {

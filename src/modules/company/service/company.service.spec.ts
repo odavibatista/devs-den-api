@@ -20,6 +20,7 @@ import { UnformattedPasswordException } from '../../../modules/user/domain/error
 import { PasswordTooLongException } from '../../user/domain/errors/PasswordTooLong.exception';
 import { NameTooShortException } from '../../user/domain/errors/NameTooShort.exception';
 import { UFNotFoundException } from '../../uf/domain/errors/UfNotFound.exception';
+import { UnprocessableDataException } from '../../../shared/domain/errors/UnprocessableData.exception';
 
 describe('CompanyService', () => {
   let companyService: CompanyService;
@@ -210,5 +211,117 @@ describe('CompanyService', () => {
     expect(async () => {
       await companyService.create(company);
     }).rejects.toThrow(UFNotFoundException);
+  });
+
+  it('should not create a company passing a city which length is less than 3 characters', async () => {
+    company.address.uf = 1;
+    company.address.city = 'Ab';
+
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(UnprocessableDataException);
+  });
+
+  it('should not create a company passing a city which names has more than 50 characters', async () => {
+    company.address.uf = 1;
+    company.address.city =
+      'AbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAb';
+
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(UnprocessableDataException);
+  });
+
+  it('should not create a company passing a city that contains numbers', async () => {
+    company.address.city = 'Cidade 1';
+
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(UnprocessableDataException);
+  });
+
+  it('should not create a company passing a city that contains special characters', async () => {
+    company.address.city = 'Cidade []';
+
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(UnprocessableDataException);
+  });
+
+  it('should not create a company passing a cep that contains letters', async () => {
+    company.address.city = 'São Paulo';
+    company.address.cep = '31245ABC';
+
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(UnprocessableDataException);
+  });
+
+  it('should not create a company passing a cep that contains special characters', async () => {
+    company.address.cep = '31245(((';
+
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(UnprocessableDataException);
+  });
+
+  it('should not create a company passing a cep that contains less than 8 characters', async () => {
+    company.address.cep = '31245';
+
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(UnprocessableDataException);
+  });
+
+  it('should not create a company passing a cep that contains more than 8 characters', async () => {
+    company.address.cep = '3124531245';
+
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(UnprocessableDataException);
+  });
+
+  it('should not create a company passing a street that contains less than 1 character', async () => {
+    company.address.cep = '12345678';
+    company.address.street = '';
+
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(UnprocessableDataException);
+  });
+
+  it('should not create a company passing a street that contains more than 100 characters', async () => {
+    company.address.street =
+      'abcdfghijklmnoabcdfghijklmnoabcdfghijklmnoabcdfghijklmnoabcdfghijklmnoabcdfghijklmnoabcdfghijklmnoabcdfghijklmnoabcdfghijklmnoabcdfghijklmnoabcdfghijklmno';
+
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(UnprocessableDataException);
+  });
+
+  it('should not create a company passing an address number that contains less than 1 character', async () => {
+    company.address.street = 'Rua dos Bobos';
+    company.address.number = '';
+
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(UnprocessableDataException);
+  });
+
+  it('should not create a company passing an address number that contains more than than 10 character', async () => {
+    company.address.number = '12412941249124';
+
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(UnprocessableDataException);
+  });
+
+  it('should not create a company passing an address complement that contains less than 1 characters', async () => {
+    company.address.number = '1';
+    company.address.complement = '';
+
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(UnprocessableDataException);
   });
 });

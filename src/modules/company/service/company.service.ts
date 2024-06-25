@@ -26,6 +26,7 @@ import { FindCompanyResponseDTO } from '../domain/requests/FindCompanies.request
 import { NameTooShortException } from '../../user/domain/errors/NameTooShort.exception';
 import { NameTooLongException } from '../../user/domain/errors/NameTooLong.exception';
 import { IAddressObject, addressValidate } from '../../../shared/utils/addressValidate';
+import { UnprocessableDataException } from '../../../shared/domain/errors/UnprocessableData.exception';
 
 @Injectable()
 export class CompanyService {
@@ -71,6 +72,7 @@ export class CompanyService {
     | CompanyNameAlreadyRegisteredException
     | CNPJAlreadyRegisteredException
     | InvalidCNPJException
+    | UnprocessableDataException
   > {
     try {
       const userWithSameEmail = await this.userRepository.findOne({

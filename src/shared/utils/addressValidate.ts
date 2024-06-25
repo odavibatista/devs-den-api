@@ -1,5 +1,3 @@
-import { CityTooLongException } from '../../modules/address/domain/errors/CityTooLong.exception';
-import { CityTooShortException } from '../../modules/address/domain/errors/CityTooShort.exception';
 import { UnprocessableDataException } from '../domain/errors/UnprocessableData.exception';
 import { cepValidate } from './cepValidate';
 import { complementValidate } from './complementValidate';
@@ -35,9 +33,9 @@ export const addressValidate = (address: IAddressObject): boolean => {
   if (!cepValidate(address.cep))
     throw new UnprocessableDataException('CEP inválido.');
 
-  if (address.city.length < 3) throw new CityTooShortException();
+  if (address.city.length < 3) throw new UnprocessableDataException("Nomes de cidades devem possuir pelo menos três caracteres.");
 
-  if (address.city.length > 50) throw new CityTooLongException();
+  if (address.city.length > 50) throw new UnprocessableDataException("Nomes de cidades devem possuir no máximo cinquenta caracteres.");
 
   if (address.city.length < 1)
     throw new UnprocessableDataException(
