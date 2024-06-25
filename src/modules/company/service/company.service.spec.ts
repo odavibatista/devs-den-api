@@ -21,6 +21,7 @@ import { PasswordTooLongException } from '../../user/domain/errors/PasswordTooLo
 import { NameTooShortException } from '../../user/domain/errors/NameTooShort.exception';
 import { UFNotFoundException } from '../../uf/domain/errors/UfNotFound.exception';
 import { UnprocessableDataException } from '../../../shared/domain/errors/UnprocessableData.exception';
+import { InvalidCNPJException } from '../domain/errors/InvalidCNPJ.exception';
 
 describe('CompanyService', () => {
   let companyService: CompanyService;
@@ -340,5 +341,54 @@ describe('CompanyService', () => {
     expect(async () => {
       await companyService.create(company);
     }).rejects.toThrow(UnprocessableDataException);
+  })
+
+  it('should not create a company passing a cnpj that contains letters', async () => {
+    company.address.complement = 'Casa';
+    company.cnpj = '1234567890ABC';
+
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(InvalidCNPJException);
+  })
+
+  it('should not create a company passing a cnpj that contains special characters', async () => {
+    company.cnpj = '1234567890@'
+
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(InvalidCNPJException);
+  })
+
+  it('should not create a company passing a cnpj that contains less than 14 characters', async () => {
+    company.cnpj = '120123'
+
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(InvalidCNPJException);
+  })
+
+  it('should not create a company passing a cnpj that contains more than 14 characters', async () => {
+    company.cnpj = '120123123123123'
+
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(InvalidCNPJException);
+  })
+
+  it('should not create a company passing a cnpj that contains a repeated sequence of numbers', async () => {
+    company.cnpj = '00000000000000'
+
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(InvalidCNPJException);
+  })
+
+  it('should not create a company passing a cnpj that contains a invalid verification digit', async () => {
+    company.cnpj = '15364400000154'
+
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(InvalidCNPJException);
   })
 });
