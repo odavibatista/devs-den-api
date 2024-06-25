@@ -1,0 +1,25 @@
+name: Issues
+description: Issues de implementações e tarefas no projeto
+title: "`[TIPO]` - NOME"
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: 'Descrição:'
+      value: |
+        Fazer determinada função
+        ```
+        Insira código aqui
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    id: rn
+    attributes:
+      label: 'RN:'
+      value: |
+        - 
+    validations:
+      required: true
