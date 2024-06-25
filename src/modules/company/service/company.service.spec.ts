@@ -22,6 +22,7 @@ import { NameTooShortException } from '../../user/domain/errors/NameTooShort.exc
 import { UFNotFoundException } from '../../uf/domain/errors/UfNotFound.exception';
 import { UnprocessableDataException } from '../../../shared/domain/errors/UnprocessableData.exception';
 import { InvalidCNPJException } from '../domain/errors/InvalidCNPJ.exception';
+import { CompanyNotFoundException } from '../domain/errors/CompanyNotFound.exception';
 
 describe('CompanyService', () => {
   let companyService: CompanyService;
@@ -399,5 +400,17 @@ describe('CompanyService', () => {
     const response = await companyService.create(company);
 
     expect(response).toHaveProperty('user');
+  })
+
+  it('should not return a company given an unvalid id', async ()  =>  {
+    expect(async () => {
+      await companyService.findOne(0);
+    }).rejects.toThrow(CompanyNotFoundException);
+  })
+
+  it('should not delete a company given an unvalid id', async () => {
+    expect(async () => {
+      await companyService.delete(0);
+    }).rejects.toThrow(CompanyNotFoundException);
   })
 });
