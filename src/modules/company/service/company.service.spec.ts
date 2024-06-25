@@ -18,6 +18,8 @@ import { RegisterCompanyBodyDTO } from '../domain/requests/RegisterCompany.reque
 import { UnformattedEmailException } from '../../../modules/user/domain/errors/UnformattedEmail.exception';
 import { UnformattedPasswordException } from '../../../modules/user/domain/errors/UnformattedPassword.exception';
 import { PasswordTooLongException } from '../../user/domain/errors/PasswordTooLong.exception';
+import { NameTooShortException } from '../../user/domain/errors/NameTooShort.exception';
+import { UFNotFoundException } from '../../uf/domain/errors/UfNotFound.exception';
 
 describe('CompanyService', () => {
   let companyService: CompanyService;
@@ -181,5 +183,32 @@ describe('CompanyService', () => {
     expect(async () => {
       await companyService.create(company);
     }).rejects.toThrow(UnformattedPasswordException);
+  });
+
+  it('should not create a company which name has less than 5 characters', async () => {
+    company.credentials.password = '@EmpresinhaQualquer12345678910@';
+    company.company_name = 'Abcd';
+
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(NameTooShortException);
+  });
+
+  it('should not create a company which name has more than 50 characters', async () => {
+    company.company_name =
+      'AbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcd';
+
+      expect(async () => {
+        await companyService.create(company);
+      }).rejects.toThrow(NameTooShortException);
+  });
+
+  it('should not create a company passing an unvalid UF id', async () => {
+    company.company_name = 'Coca Cola S/A';
+    company.address.uf = 0;
+
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(UFNotFoundException);
   });
 });
