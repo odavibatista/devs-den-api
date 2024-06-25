@@ -1,4 +1,11 @@
-import { Controller, Get, HttpException, Param, Req, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpException,
+  Param,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   FindJobCategoriesResponseDTO,
@@ -26,10 +33,7 @@ export class JobCategoryController {
   })
   async findAll(
     @Res() res: Response,
-  ): Promise<
-    | FindJobCategoriesResponseDTO
-    | AllExceptionsFilterDTO
-  > {
+  ): Promise<FindJobCategoriesResponseDTO | AllExceptionsFilterDTO> {
     const result = await this.jobCategoriesService.findAll();
 
     if (result instanceof HttpException) {
@@ -58,10 +62,7 @@ export class JobCategoryController {
     @Param('id') id: number,
     @Req() req: Request,
     @Res() res: Response,
-  ): Promise<
-    | FindJobCategoryResponseDTO
-    | AllExceptionsFilterDTO
-  > {
+  ): Promise<FindJobCategoryResponseDTO | AllExceptionsFilterDTO> {
     const result = await this.jobCategoriesService.findOne(id);
 
     if (result instanceof HttpException) {

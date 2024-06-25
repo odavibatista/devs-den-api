@@ -52,7 +52,7 @@ export class UserController {
   @ApiResponse({
     status: new CommonException().getStatus(),
     description: new CommonException().message,
-    type: AllExceptionsFilterDTO
+    type: AllExceptionsFilterDTO,
   })
   @ApiResponse({
     status: 200,
@@ -100,12 +100,12 @@ export class UserController {
   @ApiResponse({
     status: new CommonException().getStatus(),
     description: new CommonException().message,
-    type: AllExceptionsFilterDTO
+    type: AllExceptionsFilterDTO,
   })
   @ApiResponse({
     status: new UnauthorizedException().getStatus(),
     description: new UnauthorizedException().message,
-    type: AllExceptionsFilterDTO
+    type: AllExceptionsFilterDTO,
   })
   @ApiResponse({
     status: 200,
@@ -117,7 +117,7 @@ export class UserController {
     @Res() res: Response,
     @Body() body: LoginUserBodyDTO,
   ): Promise<LoginUserResponseDTO | AllExceptionsFilterDTO> {
-    if (req.user) throw new UnauthorizedException()
+    if (req.user) throw new UnauthorizedException();
 
     const result = await this.userService.login(body);
 
@@ -130,34 +130,34 @@ export class UserController {
       return res.status(200).json(result);
     }
   }
-  
+
   @ApiBearerAuth('user-token')
   @Get('home-data')
   @ApiResponse({
     status: new NotAuthenticatedException().getStatus(),
     description: new NotAuthenticatedException().message,
-    type: AllExceptionsFilterDTO
+    type: AllExceptionsFilterDTO,
   })
   @ApiResponse({
     status: new CommonException().getStatus(),
     description: new CommonException().message,
-    type: AllExceptionsFilterDTO
+    type: AllExceptionsFilterDTO,
   })
   @ApiResponse({
     status: 300,
     description: 'Dados trazidos com sucesso.',
-    type: HomeDataResponseDTO
+    type: HomeDataResponseDTO,
   })
-  async homeData (
+  async homeData(
     @Req() req: Request,
-    @Res() res: Response
+    @Res() res: Response,
   ): Promise<HomeDataResponseDTO | AllExceptionsFilterDTO> {
-    const user = req.user
+    const user = req.user;
 
     if (!user) {
       return res.status(new NotAuthenticatedException().getStatus()).json({
-          message: new NotAuthenticatedException().message,
-          status: new NotAuthenticatedException().getStatus()
+        message: new NotAuthenticatedException().message,
+        status: new NotAuthenticatedException().getStatus(),
       });
     }
 
@@ -177,7 +177,6 @@ export class UserController {
         },
       });
     }
-
   }
 
   @Delete(':id/delete')
@@ -205,7 +204,7 @@ export class UserController {
   @ApiResponse({
     status: new CommonException().getStatus(),
     description: new CommonException().message,
-    type: AllExceptionsFilterDTO
+    type: AllExceptionsFilterDTO,
   })
   @ApiResponse({
     status: 204,
@@ -243,9 +242,7 @@ export class UserController {
           message: deleteCompany.message,
           status: deleteCompany.getStatus(),
         });
-      }
-
-      else return res.status(204).json();
+      } else return res.status(204).json();
     }
 
     if (user.role === 'candidate') {
@@ -265,9 +262,7 @@ export class UserController {
           message: deleteCandidate.message,
           status: deleteCandidate.getStatus(),
         });
-      }
-
-      else return res.status(204).json();
+      } else return res.status(204).json();
     }
   }
 }

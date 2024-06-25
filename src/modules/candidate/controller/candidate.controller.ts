@@ -50,7 +50,7 @@ export class CandidateController {
     @Body() body: RegisterCandidateBodyDTO,
     @Res() res: Response,
   ): Promise<RegisterCandidateResponseDTO | AllExceptionsFilterDTO> {
-    if (req.user) throw new UnauthorizedException()
+    if (req.user) throw new UnauthorizedException();
 
     const result = await this.candidateService.create(body);
 

@@ -53,7 +53,7 @@ export class ConjunctCompanyController {
   @ApiResponse({
     status: new CommonException().getStatus(),
     description: new CommonException().message,
-    type: AllExceptionsFilterDTO
+    type: AllExceptionsFilterDTO,
   })
   async findAll(): Promise<Company[]> {
     return this.companyService.findAll();
@@ -63,7 +63,7 @@ export class ConjunctCompanyController {
 @Controller('company')
 @ApiTags('Empresas')
 export class IndividualCompanyController {
-  constructor(private readonly companyService: CompanyService) {} 
+  constructor(private readonly companyService: CompanyService) {}
   @Post('/register')
   @ApiResponse({
     status: new CNPJAlreadyRegisteredException().getStatus(),
@@ -93,7 +93,7 @@ export class IndividualCompanyController {
   @ApiResponse({
     status: new CommonException().getStatus(),
     description: new CommonException().message,
-    type: AllExceptionsFilterDTO
+    type: AllExceptionsFilterDTO,
   })
   @ApiResponse({
     status: 201,
@@ -105,7 +105,7 @@ export class IndividualCompanyController {
     @Res() res: Response,
     @Body() body: RegisterCompanyBodyDTO,
   ): Promise<RegisterCompanyResponseDTO | AllExceptionsFilterDTO> {
-    if (req.user) throw new UnauthorizedException()
+    if (req.user) throw new UnauthorizedException();
 
     const result = await this.companyService.create(body);
 

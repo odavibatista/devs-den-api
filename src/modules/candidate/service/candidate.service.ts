@@ -55,103 +55,110 @@ export class CandidateService {
     | PasswordTooLongException
     | EmailAlreadyRegisteredException
   > {
-      if (!nameValidate(params.name)) 
-      throw new UnformattedNameException()
+    if (!nameValidate(params.name)) throw new UnformattedNameException();
 
-      if (params.name.length < 5) 
-      throw new NameTooShortException()
+    if (params.name.length < 5) throw new NameTooShortException();
 
-      if (params.name.length > 50) 
-      throw new NameTooLongException()
+    if (params.name.length > 50) throw new NameTooLongException();
 
-      if (!emailValidate(params.credentials.email))
-        throw new UnformattedEmailException();
+    if (!emailValidate(params.credentials.email))
+      throw new UnformattedEmailException();
 
-      if (!passwordValidate(params.credentials.password))
+    if (!passwordValidate(params.credentials.password))
       throw new UnformattedPasswordException();
 
-      if (!nameValidate(params.address.city)) 
-        throw new UnprocessableDataException("Cidades não podem conter números e caracteres especiais.")
-      
-      if (!streetValidate(params.address.street))
-      throw new UnprocessableDataException("Ruas devem possuir entre 1 e 100 caracteres.")
+    if (!nameValidate(params.address.city))
+      throw new UnprocessableDataException(
+        'Cidades não podem conter números e caracteres especiais.',
+      );
 
-      if (!cepValidate(params.address.cep)) 
-      throw new UnprocessableDataException("CEP inválido.")
+    if (!streetValidate(params.address.street))
+      throw new UnprocessableDataException(
+        'Ruas devem possuir entre 1 e 100 caracteres.',
+      );
 
-      if (params.address.city.length < 3) 
-      throw new CityTooShortException()
+    if (!cepValidate(params.address.cep))
+      throw new UnprocessableDataException('CEP inválido.');
 
-      if (params.address.city.length > 50) 
-      throw new CityTooLongException()
+    if (params.address.city.length < 3) throw new CityTooShortException();
 
-      if (params.address.city.length < 1)
-      throw new UnprocessableDataException("Rua deve possuir pelo menos um caractere.")
+    if (params.address.city.length > 50) throw new CityTooLongException();
 
-      if (params.address.city.length > 100)
-      throw new UnprocessableDataException("Rua não pode ter mais de 100 caracteres.")
+    if (params.address.city.length < 1)
+      throw new UnprocessableDataException(
+        'Rua deve possuir pelo menos um caractere.',
+      );
 
-      if (params.address.number.length < 1)
-      throw new UnprocessableDataException("Número de endereço deve possuir pelo menos um caractere.")
+    if (params.address.city.length > 100)
+      throw new UnprocessableDataException(
+        'Rua não pode ter mais de 100 caracteres.',
+      );
 
-      if (params.address.number.length > 10)
-      throw new UnprocessableDataException("Número de endereço deve possuir pelo menos dez caracteres.")
+    if (params.address.number.length < 1)
+      throw new UnprocessableDataException(
+        'Número de endereço deve possuir pelo menos um caractere.',
+      );
 
-      const userWithSameEmail = await this.userRepository.findOne({
-        where: { email: params.credentials.email },
-      });
+    if (params.address.number.length > 10)
+      throw new UnprocessableDataException(
+        'Número de endereço deve possuir pelo menos dez caracteres.',
+      );
 
-      if (userWithSameEmail) throw new EmailAlreadyRegisteredException();
+    const userWithSameEmail = await this.userRepository.findOne({
+      where: { email: params.credentials.email },
+    });
 
-      const uf = await this.ufRepository.findOne({
-        where: { id_uf: params.address.uf },
-      });
+    if (userWithSameEmail) throw new EmailAlreadyRegisteredException();
 
-      if (!uf) throw new UFNotFoundException();
+    const uf = await this.ufRepository.findOne({
+      where: { id_uf: params.address.uf },
+    });
 
-      await this.userService.create({
-        email: params.credentials.email,
-        password: params.credentials.password,
+    if (!uf) throw new UFNotFoundException();
+
+    await this.userService.create({
+      email: params.credentials.email,
+      password: params.credentials.password,
+      role: 'candidate',
+    });
+
+    await this.addressRepository.save({
+      uf: uf,
+      cep: params.address.cep,
+      city: params.address.city,
+      street: params.address.street,
+      complement: params.address.complement,
+      number: params.address.number,
+    });
+
+    const userToBeFound: User = await this.userRepository.findOne({
+      where: { email: params.credentials.email },
+    });
+
+    await this.candidateRepository.save({
+      id_user: userToBeFound.id_user,
+      name: params.name,
+      gender: params.gender,
+      birth_date: params.birth_date,
+    });
+
+    const token = this.JwtProvider.generate({
+      payload: {
+        id: userToBeFound.id_user,
         role: 'candidate',
-      });
+      },
+    });
 
-      await this.addressRepository.save({
-        uf: uf,
-        cep: params.address.cep,
-        city: params.address.city,
-        street: params.address.street,
-        complement: params.address.complement,
-        number: params.address.number,
-      });
-
-      const userToBeFound: User = await this.userRepository.findOne({
-        where: { email: params.credentials.email },
-      });
-
-      await this.candidateRepository.save({
-        id_user: userToBeFound.id_user,
+    const response = {
+      user: {
+        id: userToBeFound.id_user,
         name: params.name,
-        gender: params.gender,
-        birth_date: params.birth_date,
-      });
+        role: 'candidate',
+      },
+      token: token,
+    };
 
-      const token = this.JwtProvider.generate({
-        payload: {
-          id: userToBeFound.id_user,
-          role: "candidate",
-        },
-      });
-
-      const response = {
-        user: {
-          id: userToBeFound.id_user,
-          name: params.name,
-          role: 'candidate',
-        },
-        token: token,
-      };
-
-      return response;
+    return response;
   }
 
   async delete(id: number): Promise<string | CandidateNotFoundException> {
@@ -176,13 +183,13 @@ export class CandidateService {
   }
 }
 
-export class CandidateClearingService  {
+export class CandidateClearingService {
   constructor(
     @InjectRepository(Candidate)
-    private candidateRepository: Repository<Candidate>
+    private candidateRepository: Repository<Candidate>,
   ) {}
 
-  public async wipe(): Promise<void>  {
+  public async wipe(): Promise<void> {
     try {
       await this.candidateRepository.clear();
     } catch (error) {

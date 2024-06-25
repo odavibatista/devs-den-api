@@ -1,5 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { IndividualSkillController, ConjunctSkillController } from './skill.controller';
+import {
+  IndividualSkillController,
+  ConjunctSkillController,
+} from './skill.controller';
 
 describe('SkillController', () => {
   let iController: IndividualSkillController;
@@ -10,7 +13,9 @@ describe('SkillController', () => {
       controllers: [IndividualSkillController, ConjunctSkillController],
     }).compile();
 
-    iController = module.get<IndividualSkillController>(IndividualSkillController);
+    iController = module.get<IndividualSkillController>(
+      IndividualSkillController,
+    );
     cController = module.get<ConjunctSkillController>(ConjunctSkillController);
   });
 

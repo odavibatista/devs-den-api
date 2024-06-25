@@ -1,6 +1,15 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod, forwardRef } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+  forwardRef,
+} from '@nestjs/common';
 import { JobService } from './service/job.service';
-import { ConjunctJobsController, IndividualJobController } from './controller/job.controller';
+import {
+  ConjunctJobsController,
+  IndividualJobController,
+} from './controller/job.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Job } from './entity/job.entity';
 import { JobCategory } from '../job-category/entity/job-category.entity';
@@ -18,7 +27,15 @@ import { JobApplication } from '../job-applications/entity/job-application.entit
   imports: [
     DatabaseModule,
     JobModule,
-    TypeOrmModule.forFeature([Job, JobCategory, Skill, Company, User, Candidate, JobApplication]),
+    TypeOrmModule.forFeature([
+      Job,
+      JobCategory,
+      Skill,
+      Company,
+      User,
+      Candidate,
+      JobApplication,
+    ]),
     forwardRef(() => UserModule),
   ],
 
@@ -34,7 +51,6 @@ export class JobModule implements NestModule {
         method: RequestMethod.POST,
       },
       {
-
         path: 'job/:job_id/apply',
         method: RequestMethod.POST,
       },
@@ -49,7 +65,7 @@ export class JobModule implements NestModule {
       {
         path: 'job/application/:job_id/remove',
         method: RequestMethod.DELETE,
-      }
-  );
+      },
+    );
   }
 }

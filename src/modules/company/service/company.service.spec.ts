@@ -10,7 +10,10 @@ import { User } from '../../../modules/user/entity/user.entity';
 import { Address } from '../../../modules/address/entity/address.entity';
 import { Uf } from '../../../modules/uf/entity/uf.entity';
 import { JWTProvider } from '../../../modules/user/providers/JWT.provider';
-import { UserClearingService, UserService } from '../../../modules/user/service/user.service';
+import {
+  UserClearingService,
+  UserService,
+} from '../../../modules/user/service/user.service';
 import { RegisterCompanyBodyDTO } from '../domain/requests/RegisterCompany.request.dto';
 import { UnformattedEmailException } from '../../../modules/user/domain/errors/UnformattedEmail.exception';
 import { UnformattedPasswordException } from '../../../modules/user/domain/errors/UnformattedPassword.exception';
@@ -38,13 +41,13 @@ describe('CompanyService', () => {
   });
 
   afterEach(async () => {
-    await userClearingService.wipe()
-  })
+    await userClearingService.wipe();
+  });
 
   const company: RegisterCompanyBodyDTO = {
     company_name: 'Company Test',
     cnpj: '15364400000153',
-    address:  {
+    address: {
       uf: 1,
       cep: '12345678',
       street: 'Rua do Fulano',
@@ -55,127 +58,128 @@ describe('CompanyService', () => {
     credentials: {
       email: 'test@company.com',
       password: 'TestandoAlguma_Coisa_123456',
-    }
-  }
+    },
+  };
 
-  jest.setTimeout(1000 * 10)
+  jest.setTimeout(1000 * 10);
 
   it('should bring all companies', async () => {
     const companies = await companyService.findAll();
 
-    expect(companies).toBeInstanceOf(Array)
+    expect(companies).toBeInstanceOf(Array);
     // Fix the service then come back here
-  })
+  });
 
   it('should not create a company with an e-mail with more than 50 characters', async () => {
-    company.credentials.email = "coooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooompany@gmail.com"
+    company.credentials.email =
+      'coooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooompany@gmail.com';
 
     expect(async () => {
-      await companyService.create(company)
+      await companyService.create(company);
     }).rejects.toThrow(UnformattedEmailException);
-  })
+  });
 
   it('should not create a company with an e-mail with less than 8 characters', async () => {
-    company.credentials.email = "a@a.c"
+    company.credentials.email = 'a@a.c';
 
     expect(async () => {
-      await companyService.create(company)
+      await companyService.create(company);
     }).rejects.toThrow(UnformattedEmailException);
-  })
+  });
 
   it('should not create a company with an invalid e-mail', async () => {
-    company.credentials.email = "company.com"
+    company.credentials.email = 'company.com';
 
     expect(async () => {
-      await companyService.create(company)
+      await companyService.create(company);
     }).rejects.toThrow(UnformattedEmailException);
-  })
+  });
 
   it('should not create a company with an e-mail without a domain', async () => {
-    company.credentials.email = "fulano"
+    company.credentials.email = 'fulano';
 
     expect(async () => {
-      await companyService.create(company)
+      await companyService.create(company);
     }).rejects.toThrow(UnformattedEmailException);
-  })
+  });
 
   it('should not create a company with an e-mail without a username', async () => {
-    company.credentials.email = "@gmail.com"
+    company.credentials.email = '@gmail.com';
 
     expect(async () => {
-      await companyService.create(company)
+      await companyService.create(company);
     }).rejects.toThrow(UnformattedEmailException);
-  })
+  });
 
-  it('should not create a company with an email with an uncompleted domain', async () =>  {
-    company.credentials.email = "fulano@.com"
+  it('should not create a company with an email with an uncompleted domain', async () => {
+    company.credentials.email = 'fulano@.com';
 
     expect(async () => {
-      await companyService.create(company)
+      await companyService.create(company);
     }).rejects.toThrow(UnformattedEmailException);
 
-    company.credentials.email = "fulano@gmail"
+    company.credentials.email = 'fulano@gmail';
 
     expect(async () => {
-      await companyService.create(company)
+      await companyService.create(company);
     }).rejects.toThrow(UnformattedEmailException);
-  })
+  });
 
   it('should not create a company with a password with less than 15 characters', async () => {
-    company.credentials.email = "fulanodasilva@gmail.com"
-    company.credentials.password = "@Ab1"
+    company.credentials.email = 'fulanodasilva@gmail.com';
+    company.credentials.password = '@Ab1';
 
     expect(async () => {
-      await companyService.create(company)
+      await companyService.create(company);
     }).rejects.toThrow(UnformattedPasswordException);
-  })
+  });
 
   it('should not create a company with a password with more than 50 characters', async () => {
-    company.credentials.password = "@Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1"
+    company.credentials.password =
+      '@Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1';
 
     expect(async () => {
-      await companyService.create(company)
+      await companyService.create(company);
     }).rejects.toThrow(PasswordTooLongException);
-  })
+  });
 
-  it('should not create a company with a password without without at least one letter', async () =>  {
-    company.credentials.password = "1234567890@"
+  it('should not create a company with a password without without at least one letter', async () => {
+    company.credentials.password = '1234567890@';
 
     expect(async () => {
-      await companyService.create(company)
+      await companyService.create(company);
     }).rejects.toThrow(UnformattedPasswordException);
   });
 
-  it('should not create a company with a password without at least one number', async () =>  {
-    company.credentials.password = "Asadasdasd@"
+  it('should not create a company with a password without at least one number', async () => {
+    company.credentials.password = 'Asadasdasd@';
 
     expect(async () => {
-      await companyService.create(company)
+      await companyService.create(company);
     }).rejects.toThrow(UnformattedPasswordException);
   });
 
-  it('should not create a company with a password without at least one capital letter', async () =>  {
-    company.credentials.password = "abcdfg@@)$(@412412)$"
+  it('should not create a company with a password without at least one capital letter', async () => {
+    company.credentials.password = 'abcdfg@@)$(@412412)$';
 
     expect(async () => {
-      await companyService.create(company)
+      await companyService.create(company);
     }).rejects.toThrow(UnformattedPasswordException);
   });
 
-  it('should not create a company with a password without at least one special character', async () =>  {
-    company.credentials.password = "Abcdefg123"
+  it('should not create a company with a password without at least one special character', async () => {
+    company.credentials.password = 'Abcdefg123';
 
     expect(async () => {
-      await companyService.create(company)
+      await companyService.create(company);
     }).rejects.toThrow(UnformattedPasswordException);
   });
 
-  it('should not create a company with a password without at least one minor letter', async () =>  {
-    company.credentials.password = "AAAAAAAAAAAAAAAAAA@"
+  it('should not create a company with a password without at least one minor letter', async () => {
+    company.credentials.password = 'AAAAAAAAAAAAAAAAAA@';
 
     expect(async () => {
-      await companyService
-      .create(company)
-    }).rejects.toThrow(UnformattedPasswordException);    
-  })
+      await companyService.create(company);
+    }).rejects.toThrow(UnformattedPasswordException);
+  });
 });

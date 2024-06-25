@@ -29,7 +29,6 @@ import { JobModule } from '../job/job.module';
     forwardRef(() => CompanyModule),
     forwardRef(() => JobCategoryModule),
     forwardRef(() => JobModule),
-    
   ],
   controllers: [UserController],
   providers: [UserService, UserClearingService, JWTProvider, HashProvider],

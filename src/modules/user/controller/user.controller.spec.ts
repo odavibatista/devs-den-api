@@ -31,7 +31,6 @@ describe('UserController', () => {
         forwardRef(() => CompanyModule),
         forwardRef(() => JobCategoryModule),
         forwardRef(() => JobModule),
-        
       ],
       controllers: [UserController],
       providers: [UserService, JWTProvider, HashProvider],

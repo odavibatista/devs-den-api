@@ -7,12 +7,7 @@ import { Job } from '../job/entity/job.entity';
 import { User } from '../user/entity/user.entity';
 
 @Module({
-  imports: [
-    DatabaseModule,
-    JobModule,
-    TypeOrmModule.forFeature([Job, User]),
-  ],
+  imports: [DatabaseModule, JobModule, TypeOrmModule.forFeature([Job, User])],
   providers: [JobApplicationService],
 })
-
 export class JobApplicationModule {}

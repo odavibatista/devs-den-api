@@ -8,8 +8,14 @@ import { JobCategory } from '../../../modules/job-category/entity/job-category.e
 import { Company } from '../../../modules/company/entity/company.entity';
 import { CompanyNotFoundException } from '../../../modules/company/domain/errors/CompanyNotFound.exception';
 import { InvalidModalityException } from '../domain/errors/InvalidModality.exception';
-import { CreateJobBodyDTO, CreateJobResponseDTO } from '../domain/requests/CreateJob.request.dto';
-import { FindJobResponseDTO, SimpleFindJobResponseDTO } from '../domain/requests/FindJobs.request.dto';
+import {
+  CreateJobBodyDTO,
+  CreateJobResponseDTO,
+} from '../domain/requests/CreateJob.request.dto';
+import {
+  FindJobResponseDTO,
+  SimpleFindJobResponseDTO,
+} from '../domain/requests/FindJobs.request.dto';
 import { JobApplicationService } from '../../../modules/job-applications/service/job-application.service';
 import { GetJobStatusResponseDTO } from '../domain/requests/GetJobStatus.request.dto';
 import { JobAlreadyDeletedException } from '../domain/errors/JobAlreadyDeleted.exception';
@@ -23,49 +29,52 @@ export class JobService {
     private jobCategoryRepository: Repository<JobCategory>,
     @InjectRepository(Company)
     private companyRepository: Repository<Company>,
-    private jobApplicationService: JobApplicationService
+    private jobApplicationService: JobApplicationService,
   ) {}
 
   async findAll(): Promise<SimpleFindJobResponseDTO[]> {
     const jobs = await this.jobRepository.find();
 
-    const filteredJobs = jobs.filter((job) => job.deleted_at === null).map((job) => {
-      return {
-        id_job: job.id_job,
-        title: job.title,
-        description: job.description,
-        wage: job.wage,
-        modality: job.modality,
-        contract: job.contract,
-        job_category: job.job_category_id,
-        company_id: job.company_id,
-        created_at: job.created_at,
-        updated_at: job.updated_at,
-    }}
-  )
+    const filteredJobs = jobs
+      .filter((job) => job.deleted_at === null)
+      .map((job) => {
+        return {
+          id_job: job.id_job,
+          title: job.title,
+          description: job.description,
+          wage: job.wage,
+          modality: job.modality,
+          contract: job.contract,
+          job_category: job.job_category_id,
+          company_id: job.company_id,
+          created_at: job.created_at,
+          updated_at: job.updated_at,
+        };
+      });
 
-    return filteredJobs
+    return filteredJobs;
   }
 
-  async findOne(id: number): Promise<FindJobResponseDTO | JobNotFoundException> {
+  async findOne(
+    id: number,
+  ): Promise<FindJobResponseDTO | JobNotFoundException> {
     const job = await this.jobRepository.findOne({
       where: { id_job: id },
     });
 
-    if (!job || job.deleted_at !== null) throw new JobNotFoundException()
+    if (!job || job.deleted_at !== null) throw new JobNotFoundException();
 
     const jobCompany = await this.companyRepository.findOne({
-      where: { id_user: job.company_id }
-    })
+      where: { id_user: job.company_id },
+    });
 
-    if (!jobCompany) throw new CompanyNotFoundException()
-
+    if (!jobCompany) throw new CompanyNotFoundException();
 
     const jobCategory = await this.jobCategoryRepository.findOne({
-      where: { id_category: job.job_category_id }
-    })
+      where: { id_category: job.job_category_id },
+    });
 
-    if (!jobCategory) throw new CategoryNotFoundException()
+    if (!jobCategory) throw new CategoryNotFoundException();
 
     return {
       job: {
@@ -79,15 +88,15 @@ export class JobService {
         job_category: {
           id_category: jobCategory.id_category,
           name: jobCategory.name,
-          image_url: jobCategory.image_url
-        }
+          image_url: jobCategory.image_url,
+        },
       },
 
-      company:  {
+      company: {
         id_company: jobCompany.id_user,
         name: jobCompany.name,
-      }
-    }
+      },
+    };
   }
 
   async findJobsByJobCategory(
@@ -118,19 +127,27 @@ export class JobService {
     else return jobsByGivenModality;
   }
 
-  async createJob (params: CreateJobBodyDTO, companyId: number): Promise<CreateJobResponseDTO | CompanyNotFoundException | InvalidModalityException | CategoryNotFoundException> {
-    
+  async createJob(
+    params: CreateJobBodyDTO,
+    companyId: number,
+  ): Promise<
+    | CreateJobResponseDTO
+    | CompanyNotFoundException
+    | InvalidModalityException
+    | CategoryNotFoundException
+  > {
     const jobCompany = await this.companyRepository.findOne({
-      where: { id_user: companyId }
-    })
+      where: { id_user: companyId },
+    });
 
-    if (!jobCompany || jobCompany.deleted_at !== null) throw new CompanyNotFoundException()
+    if (!jobCompany || jobCompany.deleted_at !== null)
+      throw new CompanyNotFoundException();
 
     const jobCategory = await this.jobCategoryRepository.findOne({
-      where: { id_category: params.job_category_id }
-    })
+      where: { id_category: params.job_category_id },
+    });
 
-    if (!jobCategory) throw new CategoryNotFoundException()
+    if (!jobCategory) throw new CategoryNotFoundException();
 
     const job = await this.jobRepository.save({
       title: params.title,
@@ -139,7 +156,7 @@ export class JobService {
       job_category_id: params.job_category_id,
       wage: params.wage,
       modality: params.modality,
-    })
+    });
 
     const response = {
       id: job.id_job,
@@ -149,36 +166,40 @@ export class JobService {
       job_category_id: job.job_category_id,
       wage: job.wage,
       modality: job.modality,
-    }
+    };
 
-    return response
+    return response;
   }
 
-  async getJobStatus (jobId: number, companyId: number): Promise<GetJobStatusResponseDTO | JobNotFoundException> {
+  async getJobStatus(
+    jobId: number,
+    companyId: number,
+  ): Promise<GetJobStatusResponseDTO | JobNotFoundException> {
     const job = await this.jobRepository.findOne({
-      where: { id_job: jobId }
-    })
+      where: { id_job: jobId },
+    });
 
-    if (job.company_id !== companyId) throw new UnauthorizedException()
+    if (job.company_id !== companyId) throw new UnauthorizedException();
 
-    if (!job || job.deleted_at !== null) throw new JobNotFoundException()
+    if (!job || job.deleted_at !== null) throw new JobNotFoundException();
 
     const jobCategory = await this.jobCategoryRepository.findOne({
-      where: { id_category: job.job_category_id }
-    })
+      where: { id_category: job.job_category_id },
+    });
 
-    if (!jobCategory) throw new CategoryNotFoundException()
+    if (!jobCategory) throw new CategoryNotFoundException();
 
-    const applications = await this.jobApplicationService.getJobApplications(jobId)
+    const applications =
+      await this.jobApplicationService.getJobApplications(jobId);
 
     if (applications instanceof Array) {
       applications.map((application) => {
         return {
           id_user: application.candidate_id,
           job_id: application.job_id,
-          active: application.active
-        }
-      })
+          active: application.active,
+        };
+      });
 
       return {
         id_job: job.id_job,
@@ -190,27 +211,29 @@ export class JobService {
         job_category: {
           id_category: jobCategory.id_category,
           name: jobCategory.name,
-          image_url: jobCategory.image_url
+          image_url: jobCategory.image_url,
         },
-        applications: applications
-      }
+        applications: applications,
+      };
     }
-
   }
-  
-  async deleteJob (jobId: number, companyId: number): Promise<void | JobNotFoundException> {
+
+  async deleteJob(
+    jobId: number,
+    companyId: number,
+  ): Promise<void | JobNotFoundException> {
     const job = await this.jobRepository.findOne({
-      where: { id_job: jobId }
-    })
+      where: { id_job: jobId },
+    });
 
-    if (!job) throw new JobNotFoundException()
+    if (!job) throw new JobNotFoundException();
 
-    if (job.deleted_at !== null) throw new JobAlreadyDeletedException()
+    if (job.deleted_at !== null) throw new JobAlreadyDeletedException();
 
-    if (job.company_id !== companyId) throw new UnauthorizedException()
+    if (job.company_id !== companyId) throw new UnauthorizedException();
 
-    job.deleted_at = String(new Date())
-    
-    await this.jobRepository.update(jobId, job)
+    job.deleted_at = String(new Date());
+
+    await this.jobRepository.update(jobId, job);
   }
 }

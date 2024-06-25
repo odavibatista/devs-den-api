@@ -94,9 +94,11 @@ class Jobs {
       referencedColumnName: 'id_skill',
     },
   })
-  skills: Skill[]
+  skills: Skill[];
 
-  @ManyToMany(() => Candidate, (candidate) => candidate.id_user, { cascade: true })
+  @ManyToMany(() => Candidate, (candidate) => candidate.id_user, {
+    cascade: true,
+  })
   @JoinTable({
     name: 'job_applications',
     joinColumn: {
@@ -108,7 +110,7 @@ class Jobs {
       referencedColumnName: 'id_user',
     },
   })
-  applications: Candidate[]
+  applications: Candidate[];
 
   @Column({
     nullable: true,

@@ -29,6 +29,8 @@ import { nameValidate } from '../../../shared/utils/nameValidate';
 import { UnprocessableDataException } from '../../../shared/domain/errors/UnprocessableData.exception';
 import { streetValidate } from '../../../shared/utils/streetValidate';
 import { cepValidate } from '../../../shared/utils/cepValidate';
+import { CityTooShortException } from '../../address/domain/errors/CityTooShort.exception';
+import { CityTooLongException } from '../../address/domain/errors/CityTooLong.exception';
 
 @Injectable()
 export class CompanyService {
@@ -76,11 +78,9 @@ export class CompanyService {
     | InvalidCNPJException
   > {
     try {
-      if (params.company_name.length < 5) 
-        throw new NameTooShortException()
-  
-      if (params.company_name.length > 50) 
-        throw new NameTooLongException()
+      if (params.company_name.length < 5) throw new NameTooShortException();
+
+      if (params.company_name.length > 50) throw new NameTooLongException();
 
       if (!emailValidate(params.credentials.email))
         throw new UnformattedEmailException();
@@ -88,14 +88,42 @@ export class CompanyService {
       if (!passwordValidate(params.credentials.password))
         throw new UnformattedPasswordException();
 
-      if (!nameValidate(params.address.city)) 
-        throw new UnprocessableDataException("Cidades não podem conter números e caracteres especiais.")
-      
-      if (!streetValidate(params.address.street))
-      throw new UnprocessableDataException("Ruas devem possuir entre 1 e 100 caracteres.")
+      if (!nameValidate(params.address.city))
+        throw new UnprocessableDataException(
+          'Cidades não podem conter números e caracteres especiais.',
+        );
 
-      if (!cepValidate(params.address.cep)) 
-      throw new UnprocessableDataException("CEP inválido.")
+      if (!streetValidate(params.address.street))
+        throw new UnprocessableDataException(
+          'Ruas devem possuir entre 1 e 100 caracteres.',
+        );
+
+      if (!cepValidate(params.address.cep))
+        throw new UnprocessableDataException('CEP inválido.');
+
+      if (params.address.city.length < 3) throw new CityTooShortException();
+
+      if (params.address.city.length > 50) throw new CityTooLongException();
+
+      if (params.address.city.length < 1)
+        throw new UnprocessableDataException(
+          'Rua deve possuir pelo menos um caractere.',
+        );
+
+      if (params.address.city.length > 100)
+        throw new UnprocessableDataException(
+          'Rua não pode ter mais de 100 caracteres.',
+        );
+
+      if (params.address.number.length < 1)
+        throw new UnprocessableDataException(
+          'Número de endereço deve possuir pelo menos um caractere.',
+        );
+
+      if (params.address.number.length > 10)
+        throw new UnprocessableDataException(
+          'Número de endereço deve possuir pelo menos dez caracteres.',
+        );
 
       const userWithSameEmail = await this.userRepository.findOne({
         where: { email: params.credentials.email },

@@ -1,5 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConjunctCompanyController, IndividualCompanyController } from './company.controller';
+import {
+  ConjunctCompanyController,
+  IndividualCompanyController,
+} from './company.controller';
 
 describe('CompanyController', () => {
   let conjunctController: ConjunctCompanyController;
@@ -10,8 +13,12 @@ describe('CompanyController', () => {
       controllers: [ConjunctCompanyController, IndividualCompanyController],
     }).compile();
 
-    conjunctController = module.get<ConjunctCompanyController>(ConjunctCompanyController);
-    individualController = module.get<IndividualCompanyController>(IndividualCompanyController);
+    conjunctController = module.get<ConjunctCompanyController>(
+      ConjunctCompanyController,
+    );
+    individualController = module.get<IndividualCompanyController>(
+      IndividualCompanyController,
+    );
   });
 
   it('conjunct controller should be defined', () => {
