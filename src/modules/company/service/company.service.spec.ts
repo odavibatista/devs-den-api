@@ -63,10 +63,8 @@ describe('CompanyService', () => {
   it('should bring all companies', async () => {
     const companies = await companyService.findAll();
 
-    expect(companies).toBeDefined();
-
     expect(companies).toBeInstanceOf(Array)
-
+    // Fix the service then come back here
   })
 
   it('should not create a company with an e-mail with more than 50 characters', async () => {

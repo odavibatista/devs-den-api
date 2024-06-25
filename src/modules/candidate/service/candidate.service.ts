@@ -67,12 +67,12 @@ export class CandidateService {
       if (!emailValidate(params.credentials.email))
         throw new UnformattedEmailException();
 
-      if (!nameValidate(params.address.city)) 
-      throw new UnprocessableDataException("Cidades não podem conter números e caracteres especiais.")
-
       if (!passwordValidate(params.credentials.password))
       throw new UnformattedPasswordException();
 
+      if (!nameValidate(params.address.city)) 
+        throw new UnprocessableDataException("Cidades não podem conter números e caracteres especiais.")
+      
       if (!streetValidate(params.address.street))
       throw new UnprocessableDataException("Ruas devem possuir entre 1 e 100 caracteres.")
 

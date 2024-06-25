@@ -23,6 +23,12 @@ import { UFNotFoundException } from '../../../modules/uf/domain/errors/UfNotFoun
 import { JWTProvider } from '../../../modules/user/providers/JWT.provider';
 import { UserService } from '../../../modules/user/service/user.service';
 import { FindCompanyResponseDTO } from '../domain/requests/FindCompanies.request.dto';
+import { NameTooShortException } from '../../user/domain/errors/NameTooShort.exception';
+import { NameTooLongException } from '../../user/domain/errors/NameTooLong.exception';
+import { nameValidate } from '../../../shared/utils/nameValidate';
+import { UnprocessableDataException } from '../../../shared/domain/errors/UnprocessableData.exception';
+import { streetValidate } from '../../../shared/utils/streetValidate';
+import { cepValidate } from '../../../shared/utils/cepValidate';
 
 @Injectable()
 export class CompanyService {
@@ -70,6 +76,27 @@ export class CompanyService {
     | InvalidCNPJException
   > {
     try {
+      if (params.company_name.length < 5) 
+        throw new NameTooShortException()
+  
+      if (params.company_name.length > 50) 
+        throw new NameTooLongException()
+
+      if (!emailValidate(params.credentials.email))
+        throw new UnformattedEmailException();
+
+      if (!passwordValidate(params.credentials.password))
+        throw new UnformattedPasswordException();
+
+      if (!nameValidate(params.address.city)) 
+        throw new UnprocessableDataException("Cidades não podem conter números e caracteres especiais.")
+      
+      if (!streetValidate(params.address.street))
+      throw new UnprocessableDataException("Ruas devem possuir entre 1 e 100 caracteres.")
+
+      if (!cepValidate(params.address.cep)) 
+      throw new UnprocessableDataException("CEP inválido.")
+
       const userWithSameEmail = await this.userRepository.findOne({
         where: { email: params.credentials.email },
       });
@@ -81,12 +108,6 @@ export class CompanyService {
         throw new UnformattedEmailException();
 
       if (userWithSameEmail) throw new EmailAlreadyRegisteredException();
-
-      if (!emailValidate(params.credentials.email))
-        throw new UnformattedEmailException();
-
-      if (!passwordValidate(params.credentials.password))
-        throw new UnformattedPasswordException();
 
       const companyWithSameName = await this.companyRepository.findOne({
         where: { name: params.company_name },
