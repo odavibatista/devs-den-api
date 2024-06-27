@@ -5,10 +5,11 @@
 > Ação contemplada nessa Pull Request
 
 - [ ] Bugfix
-- [ ] Feature
+- [ ] Chore
 - [ ] Dependências
 - [ ] DevOps
 - [ ] Documentação
+- [ ] Feature
 - [ ] Refatoração
 - [ ] Outra (Descreva):
 
