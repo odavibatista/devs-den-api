@@ -5,12 +5,12 @@
 > Ação contemplada nessa Pull Request
 
 - [ ] Bugfix
-- [ ] Feature
+- [ ] Chore
 - [ ] Dependências
-- [ ] DevOps/Chores
+- [ ] DevOps
 - [ ] Documentação
+- [ ] Feature
 - [ ] Refatoração
-- [ ] Testes Unitários
 - [ ] Outra (Descreva):
 
 
