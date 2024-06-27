@@ -7,9 +7,10 @@
 - [ ] Bugfix
 - [ ] Feature
 - [ ] Dependências
-- [ ] DevOps
+- [ ] DevOps/Chores
 - [ ] Documentação
 - [ ] Refatoração
+- [ ] Testes Unitários
 - [ ] Outra (Descreva):
 
 
