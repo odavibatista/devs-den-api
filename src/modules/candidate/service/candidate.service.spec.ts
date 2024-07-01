@@ -341,12 +341,12 @@ describe('Candidate Service', () => {
 
   it('should not create a candidate passing an address complement that contains more than 100 characters', async () => {
     candidate.address.complement =
-      '124129412491241241294124912412412941249124124129412491241241294124912412412941249124124129412491241241294124912412412941249124124129412491241241294124912412412941249124'
+      '124129412491241241294124912412412941249124124129412491241241294124912412412941249124124129412491241241294124912412412941249124124129412491241241294124912412412941249124';
 
-      expect(async () => {
-        await candidateService.create(candidate);
-      }).rejects.toThrow(UnprocessableDataException);
-  })
+    expect(async () => {
+      await candidateService.create(candidate);
+    }).rejects.toThrow(UnprocessableDataException);
+  });
 
   it('should not create a candidate passing an address complement that contains special characters', async () => {
     candidate.address.complement = 'Casa @';
@@ -354,7 +354,7 @@ describe('Candidate Service', () => {
     expect(async () => {
       await candidateService.create(candidate);
     }).rejects.toThrow(UnprocessableDataException);
-  })
+  });
 
   it('should create a candidate given the valid credentials', async () => {
     candidate.address.complement = 'Casa';
@@ -362,5 +362,5 @@ describe('Candidate Service', () => {
     const response = await candidateService.create(candidate);
 
     expect(response).toBeTruthy();
-  })
+  });
 });

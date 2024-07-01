@@ -56,15 +56,15 @@ describe('ServiceService', () => {
     wage: 1000,
     modality: 'remote',
     contract: 'clt',
-    job_category_id: 1
-  }
+    job_category_id: 1,
+  };
 
   jest.setTimeout(1000 * 10);
-  
+
   beforeAll(async () => {
-    await companyService.create(company)
-    await jobService.createJob(job, 1)
-  })
+    await companyService.create(company);
+    await jobService.createJob(job, 1);
+  });
 
   it('should bring all jobs', async () => {
     const jobs = await jobService.findAll();
@@ -76,7 +76,7 @@ describe('ServiceService', () => {
     expect(async () => {
       await jobService.findOne(0);
     }).rejects.toThrow(JobNotFoundException);
-  })
+  });
 
   it('should find a job given its id', async () => {
     const jobs = await jobService.findAll();
@@ -84,29 +84,29 @@ describe('ServiceService', () => {
 
     expect(job).toHaveProperty('job');
     expect(job).toHaveProperty('company');
-  })
-  
+  });
+
   it('should not find jobs given an invalid category', async () => {
     expect(async () => {
       await jobService.findJobsByJobCategory(0);
     }).rejects.toThrow(JobNotFoundException);
-  })
+  });
 
   it('should find jobs given a category', async () => {
     const jobs = await jobService.findJobsByJobCategory(1);
 
     expect(jobs).toBeInstanceOf(Array);
-  })
+  });
 
   it('should not delete a job given an invalid id', async () => {
     expect(async () => {
       await jobService.deleteJob(0, 1);
     }).rejects.toThrow(JobNotFoundException);
-  })
+  });
 
   it('should not delete a job given an invalid company id', async () => {
     expect(async () => {
       await jobService.deleteJob(1, 0);
     }).rejects.toThrow(UnauthorizedException);
-  })
+  });
 });
