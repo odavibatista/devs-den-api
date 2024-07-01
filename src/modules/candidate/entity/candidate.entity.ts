@@ -44,7 +44,7 @@ class Candidates {
   @Column({
     nullable: false,
   })
-  birth_date: Date;
+  birth_date: string;
 
   @Column({
     nullable: true,
