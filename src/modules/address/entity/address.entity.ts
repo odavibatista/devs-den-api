@@ -61,6 +61,7 @@ class Addresses {
 
   @Column({
     nullable: true,
+    default: null,
   })
   deleted_at: string;
   
