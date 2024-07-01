@@ -49,7 +49,7 @@ export class UserService {
     else return users;
   }
 
-  async getProfileData(id: number, role: string): Promise<GetCandidateProfileDataResponseDTO | GetCompanyProfileDataResponseDTO | UserNotFoundException> {
+  async getProfileData(id: number): Promise<GetCandidateProfileDataResponseDTO | GetCompanyProfileDataResponseDTO | UserNotFoundException> {
     try {
       const user = await this.userRepository.findOne({
         where: { id_user: id },
@@ -59,7 +59,7 @@ export class UserService {
         throw new UserNotFoundException();
       }
 
-      if (role === 'candidate') {
+      if (user.role === 'candidate') {
         const candidateUser = await this.candidateRepository.findOne({
           where: { id_user: user.id_user },
         });
@@ -73,7 +73,7 @@ export class UserService {
         };
       }
 
-      if (role === 'company') {
+      if (user.role === 'company') {
         const companyUser = await this.companyRepository.findOne({
           where: { id_user: user.id_user },
         });

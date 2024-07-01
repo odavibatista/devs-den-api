@@ -19,6 +19,7 @@ import { UfService } from '../../../modules/uf/service/uf.service';
 import { UserNotFoundException } from '../domain/errors/UserNotFound.exception';
 import { RegisterCandidateResponseDTO } from '../../../modules/candidate/domain/requests/RegisterCandidate.request.dto';
 import { PasswordTooLongException } from '../domain/errors/PasswordTooLong.exception';
+import { RegisterCompanyBodyDTO, RegisterCompanyResponseDTO } from '../../company/domain/requests/RegisterCompany.request.dto';
 
 describe('UserService', () => {
   let userService: UserService;
@@ -330,4 +331,38 @@ describe('UserService', () => {
       expect(request).toBeTruthy();
     }
   });
+
+  it('should bring the data of a company user profile', async () => {
+    const company: RegisterCompanyBodyDTO = {
+      company_name: 'Empresa Teste',
+      credentials:{
+        email: 'companhiadeteste@teste.com',
+        password: '@TestandoAlguma_Coisa_123456',
+        role: 'company',
+      },
+      cnpj: "74124201000137",
+      address: {
+        cep: '12345678',
+        city: 'São Paulo',
+        number: '123',
+        uf: 22,
+        street: 'Rua dos Bobos',
+        complement: 'Apartamento 22',
+      },
+    }
+
+    const request = await companyService.create(company)
+
+    if(request instanceof RegisterCompanyResponseDTO){
+      const profile = await userService.getProfileData(request.user.id)
+
+      expect(profile).toMatchObject({
+        id: expect.any(Number),
+        company_name: company.company_name,
+        email: company.credentials.email,
+        role: company.credentials.role,
+        cnpj: company.cnpj
+      })
+    }
+  })
 });
