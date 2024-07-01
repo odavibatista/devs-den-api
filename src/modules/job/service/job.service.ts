@@ -32,8 +32,12 @@ export class JobService {
     private jobApplicationService: JobApplicationService,
   ) {}
 
-  async findAll(): Promise<SimpleFindJobResponseDTO[]> {
-    const jobs = await this.jobRepository.find();
+  async findAll(skip: number): Promise<SimpleFindJobResponseDTO[]> {
+    const jobs = await this.jobRepository.find({
+      order: { created_at: 'DESC' },
+      take: 20,
+      skip
+    })
 
     const filteredJobs = jobs
       .filter((job) => job.deleted_at === null)
