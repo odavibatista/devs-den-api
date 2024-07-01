@@ -17,7 +17,7 @@ import { Uf } from '../../../modules/uf/entity/uf.entity';
 import { CandidateService } from '../../../modules/candidate/service/candidate.service';
 import { UfService } from '../../../modules/uf/service/uf.service';
 import { UserNotFoundException } from '../domain/errors/UserNotFound.exception';
-import { RegisterCandidateResponseDTO } from '../../../modules/candidate/domain/requests/RegisterCandidate.request.dto';
+import { RegisterCandidateBodyDTO, RegisterCandidateResponseDTO } from '../../../modules/candidate/domain/requests/RegisterCandidate.request.dto';
 import { PasswordTooLongException } from '../domain/errors/PasswordTooLong.exception';
 import { RegisterCompanyBodyDTO, RegisterCompanyResponseDTO } from '../../company/domain/requests/RegisterCompany.request.dto';
 
@@ -303,21 +303,20 @@ describe('UserService', () => {
   });
 
   it('should delete an user given the valid id', async () => {
-    const basalRequest = (await ufService.findAll()).length;
 
     const user = await candidateService.create({
       name: 'Fulaninho da Silva',
       birth_date: '2024-05-02 21:43:22.648426',
       gender: 'male',
       credentials: {
-        email: 'davideosmar13@gmail.com',
+        email: 'zezinhodasilva@gmail.com',
         password: '@Algumacoisa123456789101_',
       },
       address: {
         cep: '12345678',
         city: 'São Paulo',
         number: '123',
-        uf: basalRequest,
+        uf: 26,
         street: 'Rua dos Bobos',
         complement: 'Apartamento 22',
       },
@@ -362,6 +361,40 @@ describe('UserService', () => {
         email: company.credentials.email,
         role: company.credentials.role,
         cnpj: company.cnpj
+      })
+    }
+  })
+
+  it('should bring the data of a candidate user profile', async () => {
+    const candidate: RegisterCandidateBodyDTO = {
+      name: 'Fulaninho da Silva',
+      birth_date: '2024-05-02 21:43:22.648426',
+      gender: 'male',
+      credentials: {
+        email: 'zezinhodasilva123@gmail.com',
+        password: '@Algumacoisa123456789101_',
+      },
+      address: {
+        cep: '12345678',
+        city: 'São Paulo',
+        number: '123',
+        uf: 26,
+        street: 'Rua dos Bobos',
+        complement: 'Apartamento 22',
+      },
+    };
+
+    const request = await candidateService.create(candidate)
+
+    if(request instanceof RegisterCandidateResponseDTO){
+      const profile = await userService.getProfileData(request.user.id)
+
+      expect(profile).toMatchObject({
+        id: expect.any(Number),
+        name: candidate.name,
+        email: candidate.credentials.email,
+        role: request.user.role,
+        birth_date: candidate.birth_date
       })
     }
   })
