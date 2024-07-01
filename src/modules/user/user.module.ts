@@ -20,18 +20,20 @@ import { CandidateModule } from '../candidate/candidate.module';
 import { AuthenticationMiddleware } from './middlewares/Auth.middleware';
 import { JobCategoryModule } from '../job-category/job-category.module';
 import { JobModule } from '../job/job.module';
+import { Uf } from '../uf/entity/uf.entity';
+import { AddressService } from '../address/services/address.service';
 
 @Module({
   imports: [
     DatabaseModule,
-    TypeOrmModule.forFeature([User, Address, Candidate, Company]),
+    TypeOrmModule.forFeature([User, Address, Candidate, Company, Uf]),
     forwardRef(() => CandidateModule),
     forwardRef(() => CompanyModule),
     forwardRef(() => JobCategoryModule),
     forwardRef(() => JobModule),
   ],
   controllers: [UserController],
-  providers: [UserService, UserClearingService, JWTProvider, HashProvider],
+  providers: [UserService, UserClearingService, JWTProvider, HashProvider, AddressService],
   exports: [JWTProvider, HashProvider, UserService, UserClearingService],
 })
 export class UserModule implements NestModule {

@@ -36,6 +36,7 @@ import {
   GetCandidateProfileDataResponseDTO,
   GetCompanyProfileDataResponseDTO,
 } from '../domain/requests/GetProfileData.request.dto';
+import { AddressService } from '../../address/services/address.service';
 
 @Controller('user')
 @ApiTags('Usuário')
@@ -44,6 +45,7 @@ export class UserController {
     private readonly userService: UserService,
     private readonly companyService: CompanyService,
     private readonly candidateService: CandidateService,
+    private readonly addressService: AddressService,
   ) {}
 
   @Get(':id/search')
@@ -277,17 +279,26 @@ export class UserController {
       throw new BadTokenException();
     }
 
+    const deleteUser = await this.userService.delete(id);
+
+    if (deleteUser instanceof HttpException) {
+      return res.status(deleteUser.getStatus()).json({
+        message: deleteUser.message,
+        status: deleteUser.getStatus(),
+      });
+    }
+
+    const deleteAddress = await this.addressService.delete(id)
+    
+    if (deleteAddress instanceof HttpException) {
+      return res.status(deleteAddress.getStatus()).json({
+        message: deleteAddress.message,
+        status: deleteAddress.getStatus(),
+      });
+    }
+
     if (user.role === 'company') {
-      const deleteUser = await this.userService.delete(id);
-
       const deleteCompany = await this.companyService.delete(id);
-
-      if (deleteUser instanceof HttpException) {
-        return res.status(deleteUser.getStatus()).json({
-          message: deleteUser.message,
-          status: deleteUser.getStatus(),
-        });
-      }
 
       if (deleteCompany instanceof HttpException) {
         return res.status(deleteCompany.getStatus()).json({
@@ -298,16 +309,7 @@ export class UserController {
     }
 
     if (user.role === 'candidate') {
-      const deleteUser = await this.userService.delete(id);
-
       const deleteCandidate = await this.candidateService.delete(id);
-
-      if (deleteUser instanceof HttpException) {
-        return res.status(deleteUser.getStatus()).json({
-          message: deleteUser.message,
-          status: deleteUser.getStatus(),
-        });
-      }
 
       if (deleteCandidate instanceof HttpException) {
         return res.status(deleteCandidate.getStatus()).json({

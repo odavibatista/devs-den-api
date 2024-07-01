@@ -19,6 +19,7 @@ import { Uf } from '../uf/entity/uf.entity';
 import { JWTProvider } from '../user/providers/JWT.provider';
 import { UserModule } from '../user/user.module';
 import { AuthenticationMiddleware } from '../user/middlewares/Auth.middleware';
+import { AddressService } from '../address/services/address.service';
 
 @Module({
   imports: [
@@ -28,7 +29,7 @@ import { AuthenticationMiddleware } from '../user/middlewares/Auth.middleware';
     forwardRef(() => UserModule),
   ],
   controllers: [ConjunctCompanyController, IndividualCompanyController],
-  providers: [CompanyService, JWTProvider],
+  providers: [CompanyService, JWTProvider, AddressService],
   exports: [CompanyService],
 })
 export class CompanyModule implements NestModule {
