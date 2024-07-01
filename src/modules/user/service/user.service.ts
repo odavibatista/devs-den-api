@@ -26,6 +26,7 @@ import { CreateUserResponseDTO } from '../domain/requests/CreateUser.request.dto
 import { PasswordTooLongException } from '../domain/errors/PasswordTooLong.exception';
 import { GetCandidateProfileDataResponseDTO, GetCompanyProfileDataResponseDTO } from '../domain/requests/GetProfileData.request.dto';
 import { CommonException } from '../../../shared/domain/errors/Common.exception';
+import { Address } from '../../address/entity/address.entity';
 
 @Injectable()
 export class UserService {
@@ -36,6 +37,8 @@ export class UserService {
     private candidateRepository: Repository<Candidate>,
     @InjectRepository(Company)
     private companyRepository: Repository<Company>,
+    @InjectRepository(Address)
+    private addressRepository: Repository<Address>,
     private jwtProvider: JWTProvider,
     private hashProvider: HashProvider,
   ) {}
@@ -59,6 +62,10 @@ export class UserService {
         throw new UserNotFoundException();
       }
 
+      const address = await this.addressRepository.findOne({
+        where: { id_address: id },
+      })
+
       if (user.role === 'candidate') {
         const candidateUser = await this.candidateRepository.findOne({
           where: { id_user: user.id_user },
@@ -70,6 +77,17 @@ export class UserService {
           email: user.email,
           role: user.role,
           birth_date: candidateUser.birth_date,
+          address:  {
+            uf: {
+              id: address.uf.id_uf,
+              name: address.uf.name
+            },
+            city: address.city,
+            cep: address.cep,
+            street: address.street,
+            number: address.number,
+            complement: address.complement,
+          }
         };
       }
 
@@ -84,6 +102,17 @@ export class UserService {
           email: user.email,
           role: user.role,
           cnpj: companyUser.cnpj,
+          address:  {
+            uf: {
+              id: address.uf.id_uf,
+              name: address.uf.name
+            },
+            city: address.city,
+            cep: address.cep,
+            street: address.street,
+            number: address.number,
+            complement: address.complement,
+          }
         };
       }
     } catch (error) {
