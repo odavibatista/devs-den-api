@@ -17,9 +17,15 @@ import { Uf } from '../../../modules/uf/entity/uf.entity';
 import { CandidateService } from '../../../modules/candidate/service/candidate.service';
 import { UfService } from '../../../modules/uf/service/uf.service';
 import { UserNotFoundException } from '../domain/errors/UserNotFound.exception';
-import { RegisterCandidateBodyDTO, RegisterCandidateResponseDTO } from '../../../modules/candidate/domain/requests/RegisterCandidate.request.dto';
+import {
+  RegisterCandidateBodyDTO,
+  RegisterCandidateResponseDTO,
+} from '../../../modules/candidate/domain/requests/RegisterCandidate.request.dto';
 import { PasswordTooLongException } from '../domain/errors/PasswordTooLong.exception';
-import { RegisterCompanyBodyDTO, RegisterCompanyResponseDTO } from '../../company/domain/requests/RegisterCompany.request.dto';
+import {
+  RegisterCompanyBodyDTO,
+  RegisterCompanyResponseDTO,
+} from '../../company/domain/requests/RegisterCompany.request.dto';
 
 describe('UserService', () => {
   let userService: UserService;
@@ -303,7 +309,6 @@ describe('UserService', () => {
   });
 
   it('should delete an user given the valid id', async () => {
-
     const user = await candidateService.create({
       name: 'Fulaninho da Silva',
       birth_date: '2024-05-02 21:43:22.648426',
@@ -334,12 +339,12 @@ describe('UserService', () => {
   it('should bring the data of a company user profile', async () => {
     const company: RegisterCompanyBodyDTO = {
       company_name: 'Empresa Teste',
-      credentials:{
+      credentials: {
         email: 'companhiadeteste@teste.com',
         password: '@TestandoAlguma_Coisa_123456',
         role: 'company',
       },
-      cnpj: "74124201000137",
+      cnpj: '74124201000137',
       address: {
         cep: '12345678',
         city: 'São Paulo',
@@ -348,22 +353,22 @@ describe('UserService', () => {
         street: 'Rua dos Bobos',
         complement: 'Apartamento 22',
       },
-    }
+    };
 
-    const request = await companyService.create(company)
+    const request = await companyService.create(company);
 
-    if(request instanceof RegisterCompanyResponseDTO){
-      const profile = await userService.getProfileData(request.user.id)
+    if (request instanceof RegisterCompanyResponseDTO) {
+      const profile = await userService.getProfileData(request.user.id);
 
       expect(profile).toMatchObject({
         id: expect.any(Number),
         company_name: company.company_name,
         email: company.credentials.email,
         role: company.credentials.role,
-        cnpj: company.cnpj
-      })
+        cnpj: company.cnpj,
+      });
     }
-  })
+  });
 
   it('should bring the data of a candidate user profile', async () => {
     const candidate: RegisterCandidateBodyDTO = {
@@ -384,18 +389,18 @@ describe('UserService', () => {
       },
     };
 
-    const request = await candidateService.create(candidate)
+    const request = await candidateService.create(candidate);
 
-    if(request instanceof RegisterCandidateResponseDTO){
-      const profile = await userService.getProfileData(request.user.id)
+    if (request instanceof RegisterCandidateResponseDTO) {
+      const profile = await userService.getProfileData(request.user.id);
 
       expect(profile).toMatchObject({
         id: expect.any(Number),
         name: candidate.name,
         email: candidate.credentials.email,
         role: request.user.role,
-        birth_date: candidate.birth_date
-      })
+        birth_date: candidate.birth_date,
+      });
     }
-  })
+  });
 });

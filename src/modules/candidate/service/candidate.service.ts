@@ -24,7 +24,11 @@ import { NameTooShortException } from '../../../modules/user/domain/errors/NameT
 import { NameTooLongException } from '../../../modules/user/domain/errors/NameTooLong.exception';
 import { UnformattedNameException } from '../../../modules/user/domain/errors/UnformattedName.exception';
 import { UnprocessableDataException } from '../../../shared/domain/errors/UnprocessableData.exception';
-import { IAddressObject, addressValidate } from '../../../shared/utils/addressValidate';
+import {
+  IAddressObject,
+  addressValidate,
+} from '../../../shared/utils/addressValidate';
+import { CommonException } from '../../../shared/domain/errors/Common.exception';
 
 @Injectable()
 export class CandidateService {
@@ -58,7 +62,7 @@ export class CandidateService {
     });
 
     if (userWithSameEmail) throw new EmailAlreadyRegisteredException();
-    
+
     if (!nameValidate(params.name)) throw new UnformattedNameException();
 
     if (params.name.length < 5) throw new NameTooShortException();
@@ -71,19 +75,19 @@ export class CandidateService {
     if (!passwordValidate(params.credentials.password))
       throw new UnformattedPasswordException();
 
-    if (addressValidate(params.address as IAddressObject) === true) {  
+    if (addressValidate(params.address as IAddressObject) === true) {
       const uf = await this.ufRepository.findOne({
         where: { id_uf: params.address.uf },
       });
-  
+
       if (!uf) throw new UFNotFoundException();
-  
+
       await this.userService.create({
         email: params.credentials.email,
         password: params.credentials.password,
         role: 'candidate',
       });
-  
+
       const userToBeFound: User = await this.userRepository.findOne({
         where: { email: params.credentials.email },
       });
@@ -97,21 +101,21 @@ export class CandidateService {
         complement: params.address.complement,
         number: params.address.number,
       });
-  
+
       await this.candidateRepository.save({
         id_user: userToBeFound.id_user,
         name: params.name,
         gender: params.gender,
         birth_date: params.birth_date,
       });
-  
+
       const token = this.JwtProvider.generate({
         payload: {
           id: userToBeFound.id_user,
           role: 'candidate',
         },
       });
-  
+
       const response = {
         user: {
           id: userToBeFound.id_user,
@@ -120,30 +124,26 @@ export class CandidateService {
         },
         token: token,
       };
-  
+
       return response;
-    }    
+    }
   }
 
   async delete(id: number): Promise<string | CandidateNotFoundException> {
-    try {
-      const candidate = await this.candidateRepository.findOne({
-        where: { id_user: id, deleted_at: null },
-      });
+    const candidate = await this.candidateRepository.findOne({
+      where: { id_user: id, deleted_at: null },
+    });
 
-      if (!candidate) throw new CandidateNotFoundException();
+    if (!candidate) throw new CandidateNotFoundException();
 
-      await this.candidateRepository.update(
-        { id_user: id },
-        {
-          deleted_at: new Date().toISOString(),
-        },
-      );
+    await this.candidateRepository.update(
+      { id_user: id },
+      {
+        deleted_at: new Date().toISOString(),
+      },
+    );
 
-      return candidate.name;
-    } catch (error) {
-      throw new HttpException(error, error.status);
-    }
+    return candidate.name;
   }
 }
 
@@ -157,7 +157,7 @@ export class CandidateClearingService {
     try {
       await this.candidateRepository.clear();
     } catch (error) {
-      throw new HttpException(error, error.status);
+      throw new CommonException(error);
     }
   }
 }

@@ -202,9 +202,9 @@ describe('CompanyService', () => {
     company.company_name =
       'AbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcdAbcd';
 
-      expect(async () => {
-        await companyService.create(company);
-      }).rejects.toThrow(NameTooShortException);
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(NameTooShortException);
   });
 
   it('should not create a company passing an unvalid UF id', async () => {
@@ -330,12 +330,12 @@ describe('CompanyService', () => {
 
   it('should not create a company passing an address complement that contains more than 100 characters', async () => {
     company.address.complement =
-      '124129412491241241294124912412412941249124124129412491241241294124912412412941249124124129412491241241294124912412412941249124124129412491241241294124912412412941249124'
+      '124129412491241241294124912412412941249124124129412491241241294124912412412941249124124129412491241241294124912412412941249124124129412491241241294124912412412941249124';
 
-      expect(async () => {
-        await companyService.create(company);
-      }).rejects.toThrow(UnprocessableDataException);
-  })
+    expect(async () => {
+      await companyService.create(company);
+    }).rejects.toThrow(UnprocessableDataException);
+  });
 
   it('should not create a company passing an address complement that contains special characters', async () => {
     company.address.complement = 'Casa @';
@@ -343,7 +343,7 @@ describe('CompanyService', () => {
     expect(async () => {
       await companyService.create(company);
     }).rejects.toThrow(UnprocessableDataException);
-  })
+  });
 
   it('should not create a company passing a cnpj that contains letters', async () => {
     company.address.complement = 'Prédio';
@@ -352,47 +352,47 @@ describe('CompanyService', () => {
     expect(async () => {
       await companyService.create(company);
     }).rejects.toThrow(InvalidCNPJException);
-  })
+  });
 
   it('should not create a company passing a cnpj that contains special characters', async () => {
-    company.cnpj = '1234567890@'
+    company.cnpj = '1234567890@';
 
     expect(async () => {
       await companyService.create(company);
     }).rejects.toThrow(InvalidCNPJException);
-  })
+  });
 
   it('should not create a company passing a cnpj that contains less than 14 characters', async () => {
-    company.cnpj = '120123'
+    company.cnpj = '120123';
 
     expect(async () => {
       await companyService.create(company);
     }).rejects.toThrow(InvalidCNPJException);
-  })
+  });
 
   it('should not create a company passing a cnpj that contains more than 14 characters', async () => {
-    company.cnpj = '120123123123123'
+    company.cnpj = '120123123123123';
 
     expect(async () => {
       await companyService.create(company);
     }).rejects.toThrow(InvalidCNPJException);
-  })
+  });
 
   it('should not create a company passing a cnpj that contains a repeated sequence of numbers', async () => {
-    company.cnpj = '00000000000000'
+    company.cnpj = '00000000000000';
 
     expect(async () => {
       await companyService.create(company);
     }).rejects.toThrow(InvalidCNPJException);
-  })
+  });
 
   it('should not create a company passing a cnpj that contains a invalid verification digit', async () => {
-    company.cnpj = '15364400000154'
+    company.cnpj = '15364400000154';
 
     expect(async () => {
       await companyService.create(company);
     }).rejects.toThrow(InvalidCNPJException);
-  })
+  });
 
   it('should create a company given the valid credentials', async () => {
     company.cnpj = '61887271000103';
@@ -400,17 +400,17 @@ describe('CompanyService', () => {
     const response = await companyService.create(company);
 
     expect(response).toHaveProperty('user');
-  })
+  });
 
-  it('should not return a company given an unvalid id', async ()  =>  {
+  it('should not return a company given an unvalid id', async () => {
     expect(async () => {
       await companyService.findOne(0);
     }).rejects.toThrow(CompanyNotFoundException);
-  })
+  });
 
   it('should not delete a company given an unvalid id', async () => {
     expect(async () => {
       await companyService.delete(0);
     }).rejects.toThrow(CompanyNotFoundException);
-  })
+  });
 });
