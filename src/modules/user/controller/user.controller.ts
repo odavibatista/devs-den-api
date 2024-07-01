@@ -32,6 +32,7 @@ import { CompanyService } from '../../../modules/company/service/company.service
 import { CandidateService } from '../../../modules/candidate/service/candidate.service';
 import { CommonException } from '../../../shared/domain/errors/Common.exception';
 import { HomeDataResponseDTO } from '../domain/requests/HomeData.request.dto';
+import { GetCandidateProfileDataResponseDTO, GetCompanyProfileDataResponseDTO } from '../domain/requests/GetProfileData.request.dto';
 
 @Controller('user')
 @ApiTags('Usuário')
@@ -178,6 +179,53 @@ export class UserController {
       });
     }
   }
+
+  @ApiBearerAuth('user-token')
+  @Get('profile')
+  @ApiResponse({
+    status: new UserNotFoundException().getStatus(),
+    description: new UserNotFoundException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: new UnauthorizedException().getStatus(),
+    description: new UnauthorizedException().message,
+    type: AllExceptionsFilterDTO,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Perfil do usuário trazido com sucesso',
+    type: GetCandidateProfileDataResponseDTO,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Perfil do usuário trazido com sucesso',
+    type: GetCompanyProfileDataResponseDTO,
+  })
+  async getProfileData(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<
+    | GetCandidateProfileDataResponseDTO
+    | GetCompanyProfileDataResponseDTO
+    | AllExceptionsFilterDTO> {
+      const user = req.user;
+
+      if (!user) {
+        throw new NotAuthenticatedException();
+      }
+
+      const result = await this.userService.getProfileData(user.id);
+
+      if (result instanceof HttpException) {
+        return res.status(result.getStatus()).json({
+          message: result.message,
+          status: result.getStatus(),
+        });
+      } else {
+        return res.status(200).json(result);
+      }
+    }
 
   @Delete(':id/delete')
   @ApiBearerAuth('user-token')
