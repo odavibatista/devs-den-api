@@ -30,6 +30,9 @@ import {
 } from '../domain/requests/GetProfileData.request.dto';
 import { CommonException } from '../../../shared/domain/errors/Common.exception';
 import { Address } from '../../address/entity/address.entity';
+import { AddressService } from '../../address/services/address.service';
+import { AddressNotFoundException } from '../../address/domain/errors/AddressNotFound.exception.dto';
+import { FindAddressResponseDTO } from '../../address/domain/requests/FindAddress.request.dto';
 
 @Injectable()
 export class UserService {
@@ -40,10 +43,9 @@ export class UserService {
     private candidateRepository: Repository<Candidate>,
     @InjectRepository(Company)
     private companyRepository: Repository<Company>,
-    @InjectRepository(Address)
-    private addressRepository: Repository<Address>,
     private jwtProvider: JWTProvider,
     private hashProvider: HashProvider,
+    private addressService: AddressService,
   ) {}
 
   async findAll(): Promise<User[] | UserNotFoundException> {
@@ -70,9 +72,11 @@ export class UserService {
       throw new UserNotFoundException();
     }
 
-    const address = await this.addressRepository.findOne({
-      where: { id_address: id },
-    });
+    const address = await this.addressService.findOne(user.id_user)
+
+    if (address instanceof AddressNotFoundException) {
+      return
+    }
 
     if (user.role === 'candidate') {
       const candidateUser = await this.candidateRepository.findOne({

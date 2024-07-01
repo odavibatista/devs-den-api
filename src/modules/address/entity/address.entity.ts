@@ -59,6 +59,12 @@ class Addresses {
   })
   complement: string;
 
+  @Column({
+    nullable: true,
+    default: null,
+  })
+  deleted_at: string;
+  
   @CreateDateColumn({
     nullable: false,
   })

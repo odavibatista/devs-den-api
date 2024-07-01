@@ -1,9 +1,8 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Candidate } from '../entity/candidate.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../../modules/user/entity/user.entity';
-import { Address } from '../../../modules/address/entity/address.entity';
 import {
   RegisterCandidateBodyDTO,
   RegisterCandidateResponseDTO,
@@ -29,6 +28,7 @@ import {
   addressValidate,
 } from '../../../shared/utils/addressValidate';
 import { CommonException } from '../../../shared/domain/errors/Common.exception';
+import { AddressService } from '../../address/services/address.service';
 
 @Injectable()
 export class CandidateService {
@@ -37,12 +37,11 @@ export class CandidateService {
     private readonly candidateRepository: Repository<Candidate>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(Address)
-    private readonly addressRepository: Repository<Address>,
     @InjectRepository(Uf)
     private readonly ufRepository: Repository<Uf>,
     private readonly JwtProvider: JWTProvider,
     private readonly userService: UserService,
+    private readonly addressService: AddressService
   ) {}
 
   async create(
@@ -92,7 +91,7 @@ export class CandidateService {
         where: { email: params.credentials.email },
       });
 
-      await this.addressRepository.save({
+      await this.addressService.create({
         id_address: userToBeFound.id_user,
         uf_id: params.address.uf,
         cep: params.address.cep,

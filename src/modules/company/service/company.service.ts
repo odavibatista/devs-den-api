@@ -30,6 +30,7 @@ import {
   addressValidate,
 } from '../../../shared/utils/addressValidate';
 import { UnprocessableDataException } from '../../../shared/domain/errors/UnprocessableData.exception';
+import { AddressService } from '../../address/services/address.service';
 
 @Injectable()
 export class CompanyService {
@@ -38,12 +39,11 @@ export class CompanyService {
     private companyRepository: Repository<Company>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(Address)
-    private readonly addressRepository: Repository<Address>,
     @InjectRepository(Uf)
     private readonly ufRepository: Repository<Uf>,
     private readonly JwtProvider: JWTProvider,
     private readonly userService: UserService,
+    private readonly addressService: AddressService
   ) {}
 
   async findAll(): Promise<Company[]> {
@@ -128,7 +128,7 @@ export class CompanyService {
         where: { email: params.credentials.email },
       });
 
-      await this.addressRepository.save({
+      await this.addressService.create({
         id_address: userToBeFound.id_user,
         uf_id: params.address.uf,
         cep: params.address.cep,
