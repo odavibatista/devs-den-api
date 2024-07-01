@@ -6,6 +6,7 @@ import {
   HttpException,
   Param,
   Post,
+  Query,
   Req,
   Res,
   UnauthorizedException,
@@ -32,6 +33,7 @@ import { JobApplicationService } from '../../../modules/job-applications/service
 import { GetJobStatusResponseDTO } from '../domain/requests/GetJobStatus.request.dto';
 import { ApplicationDoesNotExist } from '../../../modules/job-applications/domain/errors/ApplicationDoesNotExist.exception';
 import { UserNotFoundException } from '../../../modules/user/domain/errors/UserNotFound.exception';
+import { PaginationDto } from '../../../shared/domain/dtos/providers/Pagination.dto';
 
 @Controller('jobs')
 @ApiTags('Vagas')
@@ -47,8 +49,11 @@ export class ConjunctJobsController {
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
+    @Query() paginationDto: PaginationDto
   ): Promise<SimpleFindJobResponseDTO[] | AllExceptionsFilterDTO> {
-    const result = await this.jobService.findAll();
+    const { page } = paginationDto;
+    
+    const result = await this.jobService.findAll((page - 1) * 20);
 
     if (result instanceof HttpException) {
       return res.status(result.getStatus()).json({
