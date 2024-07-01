@@ -8,10 +8,7 @@ export const GetCandidateProfileDataResponseSchema = z.object({
     role: z.string().min(7).max(9).describe('Papel do usuário'),
     birth_date: z.string().length(10).describe('Data de nascimento do usuário'),
     address: z.object({
-        uf: z.object({
-            id: z.number().describe('ID da UF'),
-            name: z.string().max(50).describe('Nome da UF')
-        }),
+        uf: z.number().describe('ID da UF'),
         city: z.string().max(50).describe('Cidade do endereço'),
         cep: z.string().length(8).describe('CEP do endereço'),
         street: z.string().max(50).describe('Rua do endereço'),
@@ -31,10 +28,7 @@ export const GetCompanyProfileDataResponseSchema = z.object({
     role: z.string().min(7).max(9).describe('Papel do usuário'),
     cnpj: z.string().length(16).describe('CNPJ da empresa'),
     address: z.object({
-        uf: z.object({
-            id: z.number().describe('ID da UF'),
-            name: z.string().max(50).describe('Nome da UF')
-        }),
+        uf: z.number().describe('ID da UF'),
         city: z.string().max(50).describe('Cidade do endereço'),
         cep: z.string().length(8).describe('CEP do endereço'),
         street: z.string().max(50).describe('Rua do endereço'),
