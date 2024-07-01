@@ -126,7 +126,8 @@ export class CompanyService {
         });
   
         await this.addressRepository.save({
-          uf: uf,
+          id_address: userToBeFound.id_user,
+          uf_id: params.address.uf,
           cep: params.address.cep,
           city: params.address.city,
           street: params.address.street,

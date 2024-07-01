@@ -84,17 +84,18 @@ export class CandidateService {
         role: 'candidate',
       });
   
+      const userToBeFound: User = await this.userRepository.findOne({
+        where: { email: params.credentials.email },
+      });
+
       await this.addressRepository.save({
-        uf: uf,
+        id_address: userToBeFound.id_user,
+        uf_id: params.address.uf,
         cep: params.address.cep,
         city: params.address.city,
         street: params.address.street,
         complement: params.address.complement,
         number: params.address.number,
-      });
-  
-      const userToBeFound: User = await this.userRepository.findOne({
-        where: { email: params.credentials.email },
       });
   
       await this.candidateRepository.save({
