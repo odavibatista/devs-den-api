@@ -5,13 +5,13 @@ import { nameValidate } from './nameValidate';
 import { numberValidate } from './numberValidate';
 import { streetValidate } from './streetValidate';
 
-export interface IAddressObject    {
-    uf: number
-    city: string;
-    cep: string;
-    street: string;
-    number: string;
-    complement?: string;
+export interface IAddressObject {
+  uf: number;
+  city: string;
+  cep: string;
+  street: string;
+  number: string;
+  complement?: string;
 }
 
 export const addressValidate = (address: IAddressObject): boolean => {
@@ -25,7 +25,7 @@ export const addressValidate = (address: IAddressObject): boolean => {
       'Ruas devem possuir entre 1 e 100 caracteres e não podem conter caracteres especiais.',
     );
 
-    if (!numberValidate(address.number))
+  if (!numberValidate(address.number))
     throw new UnprocessableDataException(
       'Número de endereço deve possuir entre 1 e 6 caracteres e não podem conter letras ou caracteres especiais.',
     );
@@ -33,9 +33,15 @@ export const addressValidate = (address: IAddressObject): boolean => {
   if (!cepValidate(address.cep))
     throw new UnprocessableDataException('CEP inválido.');
 
-  if (address.city.length < 3) throw new UnprocessableDataException("Nomes de cidades devem possuir pelo menos três caracteres.");
+  if (address.city.length < 3)
+    throw new UnprocessableDataException(
+      'Nomes de cidades devem possuir pelo menos três caracteres.',
+    );
 
-  if (address.city.length > 50) throw new UnprocessableDataException("Nomes de cidades devem possuir no máximo cinquenta caracteres.");
+  if (address.city.length > 50)
+    throw new UnprocessableDataException(
+      'Nomes de cidades devem possuir no máximo cinquenta caracteres.',
+    );
 
   if (address.city.length < 1)
     throw new UnprocessableDataException(
@@ -57,15 +63,14 @@ export const addressValidate = (address: IAddressObject): boolean => {
       'Número de endereço deve possuir no máximo dez caracteres.',
     );
 
-    if (address.complement && address.complement.length > 100)
+  if (address.complement && address.complement.length > 100)
     throw new UnprocessableDataException(
       'Complemento não pode ter mais de 100 caracteres.',
     );
 
-    if (!complementValidate(address.complement))
+  if (!complementValidate(address.complement))
     throw new UnprocessableDataException(
       'Complemento não pode conter caracteres especiais.',
     );
-
   else return true;
 };
