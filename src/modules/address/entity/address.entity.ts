@@ -3,20 +3,31 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
-  PrimaryGeneratedColumn,
+  OneToOne,
+  PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { User } from '../../user/entity/user.entity';
 
 @Entity()
 class Addresses {
-  @PrimaryGeneratedColumn({})
+  @OneToOne(() => User, (user) => user.id_user, {
+    nullable: false,
+  })
+  @PrimaryColumn()
+  @JoinColumn({ name: 'id_address' })
   id_address: number;
 
   @ManyToOne(() => Uf, (uf) => uf.id_uf, {
     nullable: false,
   })
-  uf: Uf;
+  @JoinColumn({ name: 'uf_id' })
+  @Column({
+    nullable: false,
+  })
+  uf_id: number;
 
   @Column({
     length: 50,

@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entity/user.entity';
@@ -53,7 +53,6 @@ export class UserService {
   }
 
   async getProfileData(id: number): Promise<GetCandidateProfileDataResponseDTO | GetCompanyProfileDataResponseDTO | UserNotFoundException> {
-    try {
       const user = await this.userRepository.findOne({
         where: { id_user: id },
       });
@@ -78,10 +77,7 @@ export class UserService {
           role: user.role,
           birth_date: candidateUser.birth_date,
           address:  {
-            uf: {
-              id: address.uf.id_uf,
-              name: address.uf.name
-            },
+            uf: address.uf_id,
             city: address.city,
             cep: address.cep,
             street: address.street,
@@ -103,10 +99,7 @@ export class UserService {
           role: user.role,
           cnpj: companyUser.cnpj,
           address:  {
-            uf: {
-              id: address.uf.id_uf,
-              name: address.uf.name
-            },
+            uf: address.uf_id,
             city: address.city,
             cep: address.cep,
             street: address.street,
@@ -115,9 +108,6 @@ export class UserService {
           }
         };
       }
-    } catch (error) {
-      throw new CommonException(error);
-    }
   }
 
   async findOne(
