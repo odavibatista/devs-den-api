@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateAddressRequestDTO } from '../domain/requests/CreateAddress.request.dto';
 import { AddressNotFoundException } from '../domain/errors/AddressNotFound.exception.dto';
 import { FindAddressResponseDTO } from '../domain/requests/FindAddress.request.dto';
+import { CommonException } from 'src/shared/domain/errors/Common.exception';
 
 @Injectable()
 export class AddressService {
@@ -53,3 +54,19 @@ export class AddressService {
         )
     }
 }
+
+@Injectable()
+export class AddressClearingService {
+    constructor(
+      @InjectRepository(Address)
+      private userRepository: Repository<Address>,
+    ) {}
+  
+    public async wipe(): Promise<void> {
+      try {
+        await this.userRepository.clear();
+      } catch (error) {
+        throw new CommonException(error);
+      }
+    }
+  }
