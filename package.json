@@ -33,7 +33,7 @@
     "@nestjs/config": "^3.2.2",
     "@nestjs/core": "^11.1.9",
     "@nestjs/platform-express": "^11.1.9",
-    "@nestjs/swagger": "^11.2.3",
+    "@nestjs/swagger": "^11.2.6",
     "@nestjs/typeorm": "^11.0.0",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
